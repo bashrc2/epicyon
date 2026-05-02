@@ -34,6 +34,7 @@ from content import remove_script
 from data import save_binary
 from data import load_binary
 from data import erase_file
+from data import is_a_file
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -42,7 +43,7 @@ def remove_person_from_cache(base_dir: str, person_url: str,
     """
     cache_filename = base_dir + '/cache/actors/' + \
         person_url.replace('/', '#') + '.json'
-    if os.path.isfile(cache_filename):
+    if is_a_file(cache_filename):
         ex_text = \
             'EX: unable to delete cached actor ' + str(cache_filename)
         erase_file(cache_filename, ex_text)
@@ -116,7 +117,7 @@ def store_person_in_cache(base_dir: str, person_url: str,
     if os.path.isdir(base_dir + '/cache/actors'):
         cache_filename = base_dir + '/cache/actors/' + \
             person_url.replace('/', '#') + '.json'
-        if not os.path.isfile(cache_filename):
+        if not is_a_file(cache_filename):
             save_json(person_json, cache_filename)
 
 
@@ -402,7 +403,7 @@ def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
     for extension in avatar_filename_extensions:
         avatar_filename = \
             base_dir + '/cache/avatars/' + actor_str + '.' + extension
-        if not os.path.isfile(avatar_filename):
+        if not is_a_file(avatar_filename):
             continue
         ex_text = \
             'EX: remove_avatar_from_cache ' + \
@@ -426,7 +427,7 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
                 continue
             cache_dir = os.path.join(dir_str, acct)
             post_filename = cache_dir + filename
-            if os.path.isfile(post_filename):
+            if is_a_file(post_filename):
                 ex_text = \
                     'EX: clear_from_post_caches file not removed ' + \
                     str(post_filename)

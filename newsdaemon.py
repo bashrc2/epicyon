@@ -48,6 +48,7 @@ from data import save_string
 from data import append_string
 from data import prepend_string
 from data import erase_file
+from data import is_a_file
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -57,7 +58,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
     base_path = data_dir(base_dir) + '/news@' + domain
     index_filename = base_path + '/outbox.index'
 
-    if os.path.isfile(index_filename):
+    if is_a_file(index_filename):
         if not text_in_file(post_id, index_filename):
             if prepend_string(post_id, index_filename,
                               'EX: ' +
@@ -387,7 +388,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     of this instance
     """
     rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
-    if not os.path.isfile(rules_filename):
+    if not is_a_file(rules_filename):
         return True
     rules: list[str] = \
         load_list(rules_filename,
@@ -462,7 +463,7 @@ def _create_news_mirror(base_dir: str, domain: str,
     mirror_index_filename = data_dir(base_dir) + '/newsmirror.txt'
 
     if max_mirrored_articles > 0 and no_of_dirs > max_mirrored_articles:
-        if not os.path.isfile(mirror_index_filename):
+        if not is_a_file(mirror_index_filename):
             # no index for mirrors found
             return True
         removals: list[str] = []
@@ -527,7 +528,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         return True
 
     # append the post Id number to the index file
-    if os.path.isfile(mirror_index_filename):
+    if is_a_file(mirror_index_filename):
         append_string(post_id_number + '\n', mirror_index_filename,
                       'EX: _create_news_mirror unable to append ' +
                       mirror_index_filename)
@@ -592,7 +593,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
 
         # file where the post is stored
         filename = base_path + '/' + new_post_id.replace('/', '#') + '.json'
-        if os.path.isfile(filename):
+        if is_a_file(filename):
             # don't create the post if it already exists
             # set the url
             # newswire[original_date_str][1] = \
@@ -753,7 +754,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                     _save_arrived_time(filename,
                                        blog['object']['arrived'])
                 else:
-                    if os.path.isfile(filename + '.arrived'):
+                    if is_a_file(filename + '.arrived'):
                         erase_file(filename + '.arrived',
                                    'EX: _convert_rss_to_activitypub ' +
                                    'unable to delete ' +
@@ -821,7 +822,7 @@ def run_newswire_daemon(base_dir: str, httpd,
 
         if not httpd.newswire:
             print('Newswire feeds not updated')
-            if os.path.isfile(newswire_state_filename):
+            if is_a_file(newswire_state_filename):
                 print('Loading newswire from file')
                 httpd.newswire = load_json(newswire_state_filename)
 
@@ -864,7 +865,7 @@ def run_newswire_daemon(base_dir: str, httpd,
             time.sleep(10)
             # if a new blog post has been created then stop
             # waiting and recalculate the newswire
-            if not os.path.isfile(refresh_filename):
+            if not is_a_file(refresh_filename):
                 continue
             ex_text = \
                 'EX: run_newswire_daemon unable to delete ' + \

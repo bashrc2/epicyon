@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from utils import get_mutuals_of_person
 from utils import data_dir
@@ -25,6 +24,7 @@ from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_post import individual_post_as_html
+from data import is_a_file
 
 
 def html_confirm_delete(server,
@@ -75,7 +75,7 @@ def html_confirm_delete(server,
 
     delete_post_str = None
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -86,7 +86,7 @@ def html_confirm_delete(server,
                                         preload_images)
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm: bool = False
-    if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+    if is_a_file(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
     bold_reading: bool = False
     if server.bold_reading.get(nickname):
@@ -162,7 +162,7 @@ def html_confirm_remove_shared_item(translate: {},
     domain_full = get_full_domain(domain, port)
     shares_file = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_file):
+    if not is_a_file(shares_file):
         print('ERROR: no ' + shares_file_type + ' file ' + shares_file)
         return None
     shares_json = load_json(shares_file)
@@ -180,7 +180,7 @@ def html_confirm_remove_shared_item(translate: {},
     set_custom_background(base_dir, 'shares-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -232,13 +232,13 @@ def html_confirm_follow(translate: {}, base_dir: str,
     follow_domain, _ = get_domain_from_actor(follow_actor)
 
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/follow-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/follow-background.jpg'):
+    if is_a_file(dir_str + '/follow-background-custom.jpg'):
+        if not is_a_file(dir_str + '/follow-background.jpg'):
             copyfile(dir_str + '/follow-background-custom.jpg',
                      dir_str + '/follow-background.jpg')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -290,13 +290,13 @@ def html_confirm_unfollow(translate: {}, base_dir: str,
     follow_domain, _ = get_domain_from_actor(follow_actor)
 
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/follow-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/follow-background.jpg'):
+    if is_a_file(dir_str + '/follow-background-custom.jpg'):
+        if not is_a_file(dir_str + '/follow-background.jpg'):
             copyfile(dir_str + '/follow-background-custom.jpg',
                      dir_str + '/follow-background.jpg')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -345,7 +345,7 @@ def html_confirm_unblock(translate: {}, base_dir: str,
     set_custom_background(base_dir, 'block-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -394,7 +394,7 @@ def html_confirm_block(translate: {}, base_dir: str,
     set_custom_background(base_dir, 'block-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')

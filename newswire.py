@@ -58,6 +58,7 @@ from data import load_list
 from data import load_string
 from data import save_binary
 from data import erase_file
+from data import is_a_file
 
 
 def _remove_cdata(text: str) -> str:
@@ -198,7 +199,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
 
     # save to the cache
     fav_filename = get_fav_filename_from_url(base_dir, fav_url)
-    if os.path.isfile(fav_filename):
+    if is_a_file(fav_filename):
         return True
     if not save_binary(image_data, fav_filename,
                        'EX: failed writing favicon ' + fav_filename):
@@ -397,10 +398,10 @@ def load_hashtag_categories(base_dir: str, language: str) -> None:
     """Loads an rss file containing hashtag categories
     """
     hashtag_categories_filename = base_dir + '/categories.xml'
-    if not os.path.isfile(hashtag_categories_filename):
+    if not is_a_file(hashtag_categories_filename):
         hashtag_categories_filename = \
             base_dir + '/defaultcategories/' + language + '.xml'
-        if not os.path.isfile(hashtag_categories_filename):
+        if not is_a_file(hashtag_categories_filename):
             return
 
     xml_str = load_string(hashtag_categories_filename,
@@ -1667,7 +1668,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                                    session, debug: bool) -> None:
     """Adds blogs for the given account to the newswire
     """
-    if not os.path.isfile(index_filename):
+    if not is_a_file(index_filename):
         return
     # local blog entries are unmoderated by default
     moderated: bool = False
@@ -1675,7 +1676,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
     # local blogs can potentially be moderated
     moderated_filename = \
         acct_dir(base_dir, nickname, domain) + '/.newswiremoderated'
-    if os.path.isfile(moderated_filename):
+    if is_a_file(moderated_filename):
         moderated = True
 
     try:
@@ -1719,7 +1720,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
                     votes: list[str] = []
-                    if os.path.isfile(full_post_filename + '.votes'):
+                    if is_a_file(full_post_filename + '.votes'):
                         votes = load_json(full_post_filename + '.votes')
                     content = \
                         get_base_content_from_post(post_json_object,
@@ -1774,13 +1775,13 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
                 continue
 
             handle_dir = acct_handle_dir(base_dir, handle)
-            if os.path.isfile(handle_dir + '/.nonewswire'):
+            if is_a_file(handle_dir + '/.nonewswire'):
                 continue
 
             # is there a blogs timeline for this account?
             account_dir = os.path.join(dir_str, handle)
             blogs_index = account_dir + '/tlblogs.index'
-            if os.path.isfile(blogs_index):
+            if is_a_file(blogs_index):
                 domain = handle.split('@')[1]
                 _add_account_blogs_to_newswire(base_dir, nickname, domain,
                                                newswire, max_blogs_per_account,
@@ -1799,7 +1800,7 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
         save_json(sorted_moderation_dict, newswire_moderation_filename)
     else:
         # remove the file if there is nothing to moderate
-        if os.path.isfile(newswire_moderation_filename):
+        if is_a_file(newswire_moderation_filename):
             ex_text = \
                 'EX: _add_blogs_to_newswire unable to delete ' + \
                 str(newswire_moderation_filename)
@@ -1817,7 +1818,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptions_filename = data_dir(base_dir) + '/newswire.txt'
-    if not os.path.isfile(subscriptions_filename):
+    if not is_a_file(subscriptions_filename):
         return {}
 
     max_posts_per_source = 5

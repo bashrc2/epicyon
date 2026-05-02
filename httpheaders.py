@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 import urllib.parse
 from hashlib import md5
 from utils import string_contains
@@ -19,6 +18,7 @@ from utils import has_object_dict
 from utils import get_attributed_to
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def login_headers(self, file_format: str, length: int,
@@ -225,7 +225,7 @@ def set_headers_etag(self, media_filename: str, file_format: str,
     _set_headers_base(self, file_format, datalen, cookie, calling_domain,
                       permissive)
     etag = None
-    if os.path.isfile(media_filename + '.etag'):
+    if is_a_file(media_filename + '.etag'):
         etag = load_string(media_filename + '.etag',
                            'EX: _set_headers_etag ' +
                            'unable to read ' + media_filename + '.etag')

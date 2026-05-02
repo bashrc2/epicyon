@@ -64,6 +64,7 @@ from data import save_flag_file
 from data import save_binary
 from data import load_string
 from data import erase_file
+from data import is_a_file
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -78,10 +79,10 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
     minimize_filename = \
         acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
     handle = following_nickname + '@' + following_domain
-    if not os.path.isfile(minimize_filename):
+    if not is_a_file(minimize_filename):
         following_filename = \
             acct_dir(base_dir, nickname, domain) + '/following.txt'
-        if not os.path.isfile(following_filename):
+        if not is_a_file(following_filename):
             return False
         # create a new minimize file from the following file
         save_flag_file(minimize_filename,
@@ -109,7 +110,7 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
         following_list.sort()
         if following_list:
             css_filename = base_dir + '/epicyon-profile.css'
-            if os.path.isfile(base_dir + '/epicyon.css'):
+            if is_a_file(base_dir + '/epicyon.css'):
                 css_filename = base_dir + '/epicyon.css'
 
             instance_title = \
@@ -188,7 +189,7 @@ def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
     """
     blocked_hashtag_form: str = ''
     css_filename = base_dir + '/epicyon-suspended.css'
-    if os.path.isfile(base_dir + '/suspended.css'):
+    if is_a_file(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
 
     instance_title = \
@@ -407,7 +408,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
     if not avatar_image_filename or not session_headers:
         return None
 
-    if (not os.path.isfile(avatar_image_filename) or force) and \
+    if (not is_a_file(avatar_image_filename) or force) and \
        allow_downloads:
         if '://' not in avatar_url and avatar_url.startswith('/'):
             avatar_url = http_prefix + '://' + domain + avatar_url
@@ -424,7 +425,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                     print('Avatar image download failed with status ' +
                           str(result.status_code))
                 # remove partial download
-                if os.path.isfile(avatar_image_filename):
+                if is_a_file(avatar_image_filename):
                     erase_file(avatar_image_filename,
                                'EX: ' +
                                'update_avatar_image_cache unable to delete ' +
@@ -489,7 +490,7 @@ def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
     """
     schedule_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
-    if not os.path.isfile(schedule_index_filename):
+    if not is_a_file(schedule_index_filename):
         return False
     if text_in_file('#users#', schedule_index_filename):
         return True
@@ -513,7 +514,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                 continue
             account_dir = acct_handle_dir(base_dir, handle)
             shares_filename = account_dir + '/' + shares_file_type + '.json'
-            if not os.path.isfile(shares_filename):
+            if not is_a_file(shares_filename):
                 continue
             shares_json = load_json(shares_filename)
             if not shares_json:
@@ -1107,7 +1108,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     if not cached_post_filename:
         return post_html
 
-    if not os.path.isfile(cached_post_filename):
+    if not is_a_file(cached_post_filename):
         return post_html
 
     tries: int = 0
@@ -1490,7 +1491,7 @@ def get_post_attachments_as_html(base_dir: str,
                             im_filename = image_url
                         cached_svg_filename = \
                             base_dir + '/media/' + post_id + '_' + im_filename
-                        if os.path.isfile(cached_svg_filename):
+                        if is_a_file(cached_svg_filename):
                             svg_harmless = True
 
             if _is_attached_image(image_url) and svg_harmless:
@@ -1794,7 +1795,7 @@ def html_post_separator(base_dir: str, column: str) -> str:
     separator_image_filename = \
         base_dir + '/theme/' + theme + '/icons/' + filename
     separator_str: str = ''
-    if os.path.isfile(separator_image_filename):
+    if is_a_file(separator_image_filename):
         separator_str = \
             '<div class="' + separator_class + '"><center>' + \
             '<img src="/icons/' + filename + '" ' + \
@@ -2113,7 +2114,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
         shares_filename = \
             acct_dir(base_dir, contact_nickname, domain) + '/' + \
             shares_file_type + '.json'
-        if not os.path.isfile(shares_filename):
+        if not is_a_file(shares_filename):
             return None
         shares_json = load_json(shares_filename)
     else:
@@ -2167,7 +2168,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
                                  publicly_visible)
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
@@ -2185,12 +2186,11 @@ def set_custom_background(base_dir: str, background: str,
     Returns the extension, if found
     """
     ext = 'jpg'
-    if os.path.isfile(base_dir + '/img/' + background + '.' + ext):
+    if is_a_file(base_dir + '/img/' + background + '.' + ext):
         if not new_background:
             new_background = background
         dir_str = data_dir(base_dir)
-        if not os.path.isfile(dir_str + '/' +
-                              new_background + '.' + ext):
+        if not is_a_file(dir_str + '/' + new_background + '.' + ext):
             copyfile(base_dir + '/img/' + background + '.' + ext,
                      dir_str + '/' + new_background + '.' + ext)
         return ext
@@ -2201,12 +2201,12 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     """Shows common emoji
     """
     emojis_filename = base_dir + '/emoji/emoji.json'
-    if not os.path.isfile(emojis_filename):
+    if not is_a_file(emojis_filename):
         emojis_filename = base_dir + '/emoji/default_emoji.json'
     emojis_json = load_json(emojis_filename)
 
     common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
-    if not os.path.isfile(common_emoji_filename):
+    if not is_a_file(common_emoji_filename):
         return ''
     common_emoji: list[str] = \
         load_list(common_emoji_filename,
@@ -2225,9 +2225,9 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         emoji_name = remove_eol(emoji_name1)
         emoji_icon_name = emoji_name
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
-        if not os.path.isfile(emoji_filename):
+        if not is_a_file(emoji_filename):
             emoji_filename = base_dir + '/customemoji/' + emoji_name + '.png'
-            if not os.path.isfile(emoji_filename):
+            if not is_a_file(emoji_filename):
                 # load the emojis index
                 if not emojis_json:
                     emojis_json = load_json(emojis_filename)
@@ -2240,7 +2240,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                                 base_dir + '/emoji/' + emoji_code + '.png'
                             emoji_icon_name = emoji_code
                             break
-        if os.path.isfile(emoji_filename):
+        if is_a_file(emoji_filename):
             # NOTE: deliberately no alt text, so that without graphics only
             # the emoji name shows
             html_str += \
@@ -2279,7 +2279,7 @@ def html_following_data_list(base_dir: str, nickname: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
     msg: str = ''
-    if os.path.isfile(following_filename):
+    if is_a_file(following_filename):
         msg = load_string(following_filename,
                           'EX: html_following_data_list unable to read ' +
                           following_filename)
@@ -2293,7 +2293,7 @@ def html_following_data_list(base_dir: str, nickname: str,
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
-        if use_petnames and os.path.isfile(petnames_filename):
+        if use_petnames and is_a_file(petnames_filename):
             following_list: list[str] = []
             pet_str = \
                 load_string(petnames_filename,
@@ -2332,7 +2332,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
     msg: str = ''
-    if os.path.isfile(following_filename):
+    if is_a_file(following_filename):
         msg = load_string(following_filename,
                           'EX: html_following_dropdown unable to read ' +
                           following_filename)
@@ -2346,7 +2346,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
-        if use_petnames and os.path.isfile(petnames_filename):
+        if use_petnames and is_a_file(petnames_filename):
             following_list: list[str] = []
             pet_str = \
                 load_string(petnames_filename,
@@ -2461,7 +2461,7 @@ def load_buy_sites(base_dir: str) -> {}:
     """Loads domains from which buying is permitted
     """
     buy_sites_filename = data_dir(base_dir) + '/buy_sites.json'
-    if os.path.isfile(buy_sites_filename):
+    if is_a_file(buy_sites_filename):
         buy_sites_json = load_json(buy_sites_filename)
         if buy_sites_json:
             return buy_sites_json
@@ -2477,7 +2477,7 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
     """
     html_str: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')

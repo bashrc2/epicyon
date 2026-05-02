@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
-import os
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
@@ -22,6 +21,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from utils import get_actor_from_post
+from data import is_a_file
 
 
 def set_availability(base_dir: str, nickname: str, domain: str,
@@ -36,11 +36,11 @@ def set_availability(base_dir: str, nickname: str, domain: str,
         actor_exists = isinstance(actor_json, dict)
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
     if not actor_exists:
-        if os.path.isfile(actor_filename):
+        if is_a_file(actor_filename):
             actor_json = load_json(actor_filename)
     if actor_json:
         actor_json['availability'] = status
-        if os.path.isfile(actor_filename):
+        if is_a_file(actor_filename):
             save_json(actor_json, actor_filename)
     return True
 
@@ -54,7 +54,7 @@ def get_availability(base_dir: str, nickname: str, domain: str,
         actor_exists = isinstance(actor_json, dict)
     if not actor_exists:
         actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-        if not os.path.isfile(actor_filename):
+        if not is_a_file(actor_filename):
             return False
         actor_json = load_json(actor_filename)
     if actor_json:

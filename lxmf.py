@@ -8,13 +8,13 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-import os
 import pyqrcode
 from utils import get_attachment_property_value
 from utils import acct_dir
 from utils import load_json
 from utils import string_contains
 from data import erase_file
+from data import is_a_file
 
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
@@ -38,11 +38,11 @@ def save_lxmf_qrcode(base_dir: str,
     This helps to transfer onion or i2p handles to a mobile device
     """
     qrcode_filename = acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
-    if os.path.isfile(qrcode_filename):
+    if is_a_file(qrcode_filename):
         return False
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return False
     actor_json = load_json(actor_filename)
     if not actor_json:
@@ -111,7 +111,7 @@ def set_lxmf_address(base_dir: str, nickname: str, domain: str,
     if not lxmf_address:
         qrcode_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
-        if os.path.isfile(qrcode_filename):
+        if is_a_file(qrcode_filename):
             erase_file(qrcode_filename,
                        'EX: cannot remove lxmf qrcode ' + qrcode_filename)
 

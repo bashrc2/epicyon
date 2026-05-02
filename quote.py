@@ -7,12 +7,12 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 from utils import acct_dir
 from utils import resembles_url
 from utils import remove_html
 from utils import text_in_file
 from utils import has_object_dict
+from data import is_a_file
 
 
 def get_quote_toot_url(post_json_object: str) -> str:
@@ -102,12 +102,12 @@ def quote_toots_allowed(base_dir: str, nickname: str, domain: str,
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     quotes_enabled_filename = account_dir + '/.allowQuotes'
-    if os.path.isfile(quotes_enabled_filename):
+    if is_a_file(quotes_enabled_filename):
         # check blocks on individual sending accounts
         quotes_blocked_filename = account_dir + '/quotesblocked.txt'
         if sender_nickname is None:
             return True
-        if os.path.isfile(quotes_blocked_filename):
+        if is_a_file(quotes_blocked_filename):
             sender_handle = sender_nickname + '@' + sender_domain
             if text_in_file(sender_handle, quotes_blocked_filename, False):
                 # quote toots not permitted from this sender

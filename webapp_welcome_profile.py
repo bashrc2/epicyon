@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Onboarding"
 
-import os
 from shutil import copyfile
 from utils import replace_strings
 from utils import data_dir
@@ -23,6 +22,7 @@ from webapp_utils import html_footer
 from webapp_utils import edit_text_field
 from markdown import markdown_to_html
 from data import load_string
+from data import is_a_file
 
 
 def html_welcome_profile(base_dir: str, nickname: str, domain: str,
@@ -33,25 +33,25 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
     """
     # set a custom background for the welcome screen
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/welcome-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/welcome-background.jpg'):
+    if is_a_file(dir_str + '/welcome-background-custom.jpg'):
+        if not is_a_file(dir_str + '/welcome-background.jpg'):
             copyfile(dir_str + '/welcome-background-custom.jpg',
                      dir_str + '/welcome-background.jpg')
 
     profile_text = 'Welcome to Epicyon'
     profile_filename = dir_str + '/welcome_profile.md'
-    if not os.path.isfile(profile_filename):
+    if not is_a_file(profile_filename):
         default_filename = None
         if theme_name:
             default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'profile_' + language + '.md'
-            if not os.path.isfile(default_filename):
+            if not is_a_file(default_filename):
                 default_filename = None
         if not default_filename:
             default_filename = \
                 base_dir + '/defaultwelcome/profile_' + language + '.md'
-        if not os.path.isfile(default_filename):
+        if not is_a_file(default_filename):
             default_filename = base_dir + '/defaultwelcome/profile_en.md'
         copyfile(default_filename, profile_filename)
 
@@ -60,7 +60,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
     if not instance_title:
         instance_title = 'Epicyon'
 
-    if os.path.isfile(profile_filename):
+    if is_a_file(profile_filename):
         profile_text = load_string(profile_filename,
                                    'EX: html_welcome_profile unable to read ' +
                                    profile_filename)
@@ -72,7 +72,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
 
     profile_form: str = ''
     css_filename = base_dir + '/epicyon-welcome.css'
-    if os.path.isfile(base_dir + '/welcome.css'):
+    if is_a_file(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
 
     preload_images: list[str] = []
@@ -85,7 +85,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
     for ext in get_image_extensions():
         avatar_filename = \
             acct_dir(base_dir, nickname, domain) + '/avatar.' + ext
-        if os.path.isfile(avatar_filename):
+        if is_a_file(avatar_filename):
             break
     avatar_url = \
         local_actor_url(http_prefix, nickname, domain_full) + \

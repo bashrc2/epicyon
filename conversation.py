@@ -25,6 +25,7 @@ from data import save_string
 from data import save_flag_file
 from data import append_string
 from data import erase_file
+from data import is_a_file
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -66,7 +67,7 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
     if not conversation_filename:
         return False
     post_id = remove_id_ending(post_json_object['object']['id'])
-    if not os.path.isfile(conversation_filename):
+    if not is_a_file(conversation_filename):
         if save_string(post_id + '\n', conversation_filename,
                        'EX: update_conversation ' +
                        'unable to write to ' +
@@ -91,9 +92,9 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversation_filename = \
         conversation_dir + '/' + conversation_id.replace('/', '#')
-    if not os.path.isfile(conversation_filename):
+    if not is_a_file(conversation_filename):
         return
-    if os.path.isfile(conversation_filename + '.muted'):
+    if is_a_file(conversation_filename + '.muted'):
         return
     save_flag_file(conversation_filename + '.muted',
                    'EX: unable to write mute ' + conversation_filename)
@@ -109,9 +110,9 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversation_filename = \
         conversation_dir + '/' + conversation_id.replace('/', '#')
-    if not os.path.isfile(conversation_filename):
+    if not is_a_file(conversation_filename):
         return
-    if not os.path.isfile(conversation_filename + '.muted'):
+    if not is_a_file(conversation_filename + '.muted'):
         return
     erase_file(conversation_filename + '.muted',
                'EX: unmute_conversation unable to delete ' +

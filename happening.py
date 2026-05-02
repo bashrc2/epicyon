@@ -42,6 +42,7 @@ from data import save_string
 from data import append_string
 from data import prepend_string
 from data import erase_file
+from data import is_a_file
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -101,7 +102,7 @@ def _remove_event_from_timeline(event_id: str,
     if events_timeline:
         save_string(events_timeline, tl_events_filename,
                     'EX: ERROR: unable to save events timeline')
-    elif os.path.isfile(tl_events_filename):
+    elif is_a_file(tl_events_filename):
         erase_file(tl_events_filename,
                    'EX: ERROR: unable to remove events timeline')
 
@@ -157,7 +158,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         # save to the events timeline
         tl_events_filename = handle_dir + '/events.txt'
 
-        if os.path.isfile(tl_events_filename):
+        if is_a_file(tl_events_filename):
             _remove_event_from_timeline(event_id, tl_events_filename)
             ex_str: str = \
                 'EX: Failed to prepend entry to events file ' + \
@@ -178,7 +179,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         '/' + str(event_month_number) + '.txt'
 
     # Does this event post already exist within the calendar month?
-    if os.path.isfile(calendar_filename):
+    if is_a_file(calendar_filename):
         if text_in_file(post_id, calendar_filename):
             # Event post already exists
             return False
@@ -288,7 +289,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
     events = {}
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         return events
 
     calendar_post_ids: list[str] = []
@@ -614,7 +615,7 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
     calendar_filename = \
         acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         return False
 
     events_exist: bool = False
@@ -673,7 +674,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
         '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
 
     events = {}
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         return events
 
     calendar_post_ids: list[str] = []
@@ -749,7 +750,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
         '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
 
     events = {}
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         return events
 
     calendar_post_ids: list[str] = []
@@ -844,7 +845,7 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
     calendar_filename = \
         acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(month_number) + '.txt'
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         return
     if '/' in message_id:
         message_id = message_id.replace('/', '#')

@@ -63,6 +63,7 @@ from cache import store_person_in_cache
 from data import save_string
 from data import load_string
 from data import erase_file
+from data import is_a_file
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -73,7 +74,7 @@ def _load_dfc_ids(base_dir: str, system_language: str,
     """
     product_types_filename = \
         base_dir + '/ontology/custom' + product_type.title() + 'Types.json'
-    if not os.path.isfile(product_types_filename):
+    if not is_a_file(product_types_filename):
         product_types_filename = \
             base_dir + '/ontology/' + product_type + 'Types.json'
     product_types = load_json(product_types_filename)
@@ -150,7 +151,7 @@ def remove_shared_item2(base_dir: str, nickname: str, domain: str,
     """
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         print('ERROR: remove shared item, missing ' +
               shares_file_type + '.json ' + shares_filename)
         return
@@ -170,7 +171,7 @@ def remove_shared_item2(base_dir: str, nickname: str, domain: str,
             for ext in formats:
                 if not shares_json[item_id]['imageUrl'].endswith('.' + ext):
                     continue
-                if not os.path.isfile(item_idfile + '.' + ext):
+                if not is_a_file(item_idfile + '.' + ext):
                     continue
                 erase_file(item_idfile + '.' + ext,
                            'EX: remove_shared_item unable to delete ' +
@@ -309,7 +310,7 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
                 new_share_file = account_dir + '/.newShare'
             else:
                 new_share_file = account_dir + '/.newWanted'
-            if os.path.isfile(new_share_file):
+            if is_a_file(new_share_file):
                 continue
             account_nickname = handle.split('@')[0]
             # does this account block you?
@@ -352,7 +353,7 @@ def add_share(base_dir: str,
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
     shares_json = {}
-    if os.path.isfile(shares_filename):
+    if is_a_file(shares_filename):
         shares_json = load_json(shares_filename)
 
     duration = duration.lower()
@@ -374,7 +375,7 @@ def add_share(base_dir: str,
             acct_dir(base_dir, nickname, domain) + '/upload'
         formats = get_image_extensions()
         for ext in formats:
-            if not os.path.isfile(shares_image_filename + '.' + ext):
+            if not is_a_file(shares_image_filename + '.' + ext):
                 continue
             image_filename = shares_image_filename + '.' + ext
             move_image = True
@@ -383,7 +384,7 @@ def add_share(base_dir: str,
 
     # copy or move the image for the shared item to its destination
     if image_filename:
-        if os.path.isfile(image_filename):
+        if is_a_file(image_filename):
             if not os.path.isdir(base_dir + '/sharefiles'):
                 os.mkdir(base_dir + '/sharefiles')
             if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
@@ -456,7 +457,7 @@ def expire_shares(base_dir: str, max_shares_on_profile: int,
                 continue
             # regenerate shared items within actor attachment
             actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-            if not os.path.isfile(actor_filename):
+            if not is_a_file(actor_filename):
                 continue
             actor_json = load_json(actor_filename)
             if not actor_json:
@@ -484,7 +485,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
     handle = nickname + '@' + handle_domain
     shares_filename = \
         acct_handle_dir(base_dir, handle) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         return 0
     shares_json = load_json(shares_filename)
     if not shares_json:
@@ -503,7 +504,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
         item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
         formats = get_image_extensions()
         for ext in formats:
-            if not os.path.isfile(item_idfile + '.' + ext):
+            if not is_a_file(item_idfile + '.' + ext):
                 continue
             erase_file(item_idfile + '.' + ext,
                        'EX: _expire_shares_for_account unable to delete ' +
@@ -563,7 +564,7 @@ def get_shares_feed_for_person(base_dir: str,
 
     if header_only:
         no_of_shares: int = 0
-        if os.path.isfile(shares_filename):
+        if is_a_file(shares_filename):
             shares_json = load_json(shares_filename)
             if shares_json:
                 no_of_shares = len(shares_json.items())
@@ -600,7 +601,7 @@ def get_shares_feed_for_person(base_dir: str,
         'type': 'OrderedCollectionPage'
     }
 
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         return shares
     curr_page: int = 1
     page_ctr: int = 0
@@ -1367,7 +1368,7 @@ def shares_catalog_account_endpoint(base_dir: str, http_prefix: str,
 
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         if debug:
             print(shares_file_type + '.json file not found: ' +
                   shares_filename)
@@ -1465,7 +1466,7 @@ def shares_catalog_endpoint(base_dir: str, http_prefix: str,
             shares_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + \
                 shares_file_type + '.json'
-            if not os.path.isfile(shares_filename):
+            if not is_a_file(shares_filename):
                 continue
             print('Test 78363 ' + shares_filename)
             shares_json = load_json(shares_filename)
@@ -1559,7 +1560,7 @@ def generate_shared_item_federation_tokens(shared_items_federated_domains: [],
     if base_dir:
         tokens_filename = \
             data_dir(base_dir) + '/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokens_filename):
+        if is_a_file(tokens_filename):
             tokens_json = load_json(tokens_filename)
             if tokens_json is None:
                 tokens_json = {}
@@ -1590,7 +1591,7 @@ def update_shared_item_federation_token(base_dir: str,
     if base_dir:
         tokens_filename = \
             data_dir(base_dir) + '/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokens_filename):
+        if is_a_file(tokens_filename):
             if debug:
                 print('Update loading tokens for ' + token_domain_full)
             tokens_json = load_json(tokens_filename)
@@ -1650,7 +1651,7 @@ def create_shared_item_federation_token(base_dir: str,
     if base_dir:
         tokens_filename = \
             data_dir(base_dir) + '/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokens_filename):
+        if is_a_file(tokens_filename):
             tokens_json = load_json(tokens_filename)
             if tokens_json is None:
                 tokens_json = {}
@@ -1696,7 +1697,7 @@ def authorize_shared_items(shared_items_federated_domains: [],
     if not tokens_json:
         tokens_filename = \
             data_dir(base_dir) + '/sharedItemsFederationTokens.json'
-        if not os.path.isfile(tokens_filename):
+        if not is_a_file(tokens_filename):
             if debug:
                 print('DEBUG: shared item federation tokens file missing ' +
                       tokens_filename)
@@ -1825,7 +1826,7 @@ def _generate_next_shares_token_update(base_dir: str,
         os.mkdir(token_update_dir)
     token_update_filename = token_update_dir + '/.tokenUpdate'
     next_update_sec = None
-    if os.path.isfile(token_update_filename):
+    if is_a_file(token_update_filename):
         next_update_str = \
             load_string(token_update_filename,
                         'EX: _generate_next_shares_token_update ' +
@@ -1872,7 +1873,7 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     then they will receive the new token automatically
     """
     token_update_filename = data_dir(base_dir) + '/.tokenUpdate'
-    if not os.path.isfile(token_update_filename):
+    if not is_a_file(token_update_filename):
         return
     next_update_sec = None
     next_update_str = \
@@ -1935,7 +1936,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
         # load the tokens
         tokens_filename = \
             data_dir(base_dir) + '/sharedItemsFederationTokens.json'
-        if not os.path.isfile(tokens_filename):
+        if not is_a_file(tokens_filename):
             time.sleep(file_check_interval_sec)
             continue
         tokens_json = load_json(tokens_filename)
@@ -2256,7 +2257,7 @@ def get_share_category(base_dir: str, nickname: str, domain: str,
     """
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         return ''
 
     shares_json = load_json(shares_filename)
@@ -2276,7 +2277,7 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
     """
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         print('DEBUG: vf_proposal_from_id file not found ' + shares_filename)
         return {}
 
@@ -2390,7 +2391,7 @@ def add_shares_to_actor(base_dir: str,
     # do shared items exist for this account?
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/shares.json'
-    if not os.path.isfile(shares_filename):
+    if not is_a_file(shares_filename):
         return changed
     shares_json = load_json(shares_filename)
     if not shares_json:

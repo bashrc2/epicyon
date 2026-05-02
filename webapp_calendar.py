@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Calendar"
 
-import os
 from auth import create_password
 from datetime import datetime
 from datetime import date
@@ -40,6 +39,7 @@ from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_keyboard_navigation
 from maps import html_open_street_map
 from data import erase_file
+from data import is_a_file
 
 
 def html_calendar_delete_confirm(translate: {}, base_dir: str,
@@ -69,7 +69,7 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
 
     delete_post_str = None
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -131,12 +131,12 @@ def _html_calendar_day(person_cache: {}, translate: {},
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     calendar_file = account_dir + '/.newCalendar'
-    if os.path.isfile(calendar_file):
+    if is_a_file(calendar_file):
         erase_file(calendar_file,
                    'EX: _html_calendar_day unable to delete ' + calendar_file)
 
     css_filename = base_dir + '/epicyon-calendar.css'
-    if os.path.isfile(base_dir + '/calendar.css'):
+    if is_a_file(base_dir + '/calendar.css'):
         css_filename = base_dir + '/calendar.css'
 
     cal_actor = actor
@@ -519,7 +519,7 @@ def html_calendar(person_cache: {}, translate: {},
     # print('days_in_month ' + str(month_number) + ': ' + str(days_in_month))
 
     css_filename = base_dir + '/epicyon-calendar.css'
-    if os.path.isfile(base_dir + '/calendar.css'):
+    if is_a_file(base_dir + '/calendar.css'):
         css_filename = base_dir + '/calendar.css'
 
     cal_actor = actor

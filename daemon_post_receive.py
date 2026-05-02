@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import time
 import copy
 import errno
@@ -68,6 +67,7 @@ from maps import geocoords_to_osm_link
 from data import save_string
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
@@ -416,14 +416,14 @@ def _receive_new_post_process_editblog(self, fields: {},
     print('Edited blog post received')
     post_filename = \
         locate_post(base_dir, nickname, domain, fields['postUrl'])
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         post_json_object = load_json(post_filename)
         if post_json_object:
             cached_filename = \
                 acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 fields['postUrl'].replace('/', '#') + '.html'
-            if os.path.isfile(cached_filename):
+            if is_a_file(cached_filename):
                 print('Edited blog post, removing cached html')
                 erase_file(cached_filename,
                            'EX: _receive_new_post_process ' +
@@ -1718,7 +1718,7 @@ def _receive_new_post_process_newshare(self, fields: {},
         if not actor_json:
             actor_filename = \
                 acct_dir(base_dir, nickname, domain) + '.json'
-            if os.path.isfile(actor_filename):
+            if is_a_file(actor_filename):
                 actor_json = load_json(actor_filename)
         if actor_json:
             if add_shares_to_actor(base_dir, nickname, domain,
@@ -1745,7 +1745,7 @@ def _receive_new_post_process_newshare(self, fields: {},
                                debug)
 
     if filename:
-        if os.path.isfile(filename):
+        if is_a_file(filename):
             erase_file(filename,
                        'EX: _receive_new_post_process ' +
                        'unable to delete ' + filename)
@@ -1903,14 +1903,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
                               content_license_url, exif_json)
-            if os.path.isfile(post_image_filename):
+            if is_a_file(post_image_filename):
                 print('POST media saved to ' + post_image_filename)
             else:
                 exif_json = []
                 print('ERROR: POST media could not be saved to ' +
                       post_image_filename)
         else:
-            if os.path.isfile(filename):
+            if is_a_file(filename):
                 new_filename = filename.replace('.temp', '')
                 if move_file(filename, new_filename,
                              'EX: POST could not rename ' +

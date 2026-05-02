@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon Timeline"
 
-import os
 import json
 from webapp_conversation import html_conversation_view
 from flags import is_public_post_from_url
@@ -50,6 +49,7 @@ from securemode import secure_mode
 from context import get_individual_post_context
 from conversation import convthread_id_to_conversation_tag
 from data import load_string
+from data import is_a_file
 
 
 def _show_post_from_file(self, post_filename: str, liked_by: str,
@@ -93,7 +93,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          ua_str: str) -> bool:
     """Shows an individual post from its filename
     """
-    if not os.path.isfile(post_filename):
+    if not is_a_file(post_filename):
         http_404(self, 71)
         self.server.getreq_busy = False
         return True
@@ -132,7 +132,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
         if not mitm:
             mitm_filename = \
                 post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(mitm_filename):
+            if is_a_file(mitm_filename):
                 mitm = True
 
         bold_reading: bool = False
@@ -301,12 +301,12 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
             http_prefix + ':##' + domain_full + '#users#' + nickname + \
             '#statuses#' + status_number + '.ssml'
-        if not os.path.isfile(ssml_filename):
+        if not is_a_file(ssml_filename):
             ssml_filename = \
                 acct_dir(base_dir, nickname, domain) + '/postcache/' + \
                 http_prefix + ':##' + domain_full + '#users#' + \
                 nickname + '#statuses#' + status_number + '.ssml'
-        if not os.path.isfile(ssml_filename):
+        if not is_a_file(ssml_filename):
             http_404(self, 74)
             return True
         ssml_str = load_string(ssml_filename,
@@ -651,12 +651,12 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
             http_prefix + ':##' + domain_full + '#users#' + nickname + \
             '#statuses#' + status_number + '.ssml'
-        if not os.path.isfile(ssml_filename):
+        if not is_a_file(ssml_filename):
             ssml_filename = \
                 acct_dir(base_dir, nickname, domain) + '/postcache/' + \
                 http_prefix + ':##' + domain_full + '#users#' + \
                 nickname + '#statuses#' + status_number + '.ssml'
-        if not os.path.isfile(ssml_filename):
+        if not is_a_file(ssml_filename):
             http_404(self, 67)
             return True
         ssml_str = load_string(ssml_filename,
@@ -997,7 +997,7 @@ def show_replies_to_post(self, authorized: bool,
         nickname + '#statuses#' + status_number
     post_replies_filename = \
         post_dir + '/' + orig_post_url + '.replies'
-    if not os.path.isfile(post_replies_filename):
+    if not is_a_file(post_replies_filename):
         # There are no replies,
         # so show empty collection
         first_str = \

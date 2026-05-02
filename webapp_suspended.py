@@ -7,10 +7,10 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from utils import get_config_param
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from data import is_a_file
 
 
 def html_suspended(base_dir: str) -> str:
@@ -18,7 +18,7 @@ def html_suspended(base_dir: str) -> str:
     """
     suspended_form: str = ''
     css_filename = base_dir + '/epicyon-suspended.css'
-    if os.path.isfile(base_dir + '/suspended.css'):
+    if is_a_file(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
 
     instance_title = \

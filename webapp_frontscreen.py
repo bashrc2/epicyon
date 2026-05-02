@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from flags import is_system_account
 from utils import get_mutuals_of_person
 from utils import get_domain_from_actor
@@ -22,6 +21,7 @@ from webapp_utils import header_buttons_front_screen
 from webapp_column_left import get_left_column_content
 from webapp_column_right import get_right_column_content
 from webapp_post import individual_post_as_html
+from data import is_a_file
 
 
 def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
@@ -207,7 +207,7 @@ def html_front_screen(signing_priv_key_pem: str,
     profile_str = profile_header_str
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     license_str: str = ''

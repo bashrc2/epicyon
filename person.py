@@ -98,6 +98,7 @@ from data import load_string
 from data import append_string
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def generate_rsa_key() -> (str, str):
@@ -144,7 +145,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
 
     handle = nickname + '@' + domain
     person_filename = acct_handle_dir(base_dir, handle) + '.json'
-    if not os.path.isfile(person_filename):
+    if not is_a_file(person_filename):
         print('person definition not found: ' + person_filename)
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
@@ -705,11 +706,11 @@ def clear_person_qrcodes(base_dir: str) -> None:
             domain = handle.split('@')[1]
             qrcode_filename = \
                 acct_dir(base_dir, nickname, domain) + '/qrcode.png'
-            if os.path.isfile(qrcode_filename):
+            if is_a_file(qrcode_filename):
                 erase_file(qrcode_filename,
                            'EX: clear_person_qrcodes 1 ' +
                            qrcode_filename)
-            if os.path.isfile(qrcode_filename + '.etag'):
+            if is_a_file(qrcode_filename + '.etag'):
                 erase_file(qrcode_filename + '.etag',
                            'EX: clear_person_qrcodes 2 ' +
                            qrcode_filename + '.etag')
@@ -723,7 +724,7 @@ def save_person_qrcode(base_dir: str,
     This helps to transfer onion or i2p handles to a mobile device
     """
     qrcode_filename = acct_dir(base_dir, nickname, domain) + '/qrcode.png'
-    if os.path.isfile(qrcode_filename):
+    if is_a_file(qrcode_filename):
         return
     handle = get_full_domain('@' + nickname + '@' + qrcode_domain, port)
     url = pyqrcode.create(handle)
@@ -811,30 +812,30 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         theme = 'default'
 
     if nickname != 'news':
-        if os.path.isfile(base_dir + '/img/default-avatar.png'):
+        if is_a_file(base_dir + '/img/default-avatar.png'):
             account_dir = acct_dir(base_dir, nickname, domain)
             copyfile(base_dir + '/img/default-avatar.png',
                      account_dir + '/avatar.png')
     else:
         news_avatar = base_dir + '/theme/' + theme + '/icons/avatar_news.png'
-        if os.path.isfile(news_avatar):
+        if is_a_file(news_avatar):
             account_dir = acct_dir(base_dir, nickname, domain)
             copyfile(news_avatar, account_dir + '/avatar.png')
 
     default_profile_image_filename = base_dir + '/theme/default/image.png'
     if theme:
-        if os.path.isfile(base_dir + '/theme/' + theme + '/image.png'):
+        if is_a_file(base_dir + '/theme/' + theme + '/image.png'):
             default_profile_image_filename = \
                 base_dir + '/theme/' + theme + '/image.png'
-    if os.path.isfile(default_profile_image_filename):
+    if is_a_file(default_profile_image_filename):
         account_dir = acct_dir(base_dir, nickname, domain)
         copyfile(default_profile_image_filename, account_dir + '/image.png')
     default_banner_filename = base_dir + '/theme/default/banner.png'
     if theme:
-        if os.path.isfile(base_dir + '/theme/' + theme + '/banner.png'):
+        if is_a_file(base_dir + '/theme/' + theme + '/banner.png'):
             default_banner_filename = \
                 base_dir + '/theme/' + theme + '/banner.png'
-    if os.path.isfile(default_banner_filename):
+    if is_a_file(default_banner_filename):
         account_dir = acct_dir(base_dir, nickname, domain)
         copyfile(default_banner_filename, account_dir + '/banner.png')
     if nickname != 'news' and remaining_config_exists:
@@ -866,7 +867,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
     """Alter the actor to add any new properties
     """
     update_actor: bool = False
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         print('WARN: actor file not found ' + filename)
         return
     if not person_json:
@@ -1050,7 +1051,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         actor_cache_filename = \
             data_dir(base_dir) + '/cache/actors/' + \
             person_json['id'].replace('/', '#') + '.json'
-        if os.path.isfile(actor_cache_filename):
+        if is_a_file(actor_cache_filename):
             save_json(person_json, actor_cache_filename)
 
         # update domain/@nickname in actors cache
@@ -1058,7 +1059,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             data_dir(base_dir) + '/cache/actors/' + \
             replace_users_with_at(person_json['id']).replace('/', '#') + \
             '.json'
-        if os.path.isfile(actor_cache_filename):
+        if is_a_file(actor_cache_filename):
             save_json(person_json, actor_cache_filename)
 
 
@@ -1127,7 +1128,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     filename = acct_handle_dir(base_dir, handle) + '.json'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return None
     person_json = load_json(filename)
     if not is_shared_inbox:
@@ -1260,7 +1261,7 @@ def set_display_nickname(base_dir: str, nickname: str, domain: str,
         return False
     handle = nickname + '@' + domain
     filename = acct_handle_dir(base_dir, handle) + '.json'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return False
 
     person_json = load_json(filename)
@@ -1278,7 +1279,7 @@ def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
         return False
     handle = nickname + '@' + domain
     filename = acct_handle_dir(base_dir, handle) + '.json'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return False
 
     person_json = load_json(filename)
@@ -1296,7 +1297,7 @@ def _unsuspend_media_for_account(base_dir: str, account_dir: str) -> None:
     """Unsuspends all media for an account
     """
     account_media_log_filename = account_dir + '/media_log.txt'
-    if not os.path.isfile(account_media_log_filename):
+    if not is_a_file(account_media_log_filename):
         return
 
     media_log: list[str] = []
@@ -1308,7 +1309,7 @@ def _unsuspend_media_for_account(base_dir: str, account_dir: str) -> None:
 
     for filename in media_log:
         media_filename = base_dir + filename
-        if not os.path.isfile(media_filename + '.suspended'):
+        if not is_a_file(media_filename + '.suspended'):
             continue
         move_file(media_filename + '.suspended', media_filename,
                   'EX: unable to unsuspend media ' + media_filename)
@@ -1318,7 +1319,7 @@ def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
     """Removes an account suspension
     """
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
-    if os.path.isfile(suspended_filename):
+    if is_a_file(suspended_filename):
         lines: list[str] = \
             load_list(suspended_filename,
                       'EX: reenable_account unable to read ' +
@@ -1340,7 +1341,7 @@ def _suspend_media_for_account(base_dir: str, account_dir: str) -> None:
     """Suspends all media for an account
     """
     account_media_log_filename = account_dir + '/media_log.txt'
-    if not os.path.isfile(account_media_log_filename):
+    if not is_a_file(account_media_log_filename):
         return
 
     media_log: list[str] = []
@@ -1352,7 +1353,7 @@ def _suspend_media_for_account(base_dir: str, account_dir: str) -> None:
 
     for filename in media_log:
         media_filename = base_dir + filename
-        if not os.path.isfile(media_filename):
+        if not is_a_file(media_filename):
             continue
         move_file(media_filename, media_filename + '.suspended',
                   'EX: unable to suspend media ' + media_filename)
@@ -1370,7 +1371,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
 
     # Don't suspend moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
-    if os.path.isfile(moderators_file):
+    if is_a_file(moderators_file):
         lines: list[str] = \
             load_list(moderators_file,
                       'EX: suspend_account unable too read ' +
@@ -1383,16 +1384,16 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
 
     account_dir = acct_dir(base_dir, nickname, domain)
     salt_filename = account_dir + '/.salt'
-    if os.path.isfile(salt_filename):
+    if is_a_file(salt_filename):
         erase_file(salt_filename,
                    'EX: suspend_account unable to delete ' + salt_filename)
     token_filename = acct_dir(base_dir, nickname, domain) + '/.token'
-    if os.path.isfile(token_filename):
+    if is_a_file(token_filename):
         erase_file(token_filename,
                    'EX: suspend_account unable to delete 2 ' + token_filename)
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
-    if os.path.isfile(suspended_filename):
+    if is_a_file(suspended_filename):
         lines: list[str] = \
             load_list(suspended_filename,
                       'EX: suspend_account unable to read 2 ' +
@@ -1430,7 +1431,7 @@ def can_remove_post(base_dir: str,
 
     # is the post by a moderator?
     moderators_file = data_dir(base_dir) + '/moderators.txt'
-    if os.path.isfile(moderators_file):
+    if is_a_file(moderators_file):
         lines: list[str] = \
             load_list(moderators_file,
                       'EX: can_remove_post unable to read ' +
@@ -1463,7 +1464,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             print('EX: _remove_tags_for_nickname unable to join ' +
                   base_dir + '/tags/ ' + str(filename))
             continue
-        if not os.path.isfile(tag_filename):
+        if not is_a_file(tag_filename):
             continue
         if not text_in_file(match_str, tag_filename):
             continue
@@ -1489,7 +1490,7 @@ def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
     account_media_log_filename = account_dir + '/media_log.txt'
 
     media_log: list[str] = []
-    if os.path.isfile(account_media_log_filename):
+    if is_a_file(account_media_log_filename):
         media_log_str = \
             load_string(account_media_log_filename,
                         'EX: remove unable to read media log for ' +
@@ -1499,7 +1500,7 @@ def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
 
     for filename in media_log:
         media_filename = base_dir + filename
-        if not os.path.isfile(media_filename):
+        if not is_a_file(media_filename):
             continue
         erase_file(media_filename,
                    'EX: unable to remove media ' + media_filename)
@@ -1518,7 +1519,7 @@ def remove_account(base_dir: str, nickname: str,
 
     # Don't remove moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
-    if os.path.isfile(moderators_file):
+    if is_a_file(moderators_file):
         lines: list[str] = \
             load_list(moderators_file,
                       'EX: remove_account unable to read ' + moderators_file)
@@ -1539,26 +1540,26 @@ def remove_account(base_dir: str, nickname: str,
     handle_dir = acct_handle_dir(base_dir, handle)
     if os.path.isdir(handle_dir):
         shutil.rmtree(handle_dir, ignore_errors=False)
-    if os.path.isfile(handle_dir + '.json'):
+    if is_a_file(handle_dir + '.json'):
         erase_file(handle_dir + '.json',
                    'EX: remove_account unable to delete ' +
                    handle_dir + '.json')
-    if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
+    if is_a_file(base_dir + '/wfendpoints/' + handle + '.json'):
         erase_file(base_dir + '/wfendpoints/' + handle + '.json',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/wfendpoints/' + handle + '.json')
-    if os.path.isfile(base_dir + '/keys/private/' + handle + '.key'):
+    if is_a_file(base_dir + '/keys/private/' + handle + '.key'):
         erase_file(base_dir + '/keys/private/' + handle + '.key',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/keys/private/' + handle + '.key')
-    if os.path.isfile(base_dir + '/keys/public/' + handle + '.pem'):
+    if is_a_file(base_dir + '/keys/public/' + handle + '.pem'):
         erase_file(base_dir + '/keys/public/' + handle + '.pem',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/keys/public/' + handle + '.pem')
     if os.path.isdir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
                       ignore_errors=False)
-    if os.path.isfile(base_dir + '/wfdeactivated/' + handle + '.json'):
+    if is_a_file(base_dir + '/wfdeactivated/' + handle + '.json'):
         erase_file(base_dir + '/wfdeactivated/' + handle + '.json',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/wfdeactivated/' + handle + '.json')
@@ -1584,7 +1585,7 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
         os.mkdir(deactivated_dir)
     shutil.move(account_dir, deactivated_dir + '/' + handle)
 
-    if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
+    if is_a_file(base_dir + '/wfendpoints/' + handle + '.json'):
         deactivated_webfinger_dir = base_dir + '/wfdeactivated'
         if not os.path.isdir(deactivated_webfinger_dir):
             os.mkdir(deactivated_webfinger_dir)
@@ -1618,7 +1619,7 @@ def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
         activated = True
 
     deactivated_webfinger_dir = base_dir + '/wfdeactivated'
-    if os.path.isfile(deactivated_webfinger_dir + '/' + handle + '.json'):
+    if is_a_file(deactivated_webfinger_dir + '/' + handle + '.json'):
         shutil.move(deactivated_webfinger_dir + '/' + handle + '.json',
                     base_dir + '/wfendpoints/' + handle + '.json')
 
@@ -1637,7 +1638,7 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
     """Returns true if the given actor is snoozed
     """
     snoozed_filename = acct_dir(base_dir, nickname, domain) + '/snoozed.txt'
-    if not os.path.isfile(snoozed_filename):
+    if not is_a_file(snoozed_filename):
         return False
     if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return False
@@ -1690,7 +1691,7 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
         print('ERROR: unknown account ' + account_dir)
         return
     snoozed_filename = account_dir + '/snoozed.txt'
-    if os.path.isfile(snoozed_filename):
+    if is_a_file(snoozed_filename):
         if text_in_file(snooze_actor + ' ', snoozed_filename):
             return
     text = snooze_actor + ' ' + str(int(time.time())) + '\n'
@@ -1707,7 +1708,7 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
         print('ERROR: unknown account ' + account_dir)
         return
     snoozed_filename = account_dir + '/snoozed.txt'
-    if not os.path.isfile(snoozed_filename):
+    if not is_a_file(snoozed_filename):
         return
     if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return
@@ -1761,7 +1762,7 @@ def get_person_notes(base_dir: str, nickname: str, domain: str,
     person_notes_filename = \
         acct_dir(base_dir, nickname, domain) + \
         '/notes/' + handle + '.txt'
-    if os.path.isfile(person_notes_filename):
+    if is_a_file(person_notes_filename):
         person_notes = load_string(person_notes_filename,
                                    'EX: get_person_notes unable to read ' +
                                    person_notes_filename)
@@ -2072,10 +2073,10 @@ def get_person_avatar_url(base_dir: str, person_url: str,
     for ext in image_extension:
         im_filename = avatar_image_path + '.' + ext
         im_path = '/avatars/' + actor_str + '.' + ext
-        if not os.path.isfile(im_filename):
+        if not is_a_file(im_filename):
             im_filename = avatar_image_path.lower() + '.' + ext
             im_path = '/avatars/' + actor_str.lower() + '.' + ext
-            if not os.path.isfile(im_filename):
+            if not is_a_file(im_filename):
                 continue
         if ext != 'svg':
             return im_path
@@ -2156,7 +2157,7 @@ def valid_sending_actor(session, base_dir: str,
     # is this a known spam actor?
     actor_spam_filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
-    if not os.path.isfile(actor_spam_filter_filename):
+    if not is_a_file(actor_spam_filter_filename):
         return True
 
     # does the actor have a bio ?
@@ -2402,7 +2403,7 @@ def update_memorial_flags(base_dir: str, person_cache: {}) -> None:
             if not is_account_dir(account):
                 continue
             actor_filename = data_dir(base_dir) + '/' + account + '.json'
-            if not os.path.isfile(actor_filename):
+            if not is_a_file(actor_filename):
                 continue
             actor_json = load_json(actor_filename)
             if not actor_json:
@@ -2462,7 +2463,7 @@ def get_account_pub_key(path: str, person_cache: {},
     actor_json = get_person_from_cache(base_dir, actor, person_cache)
     if not actor_json:
         actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-        if not os.path.isfile(actor_filename):
+        if not is_a_file(actor_filename):
             return None
         actor_json = load_json(actor_filename)
         if not actor_json:

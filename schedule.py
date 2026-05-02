@@ -28,6 +28,7 @@ from data import save_string
 from data import load_list
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -37,7 +38,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     """
     schedule_index_filename = \
         acct_handle_dir(base_dir, handle) + '/schedule.index'
-    if not os.path.isfile(schedule_index_filename):
+    if not is_a_file(schedule_index_filename):
         return
 
     # get the current time as an int
@@ -65,7 +66,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
             post_filename = schedule_dir + post_id + '.json'
             if delete_schedule_post:
                 # delete extraneous scheduled posts
-                if os.path.isfile(post_filename):
+                if is_a_file(post_filename):
                     ex_text = \
                         'EX: ' + \
                         '_update_post_schedule unable to delete ' + \
@@ -87,7 +88,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                     continue
                 if curr_time.time().minute < post_time.time().minute:
                     continue
-            if not os.path.isfile(post_filename):
+            if not is_a_file(post_filename):
                 print('WARN: schedule missing post_filename=' +
                       post_filename)
                 index_lines.remove(line)
@@ -220,7 +221,7 @@ def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):
                 # scheduled posts index for this account
                 schedule_index_filename = \
                     dir_str + '/' + account + '/schedule.index'
-                if not os.path.isfile(schedule_index_filename):
+                if not is_a_file(schedule_index_filename):
                     continue
                 _update_post_schedule(base_dir, account,
                                       httpd, max_scheduled_posts)
@@ -259,7 +260,7 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
     # remove the index
     schedule_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
-    if os.path.isfile(schedule_index_filename):
+    if is_a_file(schedule_index_filename):
         erase_file(schedule_index_filename,
                    'EX: remove_scheduled_posts unable to delete ' +
                    schedule_index_filename)
@@ -269,7 +270,7 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
         return
     for scheduled_post_filename in os.listdir(scheduled_dir):
         file_path = os.path.join(scheduled_dir, scheduled_post_filename)
-        if not os.path.isfile(file_path):
+        if not is_a_file(file_path):
             continue
         erase_file(file_path,
                    'EX: remove_scheduled_posts unable to delete ' +

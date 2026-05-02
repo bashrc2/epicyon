@@ -11,6 +11,7 @@ import os
 from utils import acct_dir
 from data import erase_file
 from data import save_flag_file
+from data import is_a_file
 
 
 def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
@@ -21,7 +22,7 @@ def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
     if not os.path.isdir(account_dir):
         return True
     minimal_filename = account_dir + '/.notminimal'
-    if os.path.isfile(minimal_filename):
+    if is_a_file(minimal_filename):
         return False
     return True
 
@@ -34,7 +35,7 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
     if not os.path.isdir(account_dir):
         return
     minimal_filename = account_dir + '/.notminimal'
-    minimal_file_exists = os.path.isfile(minimal_filename)
+    minimal_file_exists = is_a_file(minimal_filename)
     if minimal and minimal_file_exists:
         erase_file(minimal_filename,
                    'EX: set_minimal unable to delete ' + minimal_filename)

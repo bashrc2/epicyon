@@ -25,6 +25,7 @@ from utils import load_json
 from data import load_string
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
@@ -32,7 +33,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     """returns a dict of moved accounts
     """
     moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
-    if not os.path.isfile(moved_accounts_filename):
+    if not is_a_file(moved_accounts_filename):
         return {}
     refollow_str = \
         load_string(moved_accounts_filename,
@@ -245,7 +246,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
             if not is_account_dir(account):
                 continue
             following_filename = dir_str + '/' + account + '/following.txt'
-            if not os.path.isfile(following_filename):
+            if not is_a_file(following_filename):
                 continue
             following_str = \
                 load_string(following_filename,
@@ -271,7 +272,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         if not actors_dict.get(handle):
             continue
         actor_filename = base_dir + '/cache/actors/' + actors_dict[handle]
-        if not os.path.isfile(actor_filename):
+        if not is_a_file(actor_filename):
             continue
         actor_json = load_json(actor_filename)
         if not actor_json:
@@ -306,7 +307,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
 
     moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
     if not moved_str:
-        if os.path.isfile(moved_accounts_filename):
+        if is_a_file(moved_accounts_filename):
             erase_file(moved_accounts_filename,
                        'EX: update_moved_actors unable to remove ' +
                        moved_accounts_filename)

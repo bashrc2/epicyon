@@ -9,7 +9,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 from utils import get_mutuals_of_person
 from utils import is_dm
 from utils import get_cached_post_filename
@@ -30,6 +29,7 @@ from fitnessFunctions import fitness_performance
 from like import update_likes_collection
 from like import undo_likes_collection_entry
 from webapp_post import individual_post_as_html
+from data import is_a_file
 
 
 def like_button(self, calling_domain: str, path: str,
@@ -230,7 +230,7 @@ def like_button(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     liked_post_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):
@@ -501,7 +501,7 @@ def like_button_undo(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     liked_post_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):

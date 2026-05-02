@@ -22,6 +22,7 @@ from utils import get_followers_list
 from utils import get_mutuals_of_person
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def load_searchable_by_default(base_dir: str) -> {}:
@@ -35,7 +36,7 @@ def load_searchable_by_default(base_dir: str) -> {}:
                 continue
             nickname = account.split('@')[0]
             filename = os.path.join(dir_str, account) + '/.searchableByDefault'
-            if os.path.isfile(filename):
+            if is_a_file(filename):
                 text = load_string(filename,
                                    'EX: unable to load searchableByDefault ' +
                                    filename)
@@ -55,7 +56,7 @@ def set_searchable_by(base_dir: str, nickname: str, domain: str,
     filename = acct_dir(base_dir, nickname, domain) + '/.searchableByDefault'
 
     # already the same state?
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         if text_in_file(searchable_by, filename, True):
             return
 
@@ -118,7 +119,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
                 if '.json' not in post_filename:
                     break
                 post_filename = path + '/' + post_filename.strip()
-                if not os.path.isfile(post_filename):
+                if not is_a_file(post_filename):
                     continue
                 data = load_string(post_filename,
                                    'EX: _search_virtual_box_posts ' +
@@ -151,7 +152,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     path = acct_dir(base_dir, nickname, domain) + '/' + box_name
     # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
-        if os.path.isfile(path + '.index'):
+        if is_a_file(path + '.index'):
             return _search_virtual_box_posts(base_dir, nickname, domain,
                                              search_str, max_results, box_name)
         return []

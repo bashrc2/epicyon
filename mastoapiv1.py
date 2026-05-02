@@ -23,6 +23,7 @@ from utils import account_is_indexable
 from utils import is_yggdrasil_address
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -37,7 +38,7 @@ def _meta_data_instance_v1(show_accounts: bool,
     """
     admin_actor_filename = \
         data_dir(base_dir) + '/' + admin_nickname + '@' + domain + '.json'
-    if not os.path.isfile(admin_actor_filename):
+    if not is_a_file(admin_actor_filename):
         return {}
 
     admin_actor = load_json(admin_actor_filename)
@@ -47,7 +48,7 @@ def _meta_data_instance_v1(show_accounts: bool,
 
     rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
-    if os.path.isfile(rules_filename):
+    if is_a_file(rules_filename):
         rules_lines = load_list(rules_filename,
                                 'EX: _meta_data_instance_v1 unable to read ' +
                                 rules_filename)
@@ -212,7 +213,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     account_filename = account_dir + '.json'
-    if not os.path.isfile(account_filename):
+    if not is_a_file(account_filename):
         return {}
     account_json = load_json(account_filename)
     if not account_json:
@@ -272,7 +273,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
                     })
         published_filename = \
             acct_dir(base_dir, nickname, domain) + '/.last_published'
-        if os.path.isfile(published_filename):
+        if is_a_file(published_filename):
             published: str = \
                 load_string(published_filename,
                             'EX: unable to read last published time 1 ' +

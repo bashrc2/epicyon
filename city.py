@@ -12,7 +12,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Metadata"
 
-import os
 import datetime
 import random
 import math
@@ -20,6 +19,7 @@ from random import randint
 from utils import acct_dir
 from utils import remove_eol
 from data import load_string
+from data import is_a_file
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -204,11 +204,11 @@ def spoof_geolocation(base_dir: str,
     camera make, camera model, camera serial number
     """
     locations_filename = base_dir + '/custom_locations.txt'
-    if not os.path.isfile(locations_filename):
+    if not is_a_file(locations_filename):
         locations_filename = base_dir + '/locations.txt'
 
     nogo_filename = base_dir + '/custom_locations_nogo.txt'
-    if not os.path.isfile(nogo_filename):
+    if not is_a_file(nogo_filename):
         nogo_filename = base_dir + '/locations_nogo.txt'
 
     man_city_radius: float = 0.1
@@ -226,7 +226,7 @@ def spoof_geolocation(base_dir: str,
     if cities_list:
         cities = cities_list
     else:
-        if not os.path.isfile(locations_filename):
+        if not is_a_file(locations_filename):
             return (default_latitude, default_longitude,
                     default_latdirection, default_longdirection,
                     "", "", 0)
@@ -241,7 +241,7 @@ def spoof_geolocation(base_dir: str,
     if nogo_list:
         nogo = nogo_list
     else:
-        if os.path.isfile(nogo_filename):
+        if is_a_file(nogo_filename):
             nogo_list: list[str] = []
             nogo_list_str = \
                 load_string(nogo_filename,
@@ -339,7 +339,7 @@ def get_spoofed_city(city: str, base_dir: str,
     """
     city: str = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
-    if os.path.isfile(city_filename):
+    if is_a_file(city_filename):
         city1 = load_string(city_filename,
                             'EX: get_spoofed_city unable to read ' +
                             city_filename)

@@ -18,6 +18,7 @@ from utils import remove_html
 from utils import get_attributed_to
 from utils import string_contains
 from data import save_string
+from data import is_a_file
 
 
 def _git_format_content(content: str) -> str:
@@ -41,7 +42,7 @@ def _get_git_project_name(base_dir: str, nickname: str, domain: str,
     """
     git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
-    if not os.path.isfile(git_projects_filename):
+    if not is_a_file(git_projects_filename):
         return None
     subject_line_words = subject.lower().split(' ')
     for word in subject_line_words:

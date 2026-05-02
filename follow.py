@@ -51,6 +51,7 @@ from data import load_list
 from data import save_string
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -65,7 +66,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 continue
             account_dir = os.path.join(dir_str, acct)
             following_filename = account_dir + '/following.txt'
-            if not os.path.isfile(following_filename):
+            if not is_a_file(following_filename):
                 continue
             last_seen_dir = account_dir + '/lastseen'
             if not os.path.isdir(last_seen_dir):
@@ -89,7 +90,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 actor = local_actor_url(http_prefix, nickname, domain)
                 last_seen_filename = \
                     last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
-                if os.path.isfile(last_seen_filename):
+                if is_a_file(last_seen_filename):
                     continue
                 text = str(100)
                 save_string(text, last_seen_filename,
@@ -105,7 +106,7 @@ def _pre_approved_follower(base_dir: str,
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     approved_filename = account_dir + '/approved.txt'
-    if os.path.isfile(approved_filename):
+    if is_a_file(approved_filename):
         if text_in_file(approve_handle, approved_filename):
             return True
     return False
@@ -119,7 +120,7 @@ def _remove_from_follow_base(base_dir: str,
     """
     accounts_dir = acct_dir(base_dir, nickname, domain)
     approve_follows_filename = accounts_dir + '/' + follow_file + '.txt'
-    if not os.path.isfile(approve_follows_filename):
+    if not is_a_file(approve_follows_filename):
         if debug:
             print('There is no ' + follow_file +
                   ' to remove ' + nickname + '@' + domain + ' from')
@@ -201,7 +202,7 @@ def is_following_actor(base_dir: str,
     if not os.path.isdir(accounts_dir):
         return False
     following_file = accounts_dir + '/following.txt'
-    if not os.path.isfile(following_file):
+    if not is_a_file(following_file):
         return False
     if actor.startswith('@'):
         actor = actor[1:]
@@ -240,7 +241,7 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
     """
     domain = remove_domain_port(domain)
     followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if not os.path.isfile(followers_file):
+    if not is_a_file(followers_file):
         return []
 
     lines: list[str] = \
@@ -273,7 +274,7 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
         return False
     domain = remove_domain_port(domain)
     followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if not os.path.isfile(followers_file):
+    if not is_a_file(followers_file):
         return False
     handle = follower_nickname + '@' + follower_domain
 
@@ -322,7 +323,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
 
     accounts_dir = acct_dir(base_dir, nickname, domain)
     filename = accounts_dir + '/' + follow_file
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
@@ -352,7 +353,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
     unfollowed_filename = accounts_dir + '/unfollowed.txt'
-    if os.path.isfile(unfollowed_filename):
+    if is_a_file(unfollowed_filename):
         if not text_in_file(handle_to_unfollow_lower,
                             unfollowed_filename, False):
             append_string(handle_to_unfollow + '\n', unfollowed_filename,
@@ -387,7 +388,7 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
     if not os.path.isdir(accounts_dir):
         os.mkdir(accounts_dir)
     filename = accounts_dir + '/' + follow_file
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         erase_file(filename,
                    'EX: clear_follows unable to delete ' + filename)
 
@@ -408,7 +409,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     #     return 9999
     accounts_dir = acct_dir(base_dir, nickname, domain)
     filename = accounts_dir + '/' + follow_file
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return 0
     ctr: int = 0
     lines: list[str] = \
@@ -528,7 +529,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     handle_domain = remove_domain_port(handle_domain)
     accounts_dir = acct_dir(base_dir, nickname, handle_domain)
     filename = accounts_dir + '/' + follow_file + '.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return following
     curr_page: int = 1
     page_ctr: int = 0
@@ -594,7 +595,7 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
     domain_to_follow = remove_domain_port(domain_to_follow)
     actor_filename = data_dir(base_dir) + '/' + \
         nickname_to_follow + '@' + domain_to_follow + '.json'
-    if os.path.isfile(actor_filename):
+    if is_a_file(actor_filename):
         actor = load_json(actor_filename)
         if actor:
             if 'manuallyApprovesFollowers' in actor:
@@ -616,7 +617,7 @@ def no_of_follow_requests(base_dir: str,
     """
     accounts_dir = acct_dir(base_dir, nickname_to_follow, domain_to_follow)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
-    if not os.path.isfile(approve_follows_filename):
+    if not is_a_file(approve_follows_filename):
         return 0
     ctr: int = 0
     lines: list[str] = \
@@ -660,7 +661,7 @@ def store_follow_request(base_dir: str,
         approve_handle = '!' + approve_handle
 
     followers_filename = accounts_dir + '/followers.txt'
-    if os.path.isfile(followers_filename):
+    if is_a_file(followers_filename):
         already_following = False
 
         followers_str = \
@@ -692,7 +693,7 @@ def store_follow_request(base_dir: str,
 
     # should this follow be denied?
     deny_follows_filename = accounts_dir + '/followrejects.txt'
-    if os.path.isfile(deny_follows_filename):
+    if is_a_file(deny_follows_filename):
         if text_in_file(approve_handle, deny_follows_filename):
             remove_from_follow_requests(base_dir, nickname_to_follow,
                                         domain_to_follow, approve_handle,
@@ -711,7 +712,7 @@ def store_follow_request(base_dir: str,
         if group_account:
             approve_handle = '!' + approve_handle
 
-    if os.path.isfile(approve_follows_filename):
+    if is_a_file(approve_follows_filename):
         if not text_in_file(approve_handle, approve_follows_filename):
             append_string(approve_handle_stored + '\n',
                           approve_follows_filename,
@@ -778,7 +779,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
         follow_activity_filename = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
             '/requests/' + nickname + '@' + domain + '.follow'
-        if os.path.isfile(follow_activity_filename):
+        if is_a_file(follow_activity_filename):
             erase_file(follow_activity_filename,
                        'EX: follow Accept ' +
                        'followed_account_accepts unable to delete ' +
@@ -951,7 +952,7 @@ def send_follow_request(session, base_dir: str,
     # remove follow handle from unfollowed.txt
     unfollowed_filename = \
         acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
-    if os.path.isfile(unfollowed_filename):
+    if is_a_file(unfollowed_filename):
         if text_in_file(follow_handle, unfollowed_filename):
             unfollowed_file = \
                 load_string(unfollowed_filename,
@@ -1443,7 +1444,7 @@ def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
             if debug:
                 print('DEBUG: examining follows of ' + account)
                 print(following_filename)
-            if os.path.isfile(following_filename):
+            if is_a_file(following_filename):
                 # does this account follow the given actor?
                 if debug:
                     print('DEBUG: checking if ' + actor_handle +
@@ -1524,7 +1525,7 @@ def follower_approval_active(base_dir: str,
     """
     manually_approves_followers: bool = False
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if os.path.isfile(actor_filename):
+    if is_a_file(actor_filename):
         actor_json = load_json(actor_filename)
         if actor_json:
             if 'manuallyApprovesFollowers' in actor_json:
@@ -1540,7 +1541,7 @@ def remove_follower(base_dir: str,
     """
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if not os.path.isfile(followers_filename):
+    if not is_a_file(followers_filename):
         return False
     followers_str = \
         load_string(followers_filename,
@@ -1587,7 +1588,7 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
 
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
-    if os.path.isfile(follow_requests_filename):
+    if is_a_file(follow_requests_filename):
         follow_requests_list: list[str] = \
             load_list(follow_requests_filename,
                       'EX: unable to read follow requests ' +
@@ -1607,7 +1608,7 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
                     acct_dir(base_dir, nickname, domain) + \
                     '/requests/' + \
                     foll_nickname + '@' + foll_domain + '.follow'
-                if not os.path.isfile(follow_activity_filename):
+                if not is_a_file(follow_activity_filename):
                     continue
                 follow_json = load_json(follow_activity_filename)
                 if not follow_json:

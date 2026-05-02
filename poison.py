@@ -8,10 +8,10 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 
-import os
 import random
 from random import randint
 from data import load_string
+from data import is_a_file
 
 common_nouns = (
     "time",
@@ -1974,9 +1974,9 @@ def load_dictionary(base_dir: str) -> []:
     """Loads a dictionary from file
     """
     filename = base_dir + '/custom_dictionary.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         filename = base_dir + '/dictionary.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return []
 
     words: list[str] = []
@@ -1991,9 +1991,9 @@ def load_2grams(base_dir: str) -> {}:
     """Loads 2-grams from file
     """
     filename = base_dir + '/custom_2grams.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         filename = base_dir + '/2grams.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return {}
 
     twograms = {}

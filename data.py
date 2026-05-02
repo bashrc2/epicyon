@@ -177,3 +177,9 @@ def move_file(old_filename: str, new_filename: str,
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)
     return False
+
+
+def is_a_file(filename: str) -> bool:
+    """Returns true if the given filename exists
+    """
+    return os.path.isfile(filename)

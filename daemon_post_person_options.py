@@ -51,6 +51,7 @@ from notifyOnPost import remove_notify_on_post
 from flags import is_moderator
 from data import save_flag_file
 from data import erase_file
+from data import is_a_file
 
 
 def _person_options_page_number(options_confirm_params: str) -> int:
@@ -603,7 +604,7 @@ def _person_options_post_to_news(self, options_confirm_params: str,
                                    options_nickname, options_domain)
             newswire_blocked_filename = account_dir + '/.nonewswire'
             if posts_to_news == 'on':
-                if os.path.isfile(newswire_blocked_filename):
+                if is_a_file(newswire_blocked_filename):
                     erase_file(newswire_blocked_filename,
                                'EX: _person_options unable to delete ' +
                                newswire_blocked_filename)
@@ -655,7 +656,7 @@ def _person_options_post_to_features(self, options_confirm_params: str,
                                    options_nickname, options_domain)
             features_blocked_filename = account_dir + '/.nofeatures'
             if posts_to_features == 'on':
-                if os.path.isfile(features_blocked_filename):
+                if is_a_file(features_blocked_filename):
                     erase_file(features_blocked_filename,
                                'EX: _person_options unable to delete ' +
                                features_blocked_filename)
@@ -707,7 +708,7 @@ def _person_options_mod_news(self, options_confirm_params: str,
                                    options_nickname, options_domain)
             newswire_mod_filename = account_dir + '/.newswiremoderated'
             if mod_posts_to_news != 'on':
-                if os.path.isfile(newswire_mod_filename):
+                if is_a_file(newswire_mod_filename):
                     erase_file(newswire_mod_filename,
                                'EX: _person_options unable to delete ' +
                                newswire_mod_filename)

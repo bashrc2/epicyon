@@ -18,6 +18,7 @@ from webapp_utils import html_footer
 from markdown import markdown_to_html
 from data import save_flag_file
 from data import load_string
+from data import is_a_file
 
 
 def is_welcome_screen_complete(base_dir: str,
@@ -28,7 +29,7 @@ def is_welcome_screen_complete(base_dir: str,
     if not os.path.isdir(account_path):
         return False
     complete_filename = account_path + '/.welcome_complete'
-    return os.path.isfile(complete_filename)
+    return is_a_file(complete_filename)
 
 
 def welcome_screen_is_complete(base_dir: str,
@@ -52,26 +53,26 @@ def html_welcome_screen(base_dir: str, nickname: str,
     """
     # set a custom background for the welcome screen
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/welcome-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/welcome-background.jpg'):
+    if is_a_file(dir_str + '/welcome-background-custom.jpg'):
+        if not is_a_file(dir_str + '/welcome-background.jpg'):
             copyfile(dir_str + '/welcome-background-custom.jpg',
                      dir_str + '/welcome-background.jpg')
 
     welcome_text = 'Welcome to Epicyon'
     welcome_filename = dir_str + '/' + curr_screen + '.md'
-    if not os.path.isfile(welcome_filename):
+    if not is_a_file(welcome_filename):
         default_filename = None
         if theme_name:
             default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'welcome_' + language + '.md'
-            if not os.path.isfile(default_filename):
+            if not is_a_file(default_filename):
                 default_filename = None
         if not default_filename:
             default_filename = \
                 base_dir + '/defaultwelcome/' + \
                 curr_screen + '_' + language + '.md'
-        if not os.path.isfile(default_filename):
+        if not is_a_file(default_filename):
             default_filename = \
                 base_dir + '/defaultwelcome/' + curr_screen + '_en.md'
         copyfile(default_filename, welcome_filename)
@@ -81,7 +82,7 @@ def html_welcome_screen(base_dir: str, nickname: str,
     if not instance_title:
         instance_title = 'Epicyon'
 
-    if os.path.isfile(welcome_filename):
+    if is_a_file(welcome_filename):
         welcome_text = load_string(welcome_filename,
                                    'EX: html_welcome_screen unable to read ' +
                                    welcome_filename)
@@ -92,7 +93,7 @@ def html_welcome_screen(base_dir: str, nickname: str,
             welcome_text: str = ''
     welcome_form: str = ''
     css_filename = base_dir + '/epicyon-welcome.css'
-    if os.path.isfile(base_dir + '/welcome.css'):
+    if is_a_file(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
 
     preload_images: list[str] = []

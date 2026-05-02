@@ -16,6 +16,7 @@ from utils import data_dir
 from utils import has_object_dict
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def convert_published_to_local_timezone(published, timezone: str) -> str:
@@ -126,7 +127,7 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     """
     tz_filename = \
         acct_dir(base_dir, nickname, domain) + '/timezone.txt'
-    if not os.path.isfile(tz_filename):
+    if not is_a_file(tz_filename):
         return None
     timezone = load_string(tz_filename,
                            'EX: get_account_timezone unable to read ' +
@@ -161,7 +162,7 @@ def load_account_timezones(base_dir: str) -> {}:
                 continue
             acct_directory = os.path.join(dir_str, acct)
             tz_filename = acct_directory + '/timezone.txt'
-            if not os.path.isfile(tz_filename):
+            if not is_a_file(tz_filename):
                 continue
             timezone = \
                 load_string(tz_filename,

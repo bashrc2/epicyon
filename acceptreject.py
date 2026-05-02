@@ -9,7 +9,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from posts import send_signed_json
 from flags import has_group_type
 from flags import url_permitted
@@ -31,6 +30,7 @@ from utils import has_object_string_type
 from utils import get_actor_from_post
 from utils import is_yggdrasil_address
 from timeFunctions import get_current_time_int
+from data import is_a_file
 
 
 def _create_quote_accept_reject(receiving_actor: str,
@@ -369,7 +369,7 @@ def _accept_follow(base_dir: str, message_json: {},
     # has this person already been unfollowed?
     unfollowed_filename = \
         acct_dir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
-    if os.path.isfile(unfollowed_filename):
+    if is_a_file(unfollowed_filename):
         if text_in_file(followed_nickname + '@' + followed_domain_full,
                         unfollowed_filename):
             if debug:

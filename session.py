@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Session"
 
-import os
 import requests
 import json
 import errno
@@ -31,6 +30,7 @@ from data import save_string
 from data import save_binary
 from data import load_binary
 from data import erase_file
+from data import is_a_file
 
 
 def create_session(proxy_type: str):
@@ -552,7 +552,7 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
     verified_sites_filename = \
         acct_dir(base_dir, nickname, domain) + '/verified_sites.txt'
     verified_file_exists: bool = False
-    if os.path.isfile(verified_sites_filename):
+    if is_a_file(verified_sites_filename):
         verified_file_exists = True
         if text_in_file(url + '\n', verified_sites_filename, True):
             return True
@@ -748,7 +748,7 @@ def post_image(session, attach_image_filename: str, federation_list: [],
     if not is_image_file(attach_image_filename):
         print('Image must be png, jpg, jxl, webp, avif, heic, gif or svg')
         return None
-    if not os.path.isfile(attach_image_filename):
+    if not is_a_file(attach_image_filename):
         print('Image not found: ' + attach_image_filename)
         return None
     content_type = 'image/jpeg'
@@ -832,7 +832,7 @@ def download_image(session, url: str, image_filename: str, debug: bool,
             print('download_image: no session headers')
         return False
 
-    if not os.path.isfile(image_filename) or force:
+    if not is_a_file(image_filename) or force:
         try:
             if debug:
                 print('Downloading image url: ' + url)
@@ -846,7 +846,7 @@ def download_image(session, url: str, image_filename: str, debug: bool,
                     print('Image download failed with status ' +
                           str(result.status_code))
                 # remove partial download
-                if os.path.isfile(image_filename):
+                if is_a_file(image_filename):
                     erase_file(image_filename,
                                'EX: download_image unable to delete ' +
                                image_filename)

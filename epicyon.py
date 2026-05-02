@@ -137,6 +137,7 @@ from siteactive import site_is_active
 from siteactive import is_online
 from data import save_string
 from data import load_list
+from data import is_a_file
 
 
 def str2bool(value_str) -> bool:
@@ -908,7 +909,7 @@ def _command_options() -> None:
     if argb.debug:
         debug = True
     else:
-        if os.path.isfile('debug'):
+        if is_a_file('debug'):
             debug = True
 
     if argb.accounts_data_dir:
@@ -1976,7 +1977,7 @@ def _command_options() -> None:
         accounts_dir = acct_dir(base_dir, argb.nickname, domain)
         approve_follows_filename = accounts_dir + '/followrequests.txt'
         approve_ctr: int = 0
-        if os.path.isfile(approve_follows_filename):
+        if is_a_file(approve_follows_filename):
             approve_follows_list: list[str] = \
                 load_list(approve_follows_filename,
                           'EX: unable to read follow approvals file ' +
@@ -3461,7 +3462,7 @@ def _command_options() -> None:
             print('Account ' + nickname + '@' + domain + ' not found')
             sys.exit()
         password_file = data_dir(base_dir) + '/passwords'
-        if os.path.isfile(password_file):
+        if is_a_file(password_file):
             if text_in_file(nickname + ':', password_file):
                 store_basic_credentials(base_dir, nickname, new_password)
                 print('Password for ' + nickname + ' was changed')
@@ -3503,7 +3504,7 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.avatar:
-        if not os.path.isfile(argb.avatar):
+        if not is_a_file(argb.avatar):
             print(argb.avatar + ' is not an image filename')
             sys.exit()
         if not argb.nickname:
@@ -3519,7 +3520,7 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.backgroundImage:
-        if not os.path.isfile(argb.backgroundImage):
+        if not is_a_file(argb.backgroundImage):
             print(argb.backgroundImage + ' is not an image filename')
             sys.exit()
         if not argb.nickname:

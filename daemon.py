@@ -106,6 +106,7 @@ from daemon_utils import is_authorized
 from poison import load_dictionary
 from poison import load_2grams
 from data import load_string
+from data import is_a_file
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -581,7 +582,7 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         for handle in dirs:
             if '@' in handle:
                 token_filename = acct_handle_dir(base_dir, handle) + '/.token'
-                if not os.path.isfile(token_filename):
+                if not is_a_file(token_filename):
                     continue
                 nickname = handle.split('@')[0]
                 token = load_string(token_filename,
@@ -748,7 +749,7 @@ def run_daemon(accounts_data_dir: str,
     # if a custom robots.txt exists then read it
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'
     httpd.robots_txt = None
-    if os.path.isfile(robots_txt_filename):
+    if is_a_file(robots_txt_filename):
         new_robots_txt = \
             load_string(robots_txt_filename,
                         'EX: error reading 1 ' + robots_txt_filename)
@@ -764,7 +765,7 @@ def run_daemon(accounts_data_dir: str,
     # for each account whether to hide announces
     httpd.hide_announces = {}
     hide_announces_filename = data_dir(base_dir) + '/hide_announces.json'
-    if os.path.isfile(hide_announces_filename):
+    if is_a_file(hide_announces_filename):
         httpd.hide_announces = load_json(hide_announces_filename)
 
     # short description of the instance
@@ -799,7 +800,7 @@ def run_daemon(accounts_data_dir: str,
     # loads a catalog of http header fields
     headers_catalog_fieldname = data_dir(base_dir) + '/headers_catalog.json'
     httpd.headers_catalog = {}
-    if os.path.isfile(headers_catalog_fieldname):
+    if is_a_file(headers_catalog_fieldname):
         httpd.headers_catalog = load_json(headers_catalog_fieldname)
 
     # list of websites which are currently down
@@ -855,7 +856,7 @@ def run_daemon(accounts_data_dir: str,
 
     # load a list of dogwhistle words
     dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
-    if not os.path.isfile(dogwhistles_filename):
+    if not is_a_file(dogwhistles_filename):
         dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
     httpd.dogwhistles = load_dogwhistles(dogwhistles_filename)
 
@@ -895,7 +896,7 @@ def run_daemon(accounts_data_dir: str,
     # fitness metrics
     fitness_filename = data_dir(base_dir) + '/fitness.json'
     httpd.fitness = {}
-    if os.path.isfile(fitness_filename):
+    if is_a_file(fitness_filename):
         fitness = load_json(fitness_filename)
         if fitness is not None:
             httpd.fitness = fitness
@@ -1209,7 +1210,7 @@ def run_daemon(accounts_data_dir: str,
     # and how many times they have been seen
     httpd.known_crawlers = {}
     known_crawlers_filename = dir_str + '/knownCrawlers.json'
-    if os.path.isfile(known_crawlers_filename):
+    if is_a_file(known_crawlers_filename):
         httpd.known_crawlers = load_json(known_crawlers_filename)
     # when was the last crawler seen?
     httpd.last_known_crawler = 0

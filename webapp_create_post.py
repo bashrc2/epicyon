@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from flags import is_public_post_from_url
 from flags import is_premium_account
 from utils import get_mutuals_of_person
@@ -55,6 +54,7 @@ from person import get_person_notes
 from textmode import text_mode_browser
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -184,7 +184,7 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
 
     # whether to show votes
     show_vote_file = account_dir + '/.noVotes'
-    if not os.path.isfile(show_vote_file):
+    if not is_a_file(show_vote_file):
         drop_down_content += \
             '<li><a href="' + path_base + \
             '/newquestion"><img loading="lazy" decoding="async" ' + \
@@ -566,7 +566,7 @@ def html_new_post(edit_post_params: {},
 
             # custom report header with any additional instructions
             dir_str = data_dir(base_dir)
-            if os.path.isfile(dir_str + '/report.txt'):
+            if is_a_file(dir_str + '/report.txt'):
                 custom_report_text = \
                     load_string(dir_str + '/report.txt',
                                 'EX: html_new_post unable to read ' +
@@ -609,7 +609,7 @@ def html_new_post(edit_post_params: {},
 
     # load post template if it exists
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/newpost.txt'):
+    if is_a_file(dir_str + '/newpost.txt'):
         new_post_text = \
             load_string(dir_str + '/newpost.txt',
                         'EX: html_new_post unable to read ' +
@@ -618,7 +618,7 @@ def html_new_post(edit_post_params: {},
             new_post_text: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     if '?' in path:
@@ -931,7 +931,7 @@ def html_new_post(edit_post_params: {},
     if endpoint == 'newblog':
         citations_filename = \
             acct_dir(base_dir, nickname, domain) + '/.citations.txt'
-        if os.path.isfile(citations_filename):
+        if is_a_file(citations_filename):
             citations_str = '<div class="container">\n'
             citations_str += '<p><label class="labels">' + \
                 translate['Citations'] + ':</label></p>\n'

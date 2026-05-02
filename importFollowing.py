@@ -25,6 +25,7 @@ from person import set_person_notes
 from data import load_string
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def _establish_import_session(httpd,
@@ -217,7 +218,7 @@ def run_import_following(base_dir: str, httpd):
             account_dir = dir_str + '/' + account
             import_filename = account_dir + '/import_following.csv'
 
-            if not os.path.isfile(import_filename):
+            if not is_a_file(import_filename):
                 continue
             if not _update_import_following(base_dir, account, httpd,
                                             import_filename):

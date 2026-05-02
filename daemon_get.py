@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon"
 
-import os
 import time
 import json
 import urllib.parse
@@ -222,6 +221,7 @@ from daemon_get_login import show_login_screen
 from poison import html_poisoned
 from data import load_string
 from data import load_binary
+from data import is_a_file
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -875,7 +875,7 @@ def daemon_http_get(self) -> None:
         if not actor_json:
             actor_filename = acct_dir(self.server.base_dir, nickname,
                                       self.server.domain) + '.json'
-            if os.path.isfile(actor_filename):
+            if is_a_file(actor_filename):
                 actor_json = load_json(actor_filename)
         if not actor_json:
             print('DEBUG: shareditems 2 ' + actor)
@@ -2267,7 +2267,7 @@ def daemon_http_get(self) -> None:
         following_filename = \
             acct_dir(self.server.base_dir,
                      nickname, self.server.domain) + '/following.txt'
-        if not os.path.isfile(following_filename):
+        if not is_a_file(following_filename):
             http_404(self, 125)
             return
         if self.path.endswith('/followingaccounts.csv'):
@@ -2308,7 +2308,7 @@ def daemon_http_get(self) -> None:
         followers_filename = \
             acct_dir(self.server.base_dir,
                      nickname, self.server.domain) + '/followers.txt'
-        if not os.path.isfile(followers_filename):
+        if not is_a_file(followers_filename):
             http_404(self, 128)
             return
         if html_getreq:
@@ -2634,7 +2634,7 @@ def daemon_http_get(self) -> None:
                      '/apple-touch-icon.png'):
         media_filename = \
             self.server.base_dir + '/img' + self.path
-        if os.path.isfile(media_filename):
+        if is_a_file(media_filename):
             if etag_exists(self, media_filename):
                 # The file has not changed
                 http_304(self)
@@ -2672,7 +2672,7 @@ def daemon_http_get(self) -> None:
     if self.path in ('/screenshot1.jpg', '/screenshot2.jpg'):
         screen_filename = \
             self.server.base_dir + '/img' + self.path
-        if os.path.isfile(screen_filename):
+        if is_a_file(screen_filename):
             if etag_exists(self, screen_filename):
                 # The file has not changed
                 http_304(self)
@@ -2710,7 +2710,7 @@ def daemon_http_get(self) -> None:
        (string_starts_with(self.path,
                            ('/login.', '/qrcode.png', '/qrcode_lxmf.png'))):
         icon_filename = data_dir(self.server.base_dir) + self.path
-        if os.path.isfile(icon_filename):
+        if is_a_file(icon_filename):
             if etag_exists(self, icon_filename):
                 # The file has not changed
                 http_304(self)
@@ -3196,7 +3196,7 @@ def daemon_http_get(self) -> None:
         hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
         tags_filename = \
             self.server.base_dir + '/tags/' + hashtag + '.txt'
-        if os.path.isfile(tags_filename):
+        if is_a_file(tags_filename):
             # redirect to the local hashtag screen
             self.server.getreq_busy = False
             ht_url = \
@@ -6247,7 +6247,7 @@ def daemon_http_get(self) -> None:
         self.server.getreq_busy = False
         return
 
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         content = load_string(filename,
                               'EX: unable to read file ' + filename)
         if content:
@@ -6446,7 +6446,7 @@ def _get_speaker(self, calling_domain: str, referer_domain: str,
         nickname = nickname.split('/')[0]
     speaker_filename = \
         acct_dir(base_dir, nickname, domain) + '/speaker.json'
-    if not os.path.isfile(speaker_filename):
+    if not is_a_file(speaker_filename):
         http_404(self, 18)
         return
 
@@ -6488,7 +6488,7 @@ def _get_ontology(self, calling_domain: str,
             ontology_filename = base_dir + '/ontology/' + ontology_str
         if ontology_str.endswith('.json'):
             ontology_file_type = 'application/ld+json'
-        if os.path.isfile(ontology_filename):
+        if is_a_file(ontology_filename):
             ontology_file = \
                 load_string(ontology_filename,
                             'EX: unable to read ontology ' +

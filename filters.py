@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Moderation"
 
-import os
 import fnmatch
 from utils import data_dir
 from utils import acct_dir
@@ -20,6 +19,7 @@ from data import append_string
 from data import save_string
 from data import load_list
 from data import move_file
+from data import is_a_file
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -27,7 +27,7 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     incoming posts
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    if os.path.isfile(filters_filename):
+    if is_a_file(filters_filename):
         if text_in_file(words, filters_filename):
             return False
     if not append_string(words + '\n', filters_filename,
@@ -45,7 +45,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
     if len(words) < 2:
         return False
     filters_filename = data_dir(base_dir) + '/filters.txt'
-    if os.path.isfile(filters_filename):
+    if is_a_file(filters_filename):
         if text_in_file(words, filters_filename):
             return False
     if not append_string(words + '\n', filters_filename,
@@ -59,7 +59,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     """Removes a word filter
     """
     filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    if not os.path.isfile(filters_filename):
+    if not is_a_file(filters_filename):
         return False
     if not text_in_file(words, filters_filename):
         return False
@@ -81,7 +81,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
                 'EX: unable to remove filter ' +
                 filters_filename + ' 2 [ex]')
 
-    if os.path.isfile(new_filters_filename):
+    if is_a_file(new_filters_filename):
         if move_file(new_filters_filename, filters_filename,
                      'EX: remove_filter could not rename ' +
                      new_filters_filename + ' -> ' + filters_filename):
@@ -93,7 +93,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     """Removes a global word filter
     """
     filters_filename = data_dir(base_dir) + '/filters.txt'
-    if not os.path.isfile(filters_filename):
+    if not is_a_file(filters_filename):
         return False
     if not text_in_file(words, filters_filename):
         return False
@@ -115,7 +115,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
                 'EX: unable to remove global filter ' +
                 filters_filename + ' 2 [ex]')
 
-    if os.path.isfile(new_filters_filename):
+    if is_a_file(new_filters_filename):
         if move_file(new_filters_filename, filters_filename,
                      'EX: remove_global_filter could not rename ' +
                      new_filters_filename + ' -> ' + filters_filename):
@@ -154,7 +154,7 @@ def _is_filtered_base(filename: str, content: str,
     """Uses the given file containing filtered words to check
     the given content
     """
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return False
 
     content = remove_inverted_text(content, system_language)
@@ -227,7 +227,7 @@ def is_filtered(base_dir: str, nickname: str, domain: str,
 
     # optionally remove retweets
     remove_twitter = acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
-    if os.path.isfile(remove_twitter):
+    if is_a_file(remove_twitter):
         if _is_twitter_post(content):
             return True
 

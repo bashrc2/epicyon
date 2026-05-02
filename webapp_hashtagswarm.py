@@ -43,6 +43,7 @@ from webapp_utils import html_footer
 from data import load_string
 from data import save_string
 from data import load_line
+from data import is_a_file
 
 
 def get_hashtag_categories_feed(base_dir: str,
@@ -106,7 +107,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     # This avoids needing to repeatedly load the blocked file for each hashtag
     blocked_str: str = ''
     global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
-    if os.path.isfile(global_blocking_filename):
+    if is_a_file(global_blocking_filename):
         blocked_str = \
             load_string(global_blocking_filename,
                         'EX: html_hash_tag_swarm unable to read ' +
@@ -119,7 +120,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
             if not fname.endswith('.txt'):
                 continue
             tags_filename = os.path.join(base_dir + '/tags', fname)
-            if not os.path.isfile(tags_filename):
+            if not is_a_file(tags_filename):
                 continue
 
             # get last modified datetime
@@ -186,7 +187,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                         tag_swarm.append(hash_tag_name)
                         category_filename = \
                             tags_filename.replace('.txt', '.category')
-                        if os.path.isfile(category_filename):
+                        if is_a_file(category_filename):
                             category_str = \
                                 get_hashtag_category(base_dir, hash_tag_name)
                             if category_str and \
@@ -201,7 +202,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                                     tag_map_filename = \
                                         os.path.join(base_dir + '/tagmaps',
                                                      hash_tag_name + '.txt')
-                                    if os.path.isfile(tag_map_filename):
+                                    if is_a_file(tag_map_filename):
                                         if category_str not in swarm_map:
                                             swarm_map.append(category_str)
                         break
@@ -237,7 +238,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
         tag_display_name = tag_name
         tag_map_filename = \
             os.path.join(base_dir + '/tagmaps', tag_name + '.txt')
-        if os.path.isfile(tag_map_filename):
+        if is_a_file(tag_map_filename):
             tag_display_name = '📌' + tag_name
         tag_swarm_str += \
             '<a href="' + actor + '/tags/' + tag_name + \
@@ -265,7 +266,7 @@ def html_search_hashtag_category(translate: {},
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-search.css'
-    if os.path.isfile(base_dir + '/search.css'):
+    if is_a_file(base_dir + '/search.css'):
         css_filename = base_dir + '/search.css'
 
     instance_title = \
@@ -279,7 +280,7 @@ def html_search_hashtag_category(translate: {},
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
 
-    if os.path.isfile(search_banner_filename):
+    if is_a_file(search_banner_filename):
         html_str += '<a href="' + actor + '/search">\n'
         html_str += '<img loading="lazy" decoding="async" ' + \
             'class="timeline-banner" src="' + \
@@ -299,7 +300,7 @@ def html_search_hashtag_category(translate: {},
                 tag_display_name = tag_name
                 tag_map_filename = \
                     os.path.join(base_dir + '/tagmaps', tag_name + '.txt')
-                if os.path.isfile(tag_map_filename):
+                if is_a_file(tag_map_filename):
                     tag_display_name = '📌' + tag_name
 
                 html_str += \
@@ -321,7 +322,7 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
     cached_hashtag_swarm_filename = \
         acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
     save_swarm = True
-    if os.path.isfile(cached_hashtag_swarm_filename):
+    if is_a_file(cached_hashtag_swarm_filename):
         last_modified = file_last_modified(cached_hashtag_swarm_filename)
         modified_date = None
         try:
@@ -373,7 +374,7 @@ def _store_tag_name(base_dir: str, nickname: str,
         add_tag_map_links(tag_maps_dir, tag_name, map_links,
                           published, post_url)
     hashtag_added: bool = False
-    if not os.path.isfile(tags_filename):
+    if not is_a_file(tags_filename):
         if save_string(tag_line, tags_filename,
                        'EX: store_hash_tags unable to write ' + tags_filename):
             hashtag_added = True
@@ -395,7 +396,7 @@ def _store_tag_name(base_dir: str, nickname: str,
 
     # automatically assign a category to the tag if possible
     category_filename = tags_dir + '/' + tag_name + '.category'
-    if not os.path.isfile(category_filename):
+    if not is_a_file(category_filename):
         hashtag_categories = \
             get_hashtag_categories(base_dir, False, None)
         category_str = \

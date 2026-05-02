@@ -37,6 +37,7 @@ from data import load_string
 from data import append_string
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 # music file ID3 v1 genres
@@ -308,14 +309,14 @@ def _remove_meta_data(image_filename: str, output_filename: str) -> None:
     so better to use a dedicated tool if one is installed
     """
     copyfile(image_filename, output_filename)
-    if not os.path.isfile(output_filename):
+    if not is_a_file(output_filename):
         print('ERROR: unable to remove metadata from ' + image_filename)
         return
-    if os.path.isfile('/usr/bin/exiftool'):
+    if is_a_file('/usr/bin/exiftool'):
         print('Removing metadata from ' + output_filename + ' using exiftool')
         cmd = 'exiftool -all= ' + safe_system_string(output_filename)
         os.system(cmd)  # nosec
-    elif os.path.isfile('/usr/bin/mogrify'):
+    elif is_a_file('/usr/bin/mogrify'):
         print('Removing metadata from ' + output_filename + ' using mogrify')
         cmd = \
             '/usr/bin/mogrify -strip ' + safe_system_string(output_filename)
@@ -328,14 +329,14 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                      exif_json: list[dict]) -> None:
     """Spoof image metadata using a decoy model for a given city
     """
-    if not os.path.isfile(output_filename):
+    if not is_a_file(output_filename):
         print('ERROR: unable to spoof metadata within ' + output_filename)
         return
 
     # get the random seed used to generate a unique pattern for this account
     decoy_seed_filename = acct_dir(base_dir, nickname, domain) + '/decoyseed'
     decoy_seed = 63725
-    if os.path.isfile(decoy_seed_filename):
+    if is_a_file(decoy_seed_filename):
         decoy_seed_str = \
             load_string(decoy_seed_filename,
                         'EX: _spoof_meta_data unable to read ' +
@@ -349,7 +350,7 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                     'EX: _spoof_meta_data unable to write ' +
                     decoy_seed_filename)
 
-    if os.path.isfile('/usr/bin/exiftool'):
+    if is_a_file('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + output_filename + ' using exiftool')
         curr_time_adjusted = \
             date_utcnow() - \
@@ -476,7 +477,7 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
     """Converts an image to a low bandwidth version
     """
     low_bandwidth_filename = image_filename + '.low'
-    if os.path.isfile(low_bandwidth_filename):
+    if is_a_file(low_bandwidth_filename):
         erase_file(low_bandwidth_filename,
                    'EX: convert_image_to_low_bandwidth unable to delete ' +
                    low_bandwidth_filename)
@@ -490,14 +491,14 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
     ctr: int = 0
-    while not os.path.isfile(low_bandwidth_filename):
+    while not is_a_file(low_bandwidth_filename):
         print('Waiting for low bandwidth image conversion ' + str(ctr))
         time.sleep(0.2)
         ctr += 1
         if ctr > 100:
             print('WARN: timed out waiting for low bandwidth image conversion')
             break
-    if os.path.isfile(low_bandwidth_filename):
+    if is_a_file(low_bandwidth_filename):
         erase_file(image_filename,
                    'EX: convert_image_to_low_bandwidth unable to delete ' +
                    image_filename)
@@ -505,7 +506,7 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
                   'EX: convert_image_to_low_bandwidth could not rename ' +
                   low_bandwidth_filename + ' -> ' + image_filename)
 
-        if os.path.isfile(image_filename):
+        if is_a_file(image_filename):
             print('Image converted to low bandwidth ' + image_filename)
     else:
         print('Low bandwidth converted image not found: ' +
@@ -530,7 +531,7 @@ def process_meta_data(base_dir: str, nickname: str, domain: str,
 def _is_media(image_filename: str) -> bool:
     """Is the given file a media file?
     """
-    if not os.path.isfile(image_filename):
+    if not is_a_file(image_filename):
         print('WARN: Media file does not exist ' + image_filename)
         return False
     permitted_media = get_media_extensions()
@@ -587,7 +588,7 @@ def _update_etag(media_filename: str) -> None:
         return
 
     # check that the media exists
-    if not os.path.isfile(media_filename):
+    if not is_a_file(media_filename):
         return
 
     # read the binary data
@@ -631,7 +632,7 @@ def _log_uploaded_media(base_dir: str, nickname: str, domain: str,
     account_media_log_filename = account_dir + '/media_log.txt'
     media_log = []
     write_type = 'w+'
-    if os.path.isfile(account_media_log_filename):
+    if is_a_file(account_media_log_filename):
         media_log_str = \
             load_string(account_media_log_filename,
                         'EX: unable to read media log for ' + nickname)
@@ -849,23 +850,23 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
                              watermark_opacity: int) -> bool:
     """Applies a watermark to the given image
     """
-    if not os.path.isfile(post_image_filename):
+    if not is_a_file(post_image_filename):
         return False
-    if not os.path.isfile('/usr/bin/composite'):
+    if not is_a_file('/usr/bin/composite'):
         return False
     watermark_enabled_filename = \
         acct_dir(base_dir, nickname, domain) + '/.watermarkEnabled'
-    if not os.path.isfile(watermark_enabled_filename):
+    if not is_a_file(watermark_enabled_filename):
         return False
     _, watermark_filename = get_watermark_file(base_dir, nickname, domain)
     if not watermark_filename:
         # does a default watermark filename exist?
         default_watermark_file = base_dir + '/manual/manual-watermark-ai.png'
-        if os.path.isfile(default_watermark_file):
+        if is_a_file(default_watermark_file):
             watermark_filename = default_watermark_file
     if not watermark_filename:
         return False
-    if not os.path.isfile(watermark_filename):
+    if not is_a_file(watermark_filename):
         return False
 
     # scale the watermark so that it is a fixed percentage of the image width
@@ -920,7 +921,7 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
         safe_system_string(post_image_filename) + ' ' + \
         safe_system_string(post_image_filename + '.watermarked')
     subprocess.call(cmd, shell=True)
-    if not os.path.isfile(post_image_filename + '.watermarked'):
+    if not is_a_file(post_image_filename + '.watermarked'):
         return False
 
     if not erase_file(post_image_filename,

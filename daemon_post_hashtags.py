@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 import urllib.parse
 from socket import error as SocketError
@@ -21,6 +20,7 @@ from blocking import is_blocked_hashtag
 from filters import is_filtered
 from categories import set_hashtag_category
 from data import erase_file
+from data import is_a_file
 
 
 def set_hashtag_category2(self, calling_domain: str, cookie: str,
@@ -49,7 +49,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
         http_404(self, 15)
         return
     hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_filename):
+    if not is_a_file(hashtag_filename):
         # the hashtag does not exist
         http_404(self, 16)
         return
@@ -131,7 +131,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
                                      category_str, False, False)
         else:
             category_filename = base_dir + '/tags/' + hashtag + '.category'
-            if os.path.isfile(category_filename):
+            if is_a_file(category_filename):
                 erase_file(category_filename,
                            'EX: _set_hashtag_category unable to delete ' +
                            category_filename)

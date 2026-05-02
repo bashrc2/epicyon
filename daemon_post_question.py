@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 import urllib.parse
 from socket import error as SocketError
@@ -30,6 +29,7 @@ from daemon_utils import post_to_outbox
 from inbox import populate_replies
 from data import append_string
 from data import erase_file
+from data import is_a_file
 
 
 def receive_vote(self, calling_domain: str, cookie: str,
@@ -206,7 +206,7 @@ def _send_reply_to_question(self, base_dir: str,
         acct_dir(base_dir, nickname, domain) + \
         '/questions.txt'
 
-    if os.path.isfile(votes_filename):
+    if is_a_file(votes_filename):
         # have we already voted on this?
         if text_in_file(message_id, votes_filename):
             print('Already voted on message ' + message_id)
@@ -302,7 +302,7 @@ def _send_reply_to_question(self, base_dir: str,
                                                  nickname, domain,
                                                  post_json_object)
                     if cached_post_filename:
-                        if os.path.isfile(cached_post_filename):
+                        if is_a_file(cached_post_filename):
                             erase_file(cached_post_filename,
                                        'EX: _send_reply_to_question ' +
                                        'unable to delete ' +

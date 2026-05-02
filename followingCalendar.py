@@ -7,9 +7,9 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Calendar"
 
-import os
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def _data_dir2(base_dir) -> str:
@@ -69,10 +69,10 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
     calendar_filename = \
         _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
     handle = following_nickname + '@' + following_domain
-    if not os.path.isfile(calendar_filename):
+    if not is_a_file(calendar_filename):
         following_filename = \
             _dir_acct(base_dir, nickname, domain) + '/following.txt'
-        if not os.path.isfile(following_filename):
+        if not is_a_file(following_filename):
             return False
         # create a new calendar file from the following file
         following_handles = \
@@ -95,7 +95,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     domain = _port_domain_remove(domain)
     following_filename = \
         _dir_acct(base_dir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(following_filename):
+    if not is_a_file(following_filename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
         return
@@ -112,7 +112,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     # get the contents of the calendar file, which is
     # a set of handles
     following_handles: str = ''
-    if os.path.isfile(calendar_filename):
+    if is_a_file(calendar_filename):
         print('Calendar file exists')
         following_handles = \
             load_string(calendar_filename,

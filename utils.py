@@ -28,6 +28,7 @@ from data import save_flag_file
 from data import load_string
 from data import append_string
 from data import erase_file
+from data import is_a_file
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -468,7 +469,7 @@ def set_accounts_data_dir(base_dir: str, accounts_data_path: str) -> None:
         return
 
     accounts_data_path_filename = base_dir + '/data_path.txt'
-    if os.path.isfile(accounts_data_path_filename):
+    if is_a_file(accounts_data_path_filename):
         # read the existing path
         path: str = load_string(accounts_data_path_filename,
                                 'EX: unable to read ' +
@@ -497,7 +498,7 @@ def data_dir(base_dir: str) -> str:
 
         # is an alternative path set?
         accounts_data_path_filename: str = base_dir + '/data_path.txt'
-        if os.path.isfile(accounts_data_path_filename):
+        if is_a_file(accounts_data_path_filename):
             path: str = load_string(accounts_data_path_filename,
                                     'EX: unable to read ' +
                                     accounts_data_path_filename)
@@ -524,7 +525,7 @@ def refresh_newswire(base_dir: str) -> None:
     """Causes the newswire to be updates after a change to user accounts
     """
     refresh_newswire_filename: str = data_dir(base_dir) + '/.refresh_newswire'
-    if os.path.isfile(refresh_newswire_filename):
+    if is_a_file(refresh_newswire_filename):
         return
     save_flag_file(refresh_newswire_filename,
                    'EX: refresh_newswire unable to write ' +
@@ -697,7 +698,7 @@ def get_memorials(base_dir: str) -> str:
     """Returns the nicknames for memorial accounts
     """
     memorial_file: str = data_dir(base_dir) + '/memorial'
-    if not os.path.isfile(memorial_file):
+    if not is_a_file(memorial_file):
         return ''
 
     memorial_str = load_string(memorial_file,
@@ -730,7 +731,7 @@ def _create_config(base_dir: str) -> None:
     """Creates a configuration file
     """
     config_filename: str = base_dir + '/config.json'
-    if os.path.isfile(config_filename):
+    if is_a_file(config_filename):
         return
     config_json: dict = {}
     save_json(config_json, config_filename)
@@ -745,7 +746,7 @@ def set_config_param(base_dir: str, variable_name: str,
     _create_config(base_dir)
     config_filename: str = base_dir + '/config.json'
     config_json: dict = {}
-    if os.path.isfile(config_filename):
+    if is_a_file(config_filename):
         config_json = load_json(config_filename)
         if config_json is None:
             config_json = {}
@@ -776,7 +777,7 @@ def get_followers_list(base_dir: str,
     """
     filename: str = acct_dir(base_dir, nickname, domain) + '/' + follow_file
 
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return []
 
     lines: list[str] = \
@@ -825,7 +826,7 @@ def get_followers_of_person(base_dir: str,
             if account == handle or \
                string_starts_with(account, ('inbox@', 'Actor@', 'news@')):
                 continue
-            if not os.path.isfile(filename):
+            if not is_a_file(filename):
                 continue
             following_list: list[str] = \
                 load_list(filename,
@@ -1271,7 +1272,7 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     # Try to obtain from the cached actors
     cached_actor_filename: str = \
         base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-    if os.path.isfile(cached_actor_filename):
+    if is_a_file(cached_actor_filename):
         actor_json = load_json(cached_actor_filename)
         if actor_json:
             if actor_json.get('name'):
@@ -1296,7 +1297,7 @@ def get_actor_type(base_dir: str, actor: str, person_cache: {}) -> str:
     # Try to obtain from the cached actors
     cached_actor_filename: str = \
         base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-    if os.path.isfile(cached_actor_filename):
+    if is_a_file(cached_actor_filename):
         actor_json = load_json(cached_actor_filename)
         if actor_json:
             if actor_json.get('type'):
@@ -1370,7 +1371,7 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
         # Try to obtain from the cached actors
         cached_actor_filename: str = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cached_actor_filename):
+        if is_a_file(cached_actor_filename):
             actor_json: dict = load_json(cached_actor_filename)
     if not actor_json:
         return default_gender
@@ -1540,7 +1541,7 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
 
     petname_lookup_entry: str = follow_nickname + ' ' + \
         follow_nickname + '@' + follow_domain + '\n'
-    if not os.path.isfile(petnames_filename):
+    if not is_a_file(petnames_filename):
         # if there is no existing petnames lookup file
         save_string(petname_lookup_entry, petnames_filename,
                     'EX: _set_default_pet_name unable to write ' +
@@ -1604,7 +1605,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     # was this person previously unfollowed?
     unfollowed_filename: str = \
         acct_handle_dir(base_dir, handle) + '/unfollowed.txt'
-    if os.path.isfile(unfollowed_filename):
+    if is_a_file(unfollowed_filename):
         if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
             new_lines: str = ''
@@ -1627,7 +1628,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     if group_account:
         handle_to_follow = '!' + handle_to_follow
     filename = acct_handle_dir(base_dir, handle) + '/' + follow_file
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         if text_in_file(handle_to_follow, filename):
             if debug:
                 print('DEBUG: follow already exists')
@@ -1697,7 +1698,7 @@ def locate_news_votes(base_dir: str, domain: str,
 
     account_dir: str = data_dir(base_dir) + '/news@' + domain + '/'
     post_filename: str = account_dir + 'outbox/' + post_url
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         return post_filename
 
     return None
@@ -1723,18 +1724,18 @@ def locate_post(base_dir: str, nickname: str, domain: str,
     account_dir: str = acct_dir(base_dir, nickname, domain) + '/'
     for box_name in boxes:
         post_filename: str = account_dir + box_name + '/' + post_url
-        if os.path.isfile(post_filename):
+        if is_a_file(post_filename):
             return post_filename
 
     # check news posts
     account_dir = data_dir(base_dir) + '/news' + '@' + domain + '/'
     post_filename: str = account_dir + 'outbox/' + post_url
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         return post_filename
 
     # is it in the announce cache?
     post_filename = base_dir + '/cache/announce/' + nickname + '/' + post_url
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         return post_filename
 
     # print('WARN: unable to locate ' + nickname + ' ' + post_url)
@@ -1749,7 +1750,7 @@ def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     """
     reply_interval_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
-    if os.path.isfile(reply_interval_filename):
+    if is_a_file(reply_interval_filename):
         hours_str: str = \
             load_string(reply_interval_filename,
                         'EX: get_reply_interval_hours unable to read ' +
@@ -1795,7 +1796,7 @@ def _remove_attachment(base_dir: str, http_prefix: str,
     # remove the media
     media_filename: str = base_dir + '/' + \
         attachment_url.replace(http_prefix + '://' + domain + '/', '')
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         ex_text = \
             'EX: _remove_attachment unable to delete media file ' + \
             str(media_filename)
@@ -1804,7 +1805,7 @@ def _remove_attachment(base_dir: str, http_prefix: str,
     # remove from the log file
     account_dir: str = acct_dir(base_dir, nickname, domain)
     account_media_log_filename: str = account_dir + '/media_log.txt'
-    if os.path.isfile(account_media_log_filename):
+    if is_a_file(account_media_log_filename):
         search_filename: str = media_filename.replace(base_dir, '')
         media_log_text: str = \
             load_string(account_media_log_filename,
@@ -1818,7 +1819,7 @@ def _remove_attachment(base_dir: str, http_prefix: str,
                         nickname)
 
     # remove the transcript
-    if os.path.isfile(media_filename + '.vtt'):
+    if is_a_file(media_filename + '.vtt'):
         ex_text = \
             'EX: _remove_attachment unable to delete media transcript ' + \
             str(media_filename) + '.vtt'
@@ -1826,7 +1827,7 @@ def _remove_attachment(base_dir: str, http_prefix: str,
 
     # remove the etag
     etag_filename: str = media_filename + '.etag'
-    if os.path.isfile(etag_filename):
+    if is_a_file(etag_filename):
         ex_text = \
             'EX: _remove_attachment unable to delete etag file ' + \
             str(etag_filename)
@@ -1838,7 +1839,7 @@ def remove_post_from_index(post_url: str, debug: bool,
                            index_file: str) -> None:
     """Removes a url from a box index
     """
-    if not os.path.isfile(index_file):
+    if not is_a_file(index_file):
         return
     post_id: str = remove_id_ending(post_url).strip("\n").strip("\r")
     if not text_in_file(post_id, index_file):
@@ -1888,7 +1889,7 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
         return False
     blogs_index_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogs_index_filename):
+    if not is_a_file(blogs_index_filename):
         return False
     post_id: str = remove_id_ending(reply_id)
     post_id = post_id.replace('/', '#')
@@ -1904,7 +1905,7 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
     """Removes replies when deleting a post
     """
     replies_filename: str = post_filename.replace('.json', '.replies')
-    if not os.path.isfile(replies_filename):
+    if not is_a_file(replies_filename):
         return
     if debug:
         print('DEBUG: removing replies to ' + post_filename)
@@ -1919,7 +1920,7 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
                 locate_post(base_dir, nickname, domain, reply_id_str)
             if not reply_file:
                 continue
-            if not os.path.isfile(reply_file):
+            if not is_a_file(reply_file):
                 continue
             delete_post(base_dir, http_prefix,
                         nickname, domain, reply_file, debug,
@@ -1937,7 +1938,7 @@ def _is_bookmarked(base_dir: str, nickname: str, domain: str,
     """
     bookmarks_index_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
-    if os.path.isfile(bookmarks_index_filename):
+    if is_a_file(bookmarks_index_filename):
         bookmark_index: str = post_filename.split('/')[-1] + '\n'
         if text_in_file(bookmark_index, bookmarks_index_filename):
             return True
@@ -1985,14 +1986,14 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if not cached_post_filename:
         return
-    if os.path.isfile(cached_post_filename):
+    if is_a_file(cached_post_filename):
         ex_text = \
             'EX: delete_cached_html unable to delete cached post file ' + \
             str(cached_post_filename)
         erase_file(cached_post_filename, ex_text)
 
     cached_post_filename = cached_post_filename.replace('.html', '.ssml')
-    if os.path.isfile(cached_post_filename):
+    if is_a_file(cached_post_filename):
         ex_text = \
             'EX: ' + \
             'delete_cached_html unable to delete cached ssml post file ' + \
@@ -2001,7 +2002,7 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
 
     cached_post_filename = \
         cached_post_filename.replace('/postcache/', '/outbox/')
-    if os.path.isfile(cached_post_filename):
+    if is_a_file(cached_post_filename):
         ex_text = \
             'EX: delete_cached_html ' + \
             'unable to delete cached outbox ssml post file ' + \
@@ -2065,12 +2066,12 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
         # find the index file for this tag
         tag_map_filename: str = \
             base_dir + '/tagmaps/' + tag['name'][1:] + '.txt'
-        if os.path.isfile(tag_map_filename):
+        if is_a_file(tag_map_filename):
             _remove_post_id_from_tag_index(tag_map_filename, post_id)
         # find the index file for this tag
         tag_index_filename: str = \
             base_dir + '/tags/' + tag['name'][1:] + '.txt'
-        if os.path.isfile(tag_index_filename):
+        if is_a_file(tag_index_filename):
             _remove_post_id_from_tag_index(tag_index_filename, post_id)
 
 
@@ -2101,7 +2102,7 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     conversation_id = conversation_id.replace('/', '#')
     post_id: str = post_json_object['object']['id']
     conversation_filename: str = conversation_dir + '/' + conversation_id
-    if not os.path.isfile(conversation_filename):
+    if not is_a_file(conversation_filename):
         return False
     conversation_str: str = \
         load_string(conversation_filename,
@@ -2117,7 +2118,7 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
                     'EX: _delete_conversation_post unable to write ' +
                     conversation_filename)
     else:
-        if os.path.isfile(conversation_filename + '.muted'):
+        if is_a_file(conversation_filename + '.muted'):
             ex_text = 'EX: _delete_conversation_post ' + \
                 'unable to remove conversation ' + \
                 str(conversation_filename) + '.muted'
@@ -2336,7 +2337,7 @@ def delete_post(base_dir: str, http_prefix: str,
                                  post_json_object, '',
                                  debug, False)
     if gemini_blog_filename:
-        if os.path.isfile(gemini_blog_filename):
+        if is_a_file(gemini_blog_filename):
             ex_text = 'EX: delete_post unable to delete gemini post ' + \
                 str(gemini_blog_filename)
             if erase_file(gemini_blog_filename, ex_text):
@@ -2348,7 +2349,7 @@ def delete_post(base_dir: str, http_prefix: str,
                                    post_json_object, '',
                                    debug, False)
     if markdown_blog_filename:
-        if os.path.isfile(markdown_blog_filename):
+        if is_a_file(markdown_blog_filename):
             ex_text = 'EX: delete_post unable to delete markdown post ' + \
                 str(markdown_blog_filename)
             if erase_file(markdown_blog_filename, ex_text):
@@ -2360,7 +2361,7 @@ def delete_post(base_dir: str, http_prefix: str,
                                  post_json_object, '',
                                  debug, False)
     if micron_blog_filename:
-        if os.path.isfile(micron_blog_filename):
+        if is_a_file(micron_blog_filename):
             ex_text = 'EX: delete_post unable to delete micron post ' + \
                 str(micron_blog_filename)
             if erase_file(micron_blog_filename, ex_text):
@@ -2381,13 +2382,13 @@ def delete_post(base_dir: str, http_prefix: str,
     )
     for ext in extensions:
         ext_filename: str = post_filename + '.' + ext
-        if os.path.isfile(ext_filename):
+        if is_a_file(ext_filename):
             ex_text = 'EX: delete_post unable to remove ext ' + \
                 str(ext_filename)
             erase_file(ext_filename, ex_text)
         elif post_filename.endswith('.json'):
             ext_filename = post_filename.replace('.json', '') + '.' + ext
-            if os.path.isfile(ext_filename):
+            if is_a_file(ext_filename):
                 ex_text = 'EX: delete_post unable to remove ext ' + \
                     str(ext_filename)
                 erase_file(ext_filename, ex_text)
@@ -2594,7 +2595,7 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
                 continue
             last_used_filename: str = \
                 dir_str + '/' + account + '/.lastUsed'
-            if not os.path.isfile(last_used_filename):
+            if not is_a_file(last_used_filename):
                 continue
             last_used: str = \
                 load_string(last_used_filename,
@@ -2661,7 +2662,7 @@ def get_css(css_filename: str) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
-    if not os.path.isfile(css_filename):
+    if not is_a_file(css_filename):
         return None
 
     css: str = load_string(css_filename,
@@ -2674,10 +2675,10 @@ def get_css(css_filename: str) -> str:
 def get_file_case_insensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
-    if os.path.isfile(path):
+    if is_a_file(path):
         return path
     if path != path.lower():
-        if os.path.isfile(path.lower()):
+        if is_a_file(path.lower()):
             return path.lower()
     return None
 
@@ -2784,7 +2785,7 @@ def load_translations_from_file(base_dir: str, language: str) -> ({}, str):
         system_language: str = system_language.split('.')[0]
     translations_file: str = base_dir + '/translations/' + \
         system_language + '.json'
-    if not os.path.isfile(translations_file):
+    if not is_a_file(translations_file):
         system_language: str = 'en'
         translations_file: str = base_dir + '/translations/' + \
             system_language + '.json'
@@ -2802,7 +2803,7 @@ def dm_allowed_from_domain(base_dir: str,
     """
     dm_allowed_instances_file: str = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
-    if not os.path.isfile(dm_allowed_instances_file):
+    if not is_a_file(dm_allowed_instances_file):
         return False
     if text_in_file(sending_actor_domain + '\n', dm_allowed_instances_file):
         return True
@@ -3233,7 +3234,7 @@ def load_bold_reading(base_dir: str) -> {}:
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
             bold_reading_filename = dir_str + '/' + acct + '/.boldReading'
-            if os.path.isfile(bold_reading_filename):
+            if is_a_file(bold_reading_filename):
                 nickname = acct.split('@')[0]
                 bold_reading[nickname] = True
         break
@@ -3252,7 +3253,7 @@ def load_hide_follows(base_dir: str) -> {}:
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
             hide_follows_filename = dir_str + '/' + acct + '/.hideFollows'
-            if os.path.isfile(hide_follows_filename):
+            if is_a_file(hide_follows_filename):
                 nickname = acct.split('@')[0]
                 hide_follows[nickname] = True
         break
@@ -3273,7 +3274,7 @@ def load_hide_recent_posts(base_dir: str) -> {}:
                 continue
             hide_recent_posts_filename: str = \
                 dir_str + '/' + acct + '/.hideRecentPosts'
-            if os.path.isfile(hide_recent_posts_filename):
+            if is_a_file(hide_recent_posts_filename):
                 nickname: str = acct.split('@')[0]
                 hide_recent_posts[nickname] = True
         break
@@ -3454,7 +3455,7 @@ def load_min_images_for_accounts(base_dir: str) -> []:
             if not is_account_dir(account):
                 continue
             filename = os.path.join(subdir, account) + '/.minimize_all_images'
-            if os.path.isfile(filename):
+            if is_a_file(filename):
                 min_images_for_accounts.append(account.split('@')[0])
         break
     return min_images_for_accounts
@@ -3472,7 +3473,7 @@ def set_minimize_all_images(base_dir: str,
     if minimize:
         if nickname not in min_images_for_accounts:
             min_images_for_accounts.append(nickname)
-        if not os.path.isfile(filename):
+        if not is_a_file(filename):
             save_flag_file(filename,
                            'EX: set_minimize_all_images unable to write ' +
                            filename)
@@ -3480,7 +3481,7 @@ def set_minimize_all_images(base_dir: str,
 
     if nickname in min_images_for_accounts:
         min_images_for_accounts.remove(nickname)
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         erase_file(filename,
                    'EX: unable to delete ' + filename)
 
@@ -3499,7 +3500,7 @@ def load_reverse_timeline(base_dir: str) -> []:
             domain: str = acct.split('@')[1]
             reverse_filename: str = \
                 acct_dir(base_dir, nickname, domain) + '/.reverse_timeline'
-            if os.path.isfile(reverse_filename):
+            if is_a_file(reverse_filename):
                 if nickname not in reverse_sequence:
                     reverse_sequence.append(nickname)
         break
@@ -3520,12 +3521,12 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> None:
             reverse_filename: str = \
                 acct_dir(base_dir, nickname, domain) + '/.reverse_timeline'
             if nickname in reverse_sequence:
-                if not os.path.isfile(reverse_filename):
+                if not is_a_file(reverse_filename):
                     save_flag_file(reverse_filename,
                                    'EX: failed to save reverse ' +
                                    reverse_filename)
             else:
-                if os.path.isfile(reverse_filename):
+                if is_a_file(reverse_filename):
                     erase_file(reverse_filename,
                                'EX: failed to delete reverse ' +
                                reverse_filename)
@@ -3766,7 +3767,7 @@ def get_status_count(base_dir: str) -> int:
 def lines_in_file(filename: str) -> int:
     """Returns the number of lines in a file
     """
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         text: str = load_string(filename,
                                 'EX: lines_in_file error reading ' + filename)
         if text:
@@ -4077,7 +4078,7 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
     """ Set or clear the premium account flag
     """
     premium_filename: str = acct_dir(base_dir, nickname, domain) + '/.premium'
-    if os.path.isfile(premium_filename):
+    if is_a_file(premium_filename):
         if not flag_state:
             if not erase_file(premium_filename,
                               'EX: unable to remove premium flag ' +
@@ -4139,7 +4140,7 @@ def get_image_file(base_dir: str, name: str, directory: str,
     for ext in banner_extensions:
         banner_file_test: str = im_name + '.' + ext
         banner_filename_test: str = directory + '/' + banner_file_test
-        if not os.path.isfile(banner_filename_test):
+        if not is_a_file(banner_filename_test):
             continue
         banner_file = banner_file_test
         banner_filename = banner_filename_test
@@ -4152,7 +4153,7 @@ def get_image_file(base_dir: str, name: str, directory: str,
     for ext in banner_extensions:
         banner_file_test: str = name + '.' + ext
         banner_filename_test: str = directory + '/' + banner_file_test
-        if not os.path.isfile(banner_filename_test):
+        if not is_a_file(banner_filename_test):
             continue
         banner_file = name + '_' + curr_theme + '.' + ext
         banner_filename = banner_filename_test
@@ -4211,7 +4212,7 @@ def load_instance_software(base_dir: str) -> []:
     """
     instance_software_filename: str = \
         data_dir(base_dir) + '/instance_software.json'
-    if os.path.isfile(instance_software_filename):
+    if is_a_file(instance_software_filename):
         instance_software_json: dict = load_json(instance_software_filename)
         if instance_software_json:
             return instance_software_json

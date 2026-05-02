@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 
-import os
 from flags import is_float
 from utils import resembles_url
 from utils import browser_supports_download_filename
@@ -26,6 +25,7 @@ from timeFunctions import date_utcnow
 from session import get_resolved_url
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def geocoords_to_osm_link(osm_domain: str, zoom: int,
@@ -200,7 +200,7 @@ def html_address_book_list(base_dir: str, nickname: str, domain: str) -> str:
     address_book_filename = \
         acct_dir(base_dir, nickname, domain) + '/addresses.json'
     address_book_dict = {}
-    if os.path.isfile(address_book_filename):
+    if is_a_file(address_book_filename):
         address_book_dict2 = load_json(address_book_filename)
         if address_book_dict2:
             address_book_dict = address_book_dict2
@@ -225,7 +225,7 @@ def update_address_book(base_dir: str, nickname: str, domain: str,
     address_book_filename = \
         acct_dir(base_dir, nickname, domain) + '/addresses.json'
     address_book_dict = {}
-    if os.path.isfile(address_book_filename):
+    if is_a_file(address_book_filename):
         address_book_dict2 = load_json(address_book_filename)
         if address_book_dict2:
             address_book_dict = address_book_dict2
@@ -900,7 +900,7 @@ def set_map_preferences_url(base_dir: str, nickname: str, domain: str,
     """
     maps_filename = \
         acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
-    if os.path.isfile(maps_filename):
+    if is_a_file(maps_filename):
         maps_json = load_json(maps_filename)
         maps_json['url'] = maps_website_url
     else:
@@ -915,7 +915,7 @@ def get_map_preferences_url(base_dir: str, nickname: str, domain: str) -> str:
     """
     maps_filename = \
         acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
-    if os.path.isfile(maps_filename):
+    if is_a_file(maps_filename):
         maps_json = load_json(maps_filename)
         if maps_json.get('url'):
             url_str = get_url_from_post(maps_json['url'])
@@ -930,7 +930,7 @@ def set_map_preferences_coords(base_dir: str, nickname: str, domain: str,
     """
     maps_filename = \
         acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
-    if os.path.isfile(maps_filename):
+    if is_a_file(maps_filename):
         maps_json = load_json(maps_filename)
         maps_json['latitude'] = latitude
         maps_json['longitude'] = longitude
@@ -950,7 +950,7 @@ def get_map_preferences_coords(base_dir: str, nickname: str,
     """
     maps_filename = \
         acct_dir(base_dir, nickname, domain) + '/map_preferences.json'
-    if os.path.isfile(maps_filename):
+    if is_a_file(maps_filename):
         maps_json = load_json(maps_filename)
         if maps_json.get('latitude') and \
            maps_json.get('longitude') and \
@@ -1037,7 +1037,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
 
     # read the existing map links
     existing_map_links: list[str] = []
-    if os.path.isfile(tag_map_filename):
+    if is_a_file(tag_map_filename):
         existing_map_links_str = \
             load_string(tag_map_filename,
                         'EX: error reading tag map ' + tag_map_filename)
@@ -1124,7 +1124,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
         map_str += '<kml xmlns="http://www.opengis.net/kml/2.2">\n'
         map_str += '<Document>\n'
 
-    if os.path.isfile(tag_map_filename):
+    if is_a_file(tag_map_filename):
         map_links: list[str] = []
         map_links_str = \
             load_string(tag_map_filename,
@@ -1160,7 +1160,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
                     post_filename = \
                         locate_post(base_dir, nickname, domain, post_id)
                     if post_filename:
-                        if os.path.isfile(post_filename + '.muted'):
+                        if is_a_file(post_filename + '.muted'):
                             continue
                 place_ctr += 1
                 if map_format == 'gpx':
@@ -1258,7 +1258,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
     """Returns html for maps associated with a hashtag
     """
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
-    if not os.path.isfile(tag_map_filename):
+    if not is_a_file(tag_map_filename):
         return ''
 
     time_period = _get_tagmaps_time_periods()

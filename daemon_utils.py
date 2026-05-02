@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon"
 
-import os
 import time
 from auth import authorize
 from threads import thread_with_trace
@@ -79,6 +78,7 @@ from httpheaders import set_headers
 from fitnessFunctions import fitness_performance
 from siteactive import is_online
 from data import load_string
+from data import is_a_file
 
 
 def post_to_outbox(self, message_json: {}, version: str,
@@ -904,7 +904,7 @@ def etag_exists(self, media_filename: str) -> bool:
 
     if self.headers.get(etag_header):
         old_etag = self.headers[etag_header].replace('"', '')
-        if os.path.isfile(media_filename + '.etag'):
+        if is_a_file(media_filename + '.etag'):
             # load the etag from file
             exc_str = 'EX: _etag_exists unable to read ' + \
                 str(media_filename)
@@ -953,7 +953,7 @@ def load_known_epicyon_instances(base_dir: str) -> []:
     """
     epicyon_instances_filename = \
         data_dir(base_dir) + '/known_epicyon_instances.json'
-    if not os.path.isfile(epicyon_instances_filename):
+    if not is_a_file(epicyon_instances_filename):
         return []
     known_epicyon_instances = load_json(epicyon_instances_filename)
     if not known_epicyon_instances:

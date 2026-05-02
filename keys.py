@@ -7,8 +7,8 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from data import load_string
+from data import is_a_file
 
 
 def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
@@ -18,7 +18,7 @@ def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
         return None
     handle = nickname + '@' + domain
     key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
-    if not os.path.isfile(key_filename):
+    if not is_a_file(key_filename):
         return None
     text = load_string(key_filename,
                        'EX: _get_local_private_key unable to read ' +
@@ -35,7 +35,7 @@ def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
         return None
     handle = nickname + '@' + domain
     key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
-    if not os.path.isfile(key_filename):
+    if not is_a_file(key_filename):
         return None
     text = load_string(key_filename,
                        'EX: _get_local_public_key unable to read ' +

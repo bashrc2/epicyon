@@ -7,13 +7,13 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from utils import data_dir
 from utils import load_json
 from utils import get_config_param
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
+from data import is_a_file
 
 
 color_to_hex = {
@@ -175,12 +175,12 @@ def html_theme_designer(base_dir: str,
     """
     theme_filename = base_dir + '/theme/' + theme_name + '/theme.json'
     theme_json = {}
-    if os.path.isfile(theme_filename):
+    if is_a_file(theme_filename):
         theme_json = load_json(theme_filename)
 
     # set custom theme parameters
     custom_variables_file = data_dir(base_dir) + '/theme.json'
-    if os.path.isfile(custom_variables_file):
+    if is_a_file(custom_variables_file):
         custom_theme_params = load_json(custom_variables_file)
         if custom_theme_params:
             for variable_name, value in custom_theme_params.items():
@@ -188,7 +188,7 @@ def html_theme_designer(base_dir: str,
 
     theme_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     banner_file, _ = \

@@ -60,6 +60,7 @@ from session import get_json
 from data import load_list
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -69,13 +70,13 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+    if not is_a_file(base_dir + '/emoji/emoji.json'):
         copyfile(base_dir + '/emoji/default_emoji.json',
                  base_dir + '/emoji/emoji.json')
 
     search_str = search_str.lower().replace(':', '').strip('\n').strip('\r')
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     emoji_lookup_filename = base_dir + '/emoji/emoji.json'
@@ -111,7 +112,7 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
         '</h1></center>'
 
     # does the lookup file exist?
-    if not os.path.isfile(emoji_lookup_filename):
+    if not is_a_file(emoji_lookup_filename):
         emoji_form += '<center><h5>' + \
             translate['No results'] + '</h5></center>'
         emoji_form += html_footer()
@@ -119,7 +120,7 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
 
     emoji_json = load_json(emoji_lookup_filename)
     if emoji_json:
-        if os.path.isfile(custom_emoji_lookup_filename):
+        if is_a_file(custom_emoji_lookup_filename):
             custom_emoji_json = load_json(custom_emoji_lookup_filename)
             if custom_emoji_json:
                 emoji_json = dict(emoji_json, **custom_emoji_json)
@@ -142,8 +143,8 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
         msg_str2 = ':<img loading="lazy" decoding="async" ' + \
             'class="searchEmoji" src="/emoji/'
         for emoji_name, filename in results.items():
-            if not os.path.isfile(base_dir + '/emoji/' + filename):
-                if not os.path.isfile(base_dir + '/emojicustom/' + filename):
+            if not is_a_file(base_dir + '/emoji/' + filename):
+                if not is_a_file(base_dir + '/emojicustom/' + filename):
                     continue
             if not heading_shown:
                 emoji_form += \
@@ -281,7 +282,7 @@ def html_search_shared_items(translate: {},
     search_str_lower = search_str_lower.lower().strip('\n').strip('\r')
     search_str_lower_list = search_str_lower.split('+')
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -324,7 +325,7 @@ def html_search_shared_items(translate: {},
             contact_nickname = handle.split('@')[0]
             shares_filename = acct_handle_dir(base_dir, handle) + \
                 '/' + shares_file_type + '.json'
-            if not os.path.isfile(shares_filename):
+            if not is_a_file(shares_filename):
                 continue
 
             shares_json = load_json(shares_filename)
@@ -400,7 +401,7 @@ def html_search_emoji_text_entry(translate: {},
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+    if not is_a_file(base_dir + '/emoji/emoji.json'):
         copyfile(base_dir + '/emoji/default_emoji.json',
                  base_dir + '/emoji/emoji.json')
 
@@ -409,7 +410,7 @@ def html_search_emoji_text_entry(translate: {},
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-follow.css'
-    if os.path.isfile(base_dir + '/follow.css'):
+    if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
     instance_title = \
@@ -458,18 +459,16 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
     css_filename = base_dir + '/epicyon-search.css'
-    if os.path.isfile(base_dir + '/search.css'):
+    if is_a_file(base_dir + '/search.css'):
         css_filename = base_dir + '/search.css'
 
     # set a search banner
     search_banner_filename = \
         acct_dir(base_dir, search_nickname, domain) + \
         '/search_banner.png'
-    if not os.path.isfile(search_banner_filename):
-        if os.path.isfile(base_dir +
-                          '/theme/' + theme + '/search_banner.png'):
-            copyfile(base_dir +
-                     '/theme/' + theme + '/search_banner.png',
+    if not is_a_file(search_banner_filename):
+        if is_a_file(base_dir + '/theme/' + theme + '/search_banner.png'):
+            copyfile(base_dir + '/theme/' + theme + '/search_banner.png',
                      search_banner_filename)
     users_path = '/users/' + search_nickname
 
@@ -493,7 +492,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     if text_mode_banner_str is None:
         text_mode_banner_str: str = ''
 
-    if os.path.isfile(search_banner_filename):
+    if is_a_file(search_banner_filename):
         timeline_key = access_keys['menuTimeline']
         follow_str += \
             '<header>\n' + text_mode_banner_str + \
@@ -526,7 +525,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     cached_hashtag_swarm_filename = \
         acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
     swarm_str: str = ''
-    if os.path.isfile(cached_hashtag_swarm_filename):
+    if is_a_file(cached_hashtag_swarm_filename):
         swarm_str = \
             load_string(cached_hashtag_swarm_filename,
                         'EX: ' +
@@ -646,7 +645,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
     results.sort(reverse=True)
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -758,7 +757,7 @@ def html_history_search(translate: {}, base_dir: str,
                              historysearch, posts_per_page, 'inbox')
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -911,11 +910,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
     hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
             hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 
@@ -937,7 +936,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     # read the css
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     # ensure that the page number is in bounds
@@ -1198,7 +1197,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     # read the css
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     # ensure that the page number is in bounds
@@ -1368,11 +1367,11 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
     hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
             hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 
@@ -1480,11 +1479,11 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
     hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
             hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_index_file):
+    if not is_a_file(hashtag_index_file):
         print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 

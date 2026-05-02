@@ -75,6 +75,7 @@ from markdown import blog_to_markdown
 from markdown import blog_to_micron
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
@@ -182,7 +183,7 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
     updated_actor_json = message_json['object']
     # load actor from file
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         print('actor_filename not found: ' + actor_filename)
         return
     actor_json = load_json(actor_filename)
@@ -488,7 +489,7 @@ def post_message_to_outbox(session, translate: {},
                     data_dir(base_dir) + '/' + \
                     post_to_nickname + '@' + domain
                 upload_media_filename = media_dir + '/upload.' + file_extension
-                if not os.path.isfile(upload_media_filename):
+                if not is_a_file(upload_media_filename):
                     del message_json['object']['attachment']
                 else:
                     # generate a path for the uploaded image
@@ -613,7 +614,7 @@ def post_message_to_outbox(session, translate: {},
             citations_filename = \
                 data_dir(base_dir) + '/' + \
                 post_to_nickname + '@' + domain + '/.citations.txt'
-            if os.path.isfile(citations_filename):
+            if is_a_file(citations_filename):
                 erase_file(citations_filename,
                            'EX: post_message_to_outbox unable to delete ' +
                            citations_filename)
@@ -636,7 +637,7 @@ def post_message_to_outbox(session, translate: {},
                 show_vote_posts: bool = True
                 show_vote_file = \
                     acct_dir(base_dir, post_to_nickname, domain) + '/.noVotes'
-                if os.path.isfile(show_vote_file):
+                if is_a_file(show_vote_file):
                     show_vote_posts = False
                 languages_understood: list[str] = []
                 if is_image_media(session, base_dir, http_prefix,
@@ -680,8 +681,8 @@ def post_message_to_outbox(session, translate: {},
                     get_account_timezone(base_dir,
                                          post_to_nickname, domain)
                 mitm: bool = False
-                if os.path.isfile(saved_filename.replace('.json', '') +
-                                  '.mitm'):
+                test_filename = saved_filename.replace('.json', '') + '.mitm'
+                if is_a_file(test_filename):
                     mitm = True
                 minimize_all_images: bool = False
                 if post_to_nickname in min_images_for_accounts:

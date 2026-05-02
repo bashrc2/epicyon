@@ -7,12 +7,12 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 import hashlib
 from hashlib import sha256
 from utils import acct_dir
 from utils import get_user_paths
 from data import load_string
+from data import is_a_file
 
 
 def remove_followers_sync(followers_sync_cache: {},
@@ -35,7 +35,7 @@ def _get_followers_for_domain(base_dir: str,
     """
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if not os.path.isfile(followers_filename):
+    if not is_a_file(followers_filename):
         return []
     lines: list[str] = []
     foll_text: str = \
@@ -63,7 +63,7 @@ def _get_followers_for_domain(base_dir: str,
                         possible_path + nick
                     filename = base_dir + '/cache/actors/' + \
                         url.replace('/', '#') + '.json'
-                    if not os.path.isfile(filename):
+                    if not is_a_file(filename):
                         continue
                     if url not in result:
                         result.append(url)
@@ -73,7 +73,7 @@ def _get_followers_for_domain(base_dir: str,
                     url = prefix + '://' + search_domain + '/' + nick
                     filename = base_dir + '/cache/actors/' + \
                         url.replace('/', '#') + '.json'
-                    if os.path.isfile(filename):
+                    if is_a_file(filename):
                         if url not in result:
                             result.append(url)
                         found = True

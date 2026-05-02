@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 from socket import error as SocketError
 from flags import is_editor
@@ -28,6 +27,7 @@ from content import extract_text_fields_in_post
 from content import load_dogwhistles
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def newswire_update(self, calling_domain: str, cookie: str,
@@ -128,7 +128,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                             'EX: unable to write ' + newswire_filename)
             else:
                 # text area has been cleared and there is no new feed
-                if os.path.isfile(newswire_filename):
+                if is_a_file(newswire_filename):
                     erase_file(newswire_filename,
                                'EX: _newswire_update unable to delete ' +
                                newswire_filename)
@@ -142,7 +142,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         'EX: newswire_update unable to write ' +
                         filter_newswire_filename)
         else:
-            if os.path.isfile(filter_newswire_filename):
+            if is_a_file(filter_newswire_filename):
                 erase_file(filter_newswire_filename,
                            'EX: _newswire_update unable to delete ' +
                            filter_newswire_filename)
@@ -171,7 +171,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         'EX: newswire_update unable to write 4 ' +
                         hashtag_rules_filename)
         else:
-            if os.path.isfile(hashtag_rules_filename):
+            if is_a_file(hashtag_rules_filename):
                 erase_file(hashtag_rules_filename,
                            'EX: _newswire_update unable to delete ' +
                            hashtag_rules_filename)
@@ -185,7 +185,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         'EX: newswire_update unable to write 5 ' +
                         newswire_tusted_filename)
         else:
-            if os.path.isfile(newswire_tusted_filename):
+            if is_a_file(newswire_tusted_filename):
                 erase_file(newswire_tusted_filename,
                            'EX: _newswire_update unable to delete ' +
                            newswire_tusted_filename)
@@ -222,7 +222,7 @@ def citations_update(self, calling_domain: str, cookie: str,
     citations_filename = \
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
     # remove any existing citations file
-    if os.path.isfile(citations_filename):
+    if is_a_file(citations_filename):
         erase_file(citations_filename,
                    'EX: _citations_update unable to delete ' +
                    citations_filename)

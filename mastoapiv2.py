@@ -25,6 +25,7 @@ from formats import get_audio_extensions
 from formats import get_video_extensions
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:
@@ -44,7 +45,7 @@ def _meta_data_instance_v2(show_accounts: bool,
     """
     account_dir = data_dir(base_dir) + '/' + admin_nickname + '@' + domain
     admin_actor_filename = account_dir + '.json'
-    if not os.path.isfile(admin_actor_filename):
+    if not is_a_file(admin_actor_filename):
         return {}
 
     admin_actor = load_json(admin_actor_filename)
@@ -54,7 +55,7 @@ def _meta_data_instance_v2(show_accounts: bool,
 
     rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
-    if os.path.isfile(rules_filename):
+    if is_a_file(rules_filename):
         rules_lines: list[str] = \
             load_list(rules_filename,
                       'EX: _meta_data_instance_v2 unable to read rules')
@@ -118,7 +119,7 @@ def _meta_data_instance_v2(show_accounts: bool,
     published = None
     published_filename = \
         acct_dir(base_dir, admin_nickname, domain) + '/.last_published'
-    if os.path.isfile(published_filename):
+    if is_a_file(published_filename):
         published = \
             load_string(published_filename,
                         'EX: _meta_data_instance_v2 ' +

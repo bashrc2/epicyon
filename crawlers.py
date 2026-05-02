@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 from utils import data_dir
 from utils import save_json
 from utils import user_agent_domain
@@ -21,6 +20,7 @@ from blocking import update_blocked_cache
 from blocking import is_blocked_domain
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 default_user_agent_blocks = [
     'fedilist', 'ncsc scan', 'fedifetcher'
@@ -64,7 +64,7 @@ def load_known_web_bots(base_dir: str) -> []:
     """Returns a list of known web bots
     """
     known_bots_filename = data_dir(base_dir) + '/knownBots.txt'
-    if not os.path.isfile(known_bots_filename):
+    if not is_a_file(known_bots_filename):
         return []
     crawlers_str = load_string(known_bots_filename,
                                'EX: unable to load web bots from ' +

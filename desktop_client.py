@@ -75,6 +75,7 @@ from cache import get_person_from_cache
 from data import save_string
 from data import load_string
 from data import prepend_string
+from data import is_a_file
 
 
 def _desktop_help() -> None:
@@ -186,7 +187,7 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
         handle += '_' + str(port)
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
     read_posts_filename = read_posts_dir + '/' + post_category + '.txt'
-    if os.path.isfile(read_posts_filename):
+    if is_a_file(read_posts_filename):
         if text_in_file(post_id, read_posts_filename):
             return
         prepend_string(post_id, read_posts_filename,
@@ -212,7 +213,7 @@ def _has_read_post(actor: str, post_id: str, post_category: str) -> bool:
         handle += '_' + str(port)
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
     read_posts_filename = read_posts_dir + '/' + post_category + '.txt'
-    if os.path.isfile(read_posts_filename):
+    if is_a_file(read_posts_filename):
         if text_in_file(post_id, read_posts_filename):
             return True
     return False
@@ -317,10 +318,10 @@ def _desktop_show_banner() -> None:
     """Shows the banner at the top
     """
     banner_filename = 'banner.txt'
-    if not os.path.isfile(banner_filename):
+    if not is_a_file(banner_filename):
         banner_theme = 'starlight'
         banner_filename = 'theme/' + banner_theme + '/banner.txt'
-        if not os.path.isfile(banner_filename):
+        if not is_a_file(banner_filename):
             return
     banner = load_string(banner_filename,
                          'EX: unable to read banner file ' + banner_filename)
@@ -348,7 +349,7 @@ def _play_sound(sound_filename: str,
                 player: str = 'ffplay') -> None:
     """Plays a sound
     """
-    if not os.path.isfile(sound_filename):
+    if not is_a_file(sound_filename):
         return
 
     if player == 'ffplay':

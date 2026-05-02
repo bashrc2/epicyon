@@ -37,6 +37,7 @@ from bookmarks import undo_bookmarks_collection_entry
 from webapp_post import individual_post_as_html
 from reaction import undo_reaction_collection_entry
 from data import erase_file
+from data import is_a_file
 
 
 def _receive_undo_follow(base_dir: str, message_json: {},
@@ -267,7 +268,7 @@ def receive_undo_like(recent_posts_cache: {},
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
             test_filename = post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(test_filename):
+            if is_a_file(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -426,7 +427,7 @@ def receive_undo_reaction(recent_posts_cache: {},
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
             test_filename = post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(test_filename):
+            if is_a_file(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -571,7 +572,7 @@ def receive_undo_bookmark(recent_posts_cache: {},
         timezone = get_account_timezone(base_dir, nickname, domain)
         mitm: bool = False
         test_filename = post_filename.replace('.json', '') + '.mitm'
-        if os.path.isfile(test_filename):
+        if is_a_file(test_filename):
             mitm = True
         minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
@@ -655,7 +656,7 @@ def receive_undo_announce(recent_posts_cache: {},
                 return False
     undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
                                    actor_url, domain, debug)
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         ex_text = \
             'EX: _receive_undo_announce unable to delete ' + \
             str(post_filename)

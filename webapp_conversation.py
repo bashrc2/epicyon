@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 
-import os
 from conversation import download_conversation_posts
 from flags import is_public_post
 from utils import is_private_browser
@@ -27,6 +26,7 @@ from webapp_utils import html_post_separator
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
 from webapp_post import individual_post_as_html
+from data import is_a_file
 
 
 def html_conversation_view(authorized: bool, post_id: str,
@@ -78,7 +78,7 @@ def html_conversation_view(authorized: bool, post_id: str,
         return None
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \

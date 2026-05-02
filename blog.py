@@ -50,6 +50,7 @@ from flags import is_image_file
 from data import load_string
 from data import save_string
 from data import load_list
+from data import is_a_file
 
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
@@ -69,7 +70,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
             post_id.replace('/', '#') + '.replies'
-        if os.path.isfile(post_filename):
+        if is_a_file(post_filename):
             box_found = True
             break
     if not box_found:
@@ -78,7 +79,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
             post_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
                 post_id.replace('/', '#')
-            if os.path.isfile(post_filename):
+            if is_a_file(post_filename):
                 return 1
         return 0
 
@@ -135,7 +136,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
             post_id.replace('/', '#') + '.replies'
-        if os.path.isfile(post_filename):
+        if is_a_file(post_filename):
             box_found = True
             break
     if not box_found:
@@ -144,11 +145,11 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
             post_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
                 post_id.replace('/', '#') + '.json'
-            if os.path.isfile(post_filename):
+            if is_a_file(post_filename):
                 post_filename = acct_dir(base_dir, nickname, domain) + \
                     '/postcache/' + \
                     post_id.replace('/', '#') + '.html'
-                if os.path.isfile(post_filename):
+                if is_a_file(post_filename):
                     blog_text = load_string(post_filename,
                                             'EX: unable to read blog 3 ' +
                                             post_filename)
@@ -174,7 +175,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
             post_filename = acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 reply_post_id.replace('/', '#') + '.html'
-            if not os.path.isfile(post_filename):
+            if not is_a_file(post_filename):
                 continue
             reply_text = load_string(post_filename,
                                      'EX: unable to read blog replies ' +
@@ -601,7 +602,7 @@ def html_blog_post(session, authorized: bool,
     blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-blog.css'
-    if os.path.isfile(base_dir + '/blog.css'):
+    if is_a_file(base_dir + '/blog.css'):
         css_filename = base_dir + '/blog.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
@@ -667,7 +668,7 @@ def html_blog_page(authorized: bool, session,
     blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
@@ -678,7 +679,7 @@ def html_blog_page(authorized: bool, session,
     _html_blog_remove_cw_button(blog_str, translate)
 
     blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogs_index):
+    if not is_a_file(blogs_index):
         return blog_str + html_footer()
 
     timeline_json = \
@@ -765,7 +766,7 @@ def html_blog_page_rss2(base_dir: str, http_prefix: str, translate: {},
                                'Blog', translate)
 
     blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogs_index):
+    if not is_a_file(blogs_index):
         if include_header:
             return blog_rss2 + rss2footer()
         return blog_rss2
@@ -807,7 +808,7 @@ def html_blog_page_rss3(base_dir: str, http_prefix: str,
     blog_rss3: str = ''
 
     blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogs_index):
+    if not is_a_file(blogs_index):
         return blog_rss3
 
     timeline_json = \
@@ -840,7 +841,7 @@ def _no_of_blog_accounts(base_dir: str) -> int:
                 continue
             account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
-            if os.path.isfile(blogs_index):
+            if is_a_file(blogs_index):
                 ctr += 1
         break
     return ctr
@@ -856,7 +857,7 @@ def _single_blog_account_nickname(base_dir: str) -> str:
                 continue
             account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
-            if os.path.isfile(blogs_index):
+            if is_a_file(blogs_index):
                 return acct.split('@')[0]
         break
     return None
@@ -873,7 +874,7 @@ def html_blog_view(authorized: bool,
     blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
@@ -900,7 +901,7 @@ def html_blog_view(authorized: bool,
                 continue
             account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
-            if os.path.isfile(blogs_index):
+            if is_a_file(blogs_index):
                 blog_str += '<p class="blogaccount">'
                 blog_str += '<a href="' + \
                     http_prefix + '://' + domain_full + '/blog/' + \
@@ -932,7 +933,7 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     # load blog template if it exists
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/newblog.txt'):
+    if is_a_file(dir_str + '/newblog.txt'):
         edit_blog_text_str = \
             load_string(dir_str + '/newblog.txt',
                         'EX: html_edit_blog unable to read ' +
@@ -941,7 +942,7 @@ def html_edit_blog(media_instance: bool, translate: {},
             edit_blog_text: str = '<p>' + edit_blog_text_str + '</p>'
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     if '?' in path:
@@ -1082,7 +1083,7 @@ def path_contains_blog_link(base_dir: str,
     # check for blog posts
     blog_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blog_index_filename):
+    if not is_a_file(blog_index_filename):
         return None, None
     if not text_in_file('#' + user_ending2[1] + '.', blog_index_filename):
         return None, None

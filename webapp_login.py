@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 import time
 import filecmp
 from shutil import copyfile
@@ -23,6 +22,7 @@ from webapp_utils import html_keyboard_navigation
 from textmode import text_mode_browser
 from textmode import get_text_mode_logo
 from data import load_string
+from data import is_a_file
 
 
 def html_get_login_credentials(login_params: str,
@@ -94,10 +94,10 @@ def html_login(translate: {},
         theme_image = \
             base_dir + '/theme/' + theme_name + \
             '/' + login_image
-        if os.path.isfile(theme_image):
+        if is_a_file(theme_image):
             login_image_filename = \
                 data_dir(base_dir) + '/' + login_image
-            if os.path.isfile(login_image_filename):
+            if is_a_file(login_image_filename):
                 if not filecmp.cmp(theme_image,
                                    login_image_filename):
                     copyfile(theme_image, login_image_filename)
@@ -110,7 +110,7 @@ def html_login(translate: {},
         for ext in extensions:
             login_image = 'login.' + ext
             image_filename = data_dir(base_dir) + '/' + login_image
-            if os.path.isfile(image_filename):
+            if is_a_file(image_filename):
                 login_image_filename = image_filename
                 break
 
@@ -141,7 +141,7 @@ def html_login(translate: {},
             translate['You will become the admin of this site.'] + \
             '</p>'
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/login.txt'):
+    if is_a_file(dir_str + '/login.txt'):
         # custom login message
         login_text = load_string(dir_str + '/login.txt',
                                  'EX: html_login unable to read ' + dir_str +
@@ -150,7 +150,7 @@ def html_login(translate: {},
             login_text: str = ''
 
     css_filename = base_dir + '/epicyon-login.css'
-    if os.path.isfile(base_dir + '/login.css'):
+    if is_a_file(base_dir + '/login.css'):
         css_filename = base_dir + '/login.css'
 
     # show the register button

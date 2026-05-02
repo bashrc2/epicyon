@@ -19,6 +19,7 @@ from status import get_status_number
 from data import load_list
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -54,7 +55,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
     """
     domain = remove_domain_port(domain)
     role_file = data_dir(base_dir) + '/' + role_filename
-    if os.path.isfile(role_file):
+    if is_a_file(role_file):
         # is this nickname already in the file?
 
         lines: list[str] = \
@@ -93,7 +94,7 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     This is a file containing the nicknames of accounts having this role
     """
     role_file = data_dir(base_dir) + '/' + role_filename
-    if not os.path.isfile(role_file):
+    if not is_a_file(role_file):
         return
 
     lines: list[str] = \
@@ -224,7 +225,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
     if len(role) > 128:
         return False
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return False
 
     role_files = {
@@ -274,7 +275,7 @@ def is_devops(base_dir: str, nickname: str) -> bool:
     """
     devops_file = data_dir(base_dir) + '/devops.txt'
 
-    if not os.path.isfile(devops_file):
+    if not is_a_file(devops_file):
         admin_name = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
@@ -314,7 +315,7 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         return
     roles_filename = data_dir(base_dir) + '/' + list_filename
     if not fields.get(list_name):
-        if os.path.isfile(roles_filename):
+        if is_a_file(roles_filename):
             _clear_role_status(base_dir, role_name)
             erase_file(roles_filename,
                        'EX: failed to remove roles file ' + roles_filename)

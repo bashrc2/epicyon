@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 import re
 from timeFunctions import date_utcnow
 from timeFunctions import get_published_date
@@ -32,6 +31,7 @@ from utils import get_group_paths
 from formats import get_image_extensions
 from quote import get_quote_toot_url
 from data import load_string
+from data import is_a_file
 
 
 def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
@@ -40,7 +40,7 @@ def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """
     features_blocked_filename = \
         acct_dir(base_dir, nickname, domain) + '/.nofeatures'
-    return not os.path.isfile(features_blocked_filename)
+    return not is_a_file(features_blocked_filename)
 
 
 def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
@@ -51,7 +51,7 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     last_seen_filename = acct_dir(base_dir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
-    if not os.path.isfile(last_seen_filename):
+    if not is_a_file(last_seen_filename):
         return False
 
     days_since_epoch_str = \
@@ -76,7 +76,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     """
     editors_file = data_dir(base_dir) + '/editors.txt'
 
-    if not os.path.isfile(editors_file):
+    if not is_a_file(editors_file):
         admin_name = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
@@ -106,7 +106,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
     """
     artists_file = data_dir(base_dir) + '/artists.txt'
 
-    if not os.path.isfile(artists_file):
+    if not is_a_file(artists_file):
         admin_name = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
@@ -152,7 +152,7 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a memorial account
     """
     memorial_file = data_dir(base_dir) + '/memorial'
-    if not os.path.isfile(memorial_file):
+    if not is_a_file(memorial_file):
         return False
     memorial_list: list[str] = \
         load_string(memorial_file,
@@ -174,7 +174,7 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
         return False
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
-    if os.path.isfile(suspended_filename):
+    if is_a_file(suspended_filename):
         lines: list[str] = \
             load_string(suspended_filename,
                         'EX: is_suspended unable to read ' +
@@ -510,7 +510,7 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
         print('Actor ' + actor + ' not in cache')
     cached_actor_filename = \
         base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-    if not os.path.isfile(cached_actor_filename):
+    if not is_a_file(cached_actor_filename):
         if debug:
             print('Cached actor file not found ' + cached_actor_filename)
         return False
@@ -525,7 +525,7 @@ def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account is a group
     """
     account_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(account_filename):
+    if not is_a_file(account_filename):
         return False
     if text_in_file('"type": "Group"', account_filename):
         return True
@@ -607,7 +607,7 @@ def is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
     """ Is the given account a premium one?
     """
     premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
-    return os.path.isfile(premium_filename)
+    return is_a_file(premium_filename)
 
 
 def url_permitted(url: str, federation_list: []) -> bool:
@@ -721,7 +721,7 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
     """
     moderators_file = data_dir(base_dir) + '/moderators.txt'
 
-    if not os.path.isfile(moderators_file):
+    if not is_a_file(moderators_file):
         admin_name = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False

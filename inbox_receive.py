@@ -92,6 +92,7 @@ from data import append_string
 from data import prepend_string
 from data import load_string
 from data import erase_file
+from data import is_a_file
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -113,7 +114,7 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
         destination_filename = destination_filename.split('/')[-1]
 
     written: bool = False
-    if os.path.isfile(index_filename):
+    if is_a_file(index_filename):
         if prepend_string(destination_filename, index_filename,
                           'EX: Failed to prepend entry to index [ex]'):
             written = True
@@ -139,7 +140,7 @@ def _notify_moved(base_dir: str, domain_full: str,
                 continue
             account_dir = dir_str + '/' + account
             following_filename = account_dir + '/following.txt'
-            if not os.path.isfile(following_filename):
+            if not is_a_file(following_filename):
                 continue
             if not text_in_file(prev_actor_handle + '\n', following_filename):
                 continue
@@ -147,7 +148,7 @@ def _notify_moved(base_dir: str, domain_full: str,
                 continue
             # notify
             moved_file = account_dir + '/.newMoved'
-            if os.path.isfile(moved_file):
+            if is_a_file(moved_file):
                 if not text_in_file('##sent##', moved_file):
                     continue
 
@@ -158,7 +159,7 @@ def _notify_moved(base_dir: str, domain_full: str,
             moved_str = \
                 prev_actor_handle + ' ' + new_actor_handle + ' ' + url
 
-            if os.path.isfile(moved_file):
+            if is_a_file(moved_file):
                 prev_moved_str = \
                     load_string(moved_file,
                                 'EX: _notify_moved unable to read ' +
@@ -228,7 +229,7 @@ def _person_receive_update(base_dir: str,
                 print('WARN: Public key does not match when updating actor')
             return False
     else:
-        if os.path.isfile(actor_filename):
+        if is_a_file(actor_filename):
             existing_person_json = load_json(actor_filename)
             if existing_person_json:
                 existing_pub_key, _ = \
@@ -274,7 +275,7 @@ def _person_receive_update(base_dir: str,
             refollow_str: str = ''
             refollow_filename = data_dir(base_dir) + '/actors_moved.txt'
             refollow_file_exists: bool = False
-            if os.path.isfile(refollow_filename):
+            if is_a_file(refollow_filename):
                 refollow_str = \
                     load_string(refollow_filename,
                                 'EX: _person_receive_update unable to read ' +
@@ -352,7 +353,7 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, message_json)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             erase_file(cached_post_filename,
                        'EX: _receive_update_to_question unable to delete ' +
                        cached_post_filename)
@@ -457,7 +458,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # save the edit history to file
     post_history_filename = post_filename.replace('.json', '') + '.edits'
     post_history_json = {}
-    if os.path.isfile(post_history_filename):
+    if is_a_file(post_history_filename):
         post_history_json = load_json(post_history_filename)
     # get the updated or published date
     if post_json_object['object'].get('updated'):
@@ -475,14 +476,14 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # (eg. edited reminder)
     if '/outbox/' in post_filename:
         inbox_post_filename = post_filename.replace('/outbox/', '/inbox/')
-        if os.path.isfile(inbox_post_filename):
+        if is_a_file(inbox_post_filename):
             save_json(message_json, inbox_post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, message_json)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             erase_file(cached_post_filename,
                        'EX: _receive_edit_to_post unable to delete ' +
                        cached_post_filename)
@@ -499,12 +500,12 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     not_dm = not is_dm(message_json)
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm: bool = False
-    if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+    if is_a_file(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
     bold_reading: bool = False
     bold_reading_filename = \
         acct_dir(base_dir, nickname, domain) + '/.boldReading'
-    if os.path.isfile(bold_reading_filename):
+    if is_a_file(bold_reading_filename):
         bold_reading = True
     timezone = get_account_timezone(base_dir, nickname, domain)
     lists_enabled = get_config_param(base_dir, "listsEnabled")
@@ -863,11 +864,11 @@ def _like_notify(base_dir: str, domain: str,
 
     # are like notifications enabled?
     notify_likes_enabled_filename = account_dir + '/.notifyLikes'
-    if not os.path.isfile(notify_likes_enabled_filename):
+    if not is_a_file(notify_likes_enabled_filename):
         return
 
     like_file = account_dir + '/.newLike'
-    if os.path.isfile(like_file):
+    if is_a_file(like_file):
         if not text_in_file('##sent##', like_file):
             return
 
@@ -885,7 +886,7 @@ def _like_notify(base_dir: str, domain: str,
     like_str = liker_handle + ' ' + url + '?likedBy=' + actor
     prev_like_file = account_dir + '/.prevLike'
     # was there a previous like notification?
-    if os.path.isfile(prev_like_file):
+    if is_a_file(prev_like_file):
         # is it the same as the current notification ?
         prev_like_str = \
             load_string(prev_like_file,
@@ -922,11 +923,11 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
 
     # are reaction notifications enabled?
     notify_reaction_enabled_filename = account_dir + '/.notifyReactions'
-    if not os.path.isfile(notify_reaction_enabled_filename):
+    if not is_a_file(notify_reaction_enabled_filename):
         return
 
     reaction_file = account_dir + '/.newReaction'
-    if os.path.isfile(reaction_file):
+    if is_a_file(reaction_file):
         if not text_in_file('##sent##', reaction_file):
             return
 
@@ -945,7 +946,7 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
         ';emoj=' + emoji_content
     prev_reaction_file = account_dir + '/.prevReaction'
     # was there a previous reaction notification?
-    if os.path.isfile(prev_reaction_file):
+    if is_a_file(prev_reaction_file):
         # is it the same as the current notification ?
         prev_reaction_str = \
             load_string(prev_reaction_file,
@@ -1081,7 +1082,7 @@ def receive_like(recent_posts_cache: {},
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
             test_filename = post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(test_filename):
+            if is_a_file(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1242,7 +1243,7 @@ def receive_reaction(recent_posts_cache: {},
     handle_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
-    if os.path.isfile(handle_dir + '/.hideReactionButton'):
+    if is_a_file(handle_dir + '/.hideReactionButton'):
         print('Emoji reaction rejected by ' + handle +
               ' due to their settings')
         return True
@@ -1332,7 +1333,7 @@ def receive_reaction(recent_posts_cache: {},
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
             test_filename = post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(test_filename):
+            if is_a_file(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1455,7 +1456,7 @@ def receive_zot_reaction(recent_posts_cache: {},
     handle_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of zot emoji reaction - ' + handle)
-    if os.path.isfile(handle_dir + '/.hideReactionButton'):
+    if is_a_file(handle_dir + '/.hideReactionButton'):
         print('Zot emoji reaction rejected by ' + handle +
               ' due to their settings')
         return True
@@ -1532,7 +1533,7 @@ def receive_zot_reaction(recent_posts_cache: {},
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
             test_filename = post_filename.replace('.json', '') + '.mitm'
-            if os.path.isfile(test_filename):
+            if is_a_file(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1675,7 +1676,7 @@ def receive_bookmark(recent_posts_cache: {},
         timezone = get_account_timezone(base_dir, nickname, domain)
         mitm: bool = False
         test_filename = post_filename.replace('.json', '') + '.mitm'
-        if os.path.isfile(test_filename):
+        if is_a_file(test_filename):
             mitm = True
         minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
@@ -2000,7 +2001,7 @@ def receive_announce(recent_posts_cache: {},
 
     show_vote_posts = True
     show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
-    if os.path.isfile(show_vote_file):
+    if is_a_file(show_vote_file):
         show_vote_posts = False
 
     # get the list of mutuals for the current account
@@ -2072,7 +2073,7 @@ def receive_announce(recent_posts_cache: {},
             if post_json_object['object'].get('inReplyTo'):
                 account_dir = acct_dir(base_dir, nickname, domain)
                 no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
-                if os.path.isfile(no_reply_boosts_filename):
+                if is_a_file(no_reply_boosts_filename):
                     post_json_object = None
                     announce_denied = True
 
@@ -2087,7 +2088,7 @@ def receive_announce(recent_posts_cache: {},
             if onion_domain in announce_url:
                 not_in_onion = False
         if domain not in announce_url and not_in_onion:
-            if os.path.isfile(post_filename):
+            if is_a_file(post_filename):
                 # if the announce can't be downloaded then remove it
                 ex_text = \
                     'EX: _receive_announce unable to delete ' + \
@@ -2122,7 +2123,7 @@ def receive_announce(recent_posts_cache: {},
             lookup_actor = get_actor_from_post_id(lookup_actor)
             if lookup_actor:
                 if is_recent_post(post_json_object, 3):
-                    if not os.path.isfile(post_filename + '.tts'):
+                    if not is_a_file(post_filename + '.tts'):
                         domain_full = get_full_domain(domain, port)
                         update_speaker(base_dir, http_prefix,
                                        nickname, domain, domain_full,
@@ -2212,7 +2213,7 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, question_json)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             erase_file(cached_post_filename,
                        'EX: replytoQuestion unable to delete ' +
                        cached_post_filename)
@@ -2226,7 +2227,7 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm: bool = False
     test_filename = question_post_filename.replace('.json', '') + '.mitm'
-    if os.path.isfile(test_filename):
+    if is_a_file(test_filename):
         mitm = True
     minimize_all_images: bool = False
     if nickname in min_images_for_accounts:

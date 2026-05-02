@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 from daemon_utils import has_accept
 from httpcodes import write2
 from httpcodes import http_400
@@ -19,6 +18,7 @@ from utils import load_json
 from utils import string_contains
 from pgp import actor_to_vcard_xml
 from pgp import actor_to_vcard
+from data import is_a_file
 
 
 def show_vcard(self, base_dir: str, path: str, calling_domain: str,
@@ -60,7 +60,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
     actor_json = None
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '.json'
-    if os.path.isfile(actor_filename):
+    if is_a_file(actor_filename):
         actor_json = load_json(actor_filename)
     if not actor_json:
         print('WARN: vcard actor not found ' + actor_filename)

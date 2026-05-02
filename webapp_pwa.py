@@ -7,9 +7,9 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from utils import remove_html
 from data import load_string
+from data import is_a_file
 
 
 def _get_variable_from_css(css_str: str, variable: str) -> str:
@@ -35,7 +35,7 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
     default_pwa_theme_background_color = 'black-translucent'
     pwa_theme_background_color = default_pwa_theme_background_color
 
-    if not os.path.isfile(css_filename):
+    if not is_a_file(css_filename):
         return pwa_theme_color, pwa_theme_background_color
 
     css_str = load_string(css_filename,

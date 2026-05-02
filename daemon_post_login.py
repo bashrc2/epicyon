@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import time
 import errno
 from hashlib import sha256
@@ -38,6 +37,7 @@ from person import activate_account2
 from person import register_account
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def post_login_screen(self, calling_domain: str, cookie: str,
@@ -181,7 +181,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             salt_filename = \
                 acct_dir(base_dir, login_nickname, domain) + '/.salt'
             salt = create_password(32)
-            if os.path.isfile(salt_filename):
+            if is_a_file(salt_filename):
                 salt_str = load_string(salt_filename,
                                        'EX: Unable to read salt for ' +
                                        login_nickname + ' [ex]')

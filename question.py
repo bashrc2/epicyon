@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from utils import locate_post
 from utils import load_json
 from utils import save_json
@@ -19,6 +18,7 @@ from utils import get_actor_from_post
 from data import load_list
 from data import save_string
 from data import append_string
+from data import is_a_file
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
@@ -125,7 +125,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     voters_file_separator = ';;;'
     voters_filename = question_post_filename.replace('.json', '.voters')
     actor_url = get_actor_from_post(reply_json)
-    if not os.path.isfile(voters_filename):
+    if not is_a_file(voters_filename):
         # create a new voters file
         save_string(actor_url + voters_file_separator + reply_vote + '\n',
                     voters_filename,

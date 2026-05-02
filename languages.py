@@ -22,6 +22,7 @@ from utils import resembles_url
 from cache import get_person_from_cache
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def get_actor_languages(actor_json: {}) -> str:
@@ -375,7 +376,7 @@ def load_default_post_languages(base_dir: str) -> {}:
             domain = handle.split('@')[1]
             default_post_language_filename = \
                 acct_dir(base_dir, nickname, domain) + '/.new_post_language'
-            if not os.path.isfile(default_post_language_filename):
+            if not is_a_file(default_post_language_filename):
                 continue
             text = load_string(default_post_language_filename,
                                'EX: Unable to read default post language ' +
@@ -397,7 +398,7 @@ def get_reply_language(base_dir: str,
         return None
     for lang, _ in post_obj['contentMap'].items():
         lang_filename = base_dir + '/translations/' + lang + '.json'
-        if not os.path.isfile(lang_filename):
+        if not is_a_file(lang_filename):
             continue
         return lang
     return None

@@ -14,10 +14,10 @@ __module_group__ = "Core"
 # signature, but they can conduct surveillance and gather posts for LLM
 # training (or sale for that purpose).
 
-import os
 from utils import data_dir
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 
 def detect_mitm(self) -> bool:
@@ -56,7 +56,7 @@ def load_mitm_servers(base_dir: str) -> []:
     """
     mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
     mitm_servers: list[str] = []
-    if os.path.isfile(mitm_servers_filename):
+    if is_a_file(mitm_servers_filename):
         mitm_servers_str = \
             load_string(mitm_servers_filename,
                         'EX: error while reading mitm_servers.txt')

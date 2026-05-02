@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from utils import data_dir
 from utils import get_config_param
@@ -16,6 +15,7 @@ from webapp_utils import html_footer
 from markdown import markdown_example_numbers
 from markdown import markdown_to_html
 from data import load_string
+from data import is_a_file
 
 
 def html_manual(base_dir: str, http_prefix: str,
@@ -26,16 +26,16 @@ def html_manual(base_dir: str, http_prefix: str,
     manual_filename = base_dir + '/manual/manual.md'
     admin_nickname = get_config_param(base_dir, 'admin')
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/manual.md'):
+    if is_a_file(dir_str + '/manual.md'):
         manual_filename = dir_str + '/manual.md'
 
-    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/login-background.jpg'):
+    if is_a_file(dir_str + '/login-background-custom.jpg'):
+        if not is_a_file(dir_str + '/login-background.jpg'):
             copyfile(dir_str + '/login-background-custom.jpg',
                      dir_str + '/login-background.jpg')
 
     manual_text = 'User Manual.'
-    if os.path.isfile(manual_filename):
+    if is_a_file(manual_filename):
         md_text = load_string(manual_filename,
                               'EX: html_manual unable to read ' +
                               manual_filename)
@@ -45,7 +45,7 @@ def html_manual(base_dir: str, http_prefix: str,
 
     manual_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \

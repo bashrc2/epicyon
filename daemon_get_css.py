@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 import time
 from httpcodes import http_304
 from httpcodes import http_404
@@ -19,6 +18,7 @@ from utils import get_css
 from fitnessFunctions import fitness_performance
 from daemon_utils import etag_exists
 from data import load_binary
+from data import is_a_file
 
 
 def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
@@ -35,7 +35,7 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
     css = None
     if css_cache.get(path):
         css = css_cache[path]
-    elif os.path.isfile(path):
+    elif is_a_file(path):
         tries: int = 0
         while tries < 5:
             try:
@@ -101,7 +101,7 @@ def get_fonts(self, calling_domain: str, path: str,
                                 '_GET', '_get_fonts cache',
                                 debug)
             return
-        if os.path.isfile(font_filename):
+        if is_a_file(font_filename):
             font_binary = load_binary(font_filename,
                                       'EX: unable to load font ' +
                                       font_filename)

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 import urllib.parse
 from socket import error as SocketError
@@ -32,6 +31,7 @@ from person import get_actor_update_json
 from daemon_utils import post_to_outbox_thread
 from daemon_utils import post_to_outbox
 from happening import remove_calendar_event
+from data import is_a_file
 
 
 def remove_reading_status(self, calling_domain: str, cookie: str,
@@ -195,7 +195,7 @@ def remove_share(self, calling_domain: str, cookie: str,
                     actor_filename = \
                         acct_dir(base_dir, share_nickname,
                                  share_domain) + '.json'
-                    if os.path.isfile(actor_filename):
+                    if is_a_file(actor_filename):
                         actor_json = load_json(actor_filename)
                 if actor_json:
                     if add_shares_to_actor(base_dir,

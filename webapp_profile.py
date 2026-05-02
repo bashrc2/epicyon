@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from pprint import pprint
 from webfinger import webfinger_handle
 from flags import is_dormant
@@ -138,6 +137,7 @@ from reading import html_profile_book_list
 from availability import get_availability
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -335,7 +335,7 @@ def html_profile_after_search(authorized: bool,
 
     profile_str: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     is_group: bool = False
@@ -1185,7 +1185,7 @@ def html_profile(signing_priv_key_pem: str,
     show_moved_accounts: bool = False
     if authorized:
         moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
-        if os.path.isfile(moved_accounts_filename):
+        if is_a_file(moved_accounts_filename):
             show_moved_accounts = True
 
     nickname = profile_json['preferredUsername']
@@ -1499,7 +1499,7 @@ def html_profile(signing_priv_key_pem: str,
         # are there any follow requests?
         follow_requests_filename = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
-        if os.path.isfile(follow_requests_filename):
+        if is_a_file(follow_requests_filename):
             follow_requests_list: list[str] = \
                 load_list(follow_requests_filename,
                           'EX: html_profile unable to read 1 ' +
@@ -1631,7 +1631,7 @@ def html_profile(signing_priv_key_pem: str,
     # get pinned post content
     pinned_filename = account_dir + '/pinToProfile.txt'
     pinned_content = None
-    if os.path.isfile(pinned_filename):
+    if is_a_file(pinned_filename):
         pinned_content = load_string(pinned_filename,
                                      'EX: html_profile unable to read ' +
                                      pinned_filename)
@@ -1809,7 +1809,7 @@ def html_profile(signing_priv_key_pem: str,
     profile_str += follow_approvals_section
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     license_str = \
@@ -2192,7 +2192,7 @@ def _grayscale_enabled(base_dir: str) -> bool:
     """Is grayscale UI enabled?
     """
     dir_str = data_dir(base_dir)
-    return os.path.isfile(dir_str + '/.grayscale')
+    return is_a_file(dir_str + '/.grayscale')
 
 
 def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
@@ -2219,10 +2219,10 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
             theme_name.lower() + '">' + \
             translated_theme_name + '</option>'
     themes_dropdown += '  </select><br>'
-    if os.path.isfile(base_dir + '/fonts/custom.woff') or \
-       os.path.isfile(base_dir + '/fonts/custom.woff2') or \
-       os.path.isfile(base_dir + '/fonts/custom.otf') or \
-       os.path.isfile(base_dir + '/fonts/custom.ttf'):
+    if is_a_file(base_dir + '/fonts/custom.woff') or \
+       is_a_file(base_dir + '/fonts/custom.woff2') or \
+       is_a_file(base_dir + '/fonts/custom.otf') or \
+       is_a_file(base_dir + '/fonts/custom.ttf'):
         themes_dropdown += \
             edit_check_box(translate['Remove the custom font'],
                            'removeCustomFont', False)
@@ -2418,7 +2418,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     # site moderators
     moderators: str = ''
     moderators_file = data_dir(base_dir) + '/moderators.txt'
-    if os.path.isfile(moderators_file):
+    if is_a_file(moderators_file):
         moderators = \
             load_string(moderators_file,
                         'EX: _html_edit_profile_instance unable to read ' +
@@ -2432,7 +2432,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     # site editors
     editors: str = ''
     editors_file = data_dir(base_dir) + '/editors.txt'
-    if os.path.isfile(editors_file):
+    if is_a_file(editors_file):
         editors = \
             load_string(editors_file,
                         'EX: _html_edit_profile_instance unable to read ' +
@@ -2447,7 +2447,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     # counselors
     counselors: str = ''
     counselors_file = data_dir(base_dir) + '/counselors.txt'
-    if os.path.isfile(counselors_file):
+    if is_a_file(counselors_file):
         counselors = \
             load_string(counselors_file,
                         'EX: _html_edit_profile_instance unable to read ' +
@@ -2461,7 +2461,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     # artists
     artists: str = ''
     artists_file = data_dir(base_dir) + '/artists.txt'
-    if os.path.isfile(artists_file):
+    if is_a_file(artists_file):
         artists = \
             load_string(artists_file,
                         'EX: _html_edit_profile_instance unable to read ' +
@@ -2475,7 +2475,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     # site devops
     devops: str = ''
     devops_file = data_dir(base_dir) + '/devops.txt'
-    if os.path.isfile(devops_file):
+    if is_a_file(devops_file):
         devops = \
             load_string(devops_file,
                         'EX: _html_edit_profile_instance unable to read ' +
@@ -2600,7 +2600,7 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     git_projects_str: str = ''
     git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
-    if os.path.isfile(git_projects_filename):
+    if is_a_file(git_projects_filename):
         git_projects_str = \
             load_string(git_projects_filename,
                         'EX: _html_edit_profile_git_projects unable to read ' +
@@ -2654,7 +2654,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     filter_str: str = ''
     filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    if os.path.isfile(filter_filename):
+    if is_a_file(filter_filename):
         filter_str = \
             load_string(filter_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2665,7 +2665,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     filter_bio_str: str = ''
     filter_bio_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
-    if os.path.isfile(filter_bio_filename):
+    if is_a_file(filter_bio_filename):
         filter_bio_str = \
             load_string(filter_bio_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2676,7 +2676,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     switch_str: str = ''
     switch_filename = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
-    if os.path.isfile(switch_filename):
+    if is_a_file(switch_filename):
         switch_str = \
             load_string(switch_filename,
                         'EX: _html_edit_profile_filtering unable to save ' +
@@ -2687,7 +2687,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     auto_tags: str = ''
     auto_tags_filename = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
-    if os.path.isfile(auto_tags_filename):
+    if is_a_file(auto_tags_filename):
         auto_tags = \
             load_string(auto_tags_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2698,7 +2698,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     auto_cw: str = ''
     auto_cw_filename = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
-    if os.path.isfile(auto_cw_filename):
+    if is_a_file(auto_cw_filename):
         auto_cw = \
             load_string(auto_cw_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2711,7 +2711,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     dm_allowed_instances_str: str = ''
     dm_allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
-    if os.path.isfile(dm_allowed_instances_filename):
+    if is_a_file(dm_allowed_instances_filename):
         dm_allowed_instances_str = \
             load_string(dm_allowed_instances_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2722,7 +2722,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     allowed_instances_str: str = ''
     allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
-    if os.path.isfile(allowed_instances_filename):
+    if is_a_file(allowed_instances_filename):
         allowed_instances_str = \
             load_string(allowed_instances_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2747,7 +2747,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
 
     city: str = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
-    if os.path.isfile(city_filename):
+    if is_a_file(city_filename):
         city1 = \
             load_string(city_filename,
                         'EX: _html_edit_profile_filtering unable to read ' +
@@ -2755,7 +2755,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         if city1:
             city = remove_eol(city1)
     locations_filename = base_dir + '/custom_locations.txt'
-    if not os.path.isfile(locations_filename):
+    if not is_a_file(locations_filename):
         locations_filename = base_dir + '/locations.txt'
     cities: list[str] = \
         load_list(locations_filename,
@@ -2895,7 +2895,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
 
         robots_txt_filename = data_dir(base_dir) + '/robots.txt'
         robots_txt: str = ''
-        if os.path.isfile(robots_txt_filename):
+        if is_a_file(robots_txt_filename):
             new_robots_txt = \
                 load_string(robots_txt_filename,
                             'EX: error reading 2 ' + robots_txt_filename)
@@ -3124,14 +3124,14 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/.ntfy_url'
     ntfy_topic_file = \
         acct_dir(base_dir, nickname, domain) + '/.ntfy_topic'
-    if os.path.isfile(ntfy_url_file):
+    if is_a_file(ntfy_url_file):
         ntfy_url_str = \
             load_string(ntfy_url_file,
                         'EX: _html_edit_notifications unable to read ' +
                         ntfy_url_file)
         if ntfy_url_str:
             ntfy_url = ntfy_url_str
-    if os.path.isfile(ntfy_topic_file):
+    if is_a_file(ntfy_topic_file):
         ntfy_topic = \
             load_string(ntfy_topic_file,
                         'EX: _html_edit_notifications unable to read ' +
@@ -3566,7 +3566,7 @@ def html_edit_profile(server, translate: {},
         bold_reading = True
 
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return ''
 
     # filename of the banner shown at the top
@@ -3639,7 +3639,7 @@ def html_edit_profile(server, translate: {},
         reject_spam_actors: str = ''
         actor_spam_filter_filename = \
             acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
-        if os.path.isfile(actor_spam_filter_filename):
+        if is_a_file(actor_spam_filter_filename):
             reject_spam_actors = 'checked'
         if actor_json.get('type'):
             if actor_json['type'] == 'Service':
@@ -3649,17 +3649,17 @@ def html_edit_profile(server, translate: {},
                 is_group = 'checked'
                 is_bot: str = ''
     account_dir = acct_dir(base_dir, nickname, domain)
-    if os.path.isfile(account_dir + '/.followDMs'):
+    if is_a_file(account_dir + '/.followDMs'):
         follow_dms = 'checked'
-    if os.path.isfile(account_dir + '/.removeTwitter'):
+    if is_a_file(account_dir + '/.removeTwitter'):
         remove_twitter = 'checked'
-    if os.path.isfile(account_dir + '/.notifyLikes'):
+    if is_a_file(account_dir + '/.notifyLikes'):
         notify_likes = 'checked'
-    if os.path.isfile(account_dir + '/.notifyReactions'):
+    if is_a_file(account_dir + '/.notifyReactions'):
         notify_reactions = 'checked'
-    if os.path.isfile(account_dir + '/.hideLikeButton'):
+    if is_a_file(account_dir + '/.hideLikeButton'):
         hide_like_button = 'checked'
-    if os.path.isfile(account_dir + '/.hideReactionButton'):
+    if is_a_file(account_dir + '/.hideReactionButton'):
         hide_reaction_button = 'checked'
 
     media_instance = get_config_param(base_dir, "mediaInstance")
@@ -3681,7 +3681,7 @@ def html_edit_profile(server, translate: {},
             media_instance_str = news_instance_str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_str: str = ''
@@ -3763,32 +3763,32 @@ def html_edit_profile(server, translate: {},
 
     # whether to show quote toots
     show_quote_toots: bool = False
-    if os.path.isfile(account_dir + '/.allowQuotes'):
+    if is_a_file(account_dir + '/.allowQuotes'):
         show_quote_toots = True
 
     # whether to show votes
     show_vote_posts: bool = True
-    if os.path.isfile(account_dir + '/.noVotes'):
+    if is_a_file(account_dir + '/.noVotes'):
         show_vote_posts = False
 
     # only show replies from followers
     show_replies_followers: bool = False
-    if os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
+    if is_a_file(account_dir + '/.repliesFromFollowersOnly'):
         show_replies_followers = True
 
     # only show replies from mutuals
     show_replies_mutuals: bool = False
-    if os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+    if is_a_file(account_dir + '/.repliesFromMutualsOnly'):
         show_replies_mutuals = True
 
     # don't show follows on profile
     hide_follows: bool = False
-    if os.path.isfile(account_dir + '/.hideFollows'):
+    if is_a_file(account_dir + '/.hideFollows'):
         hide_follows = True
 
     # don't show recent public posts on profile
     hide_recent_posts: bool = False
-    if os.path.isfile(account_dir + '/.hideRecentPosts'):
+    if is_a_file(account_dir + '/.hideRecentPosts'):
         hide_recent_posts = True
 
     # is this a premium account?
@@ -3797,19 +3797,19 @@ def html_edit_profile(server, translate: {},
     # are boosts of replies permitted in the inbox?
     no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
     no_reply_boosts: bool = False
-    if os.path.isfile(no_reply_boosts_filename):
+    if is_a_file(no_reply_boosts_filename):
         no_reply_boosts = True
 
     # are seen posts permitted in timelines?
     no_seen_posts_filename = account_dir + '/.noSeenPosts'
     no_seen_posts: bool = False
-    if os.path.isfile(no_seen_posts_filename):
+    if is_a_file(no_seen_posts_filename):
         no_seen_posts = True
 
     # is watermarking enabled?
     watermark_enabled_filename = account_dir + '/.watermarkEnabled'
     watermark_enabled: bool = False
-    if os.path.isfile(watermark_enabled_filename):
+    if is_a_file(watermark_enabled_filename):
         watermark_enabled = True
 
     # Option checkboxes

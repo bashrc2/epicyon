@@ -56,6 +56,7 @@ from data import save_string
 from data import save_binary
 from data import append_string
 from data import erase_file
+from data import is_a_file
 
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
@@ -278,7 +279,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
     """Returns true is the css file contains code which
     can create security problems
     """
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return False
 
     content = load_string(filename,
@@ -332,7 +333,7 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
     if not rules:
         switch_words_filename = \
             acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
-        if not os.path.isfile(switch_words_filename):
+        if not is_a_file(switch_words_filename):
             return content
         rules_str = load_string(switch_words_filename,
                                 'EX: unable to read switches ' +
@@ -384,7 +385,7 @@ def _save_custom_emoji(session, base_dir: str, emoji_name: str, url: str,
         return
     emoji_json_filename = custom_emoji_dir + '/emoji.json'
     emoji_json = {}
-    if os.path.isfile(emoji_json_filename):
+    if is_a_file(emoji_json_filename):
         emoji_json = load_json(emoji_json_filename)
         if not emoji_json:
             emoji_json = {}
@@ -401,9 +402,9 @@ def _get_emoji_name_from_code(base_dir: str, emoji_code: str) -> str:
     """Returns the emoji name from its code
     """
     emojis_filename = base_dir + '/emoji/emoji.json'
-    if not os.path.isfile(emojis_filename):
+    if not is_a_file(emojis_filename):
         emojis_filename = base_dir + '/emoji/default_emoji.json'
-        if not os.path.isfile(emojis_filename):
+        if not is_a_file(emojis_filename):
             return None
     emojis_json = load_json(emojis_filename)
     if not emojis_json:
@@ -428,7 +429,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
             return
     common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
     common_emoji = None
-    if os.path.isfile(common_emoji_filename):
+    if is_a_file(common_emoji_filename):
         common_emoji_str = load_string(common_emoji_filename,
                                        'EX: unable to load common emoji file')
         if common_emoji_str:
@@ -919,10 +920,10 @@ def _add_emoji(base_dir: str, word_str: str,
     if not emoji_dict.get(emoji):
         return False
     emoji_filename = base_dir + '/emoji/' + emoji_dict[emoji] + '.png'
-    if not os.path.isfile(emoji_filename):
+    if not is_a_file(emoji_filename):
         emoji_filename = \
             base_dir + '/emojicustom/' + emoji_dict[emoji] + '.png'
-        if not os.path.isfile(emoji_filename):
+        if not is_a_file(emoji_filename):
             return False
     emoji_url = http_prefix + "://" + domain + \
         "/emoji/" + emoji_dict[emoji] + '.png'
@@ -963,12 +964,12 @@ def _mention_to_url(base_dir: str, http_prefix: str,
         users_path = users_path.replace('/', '#')
         possible_cache_entry = \
             cache_path_start + users_path + nickname + '.json'
-        if os.path.isfile(possible_cache_entry):
+        if is_a_file(possible_cache_entry):
             return http_prefix + '://' + \
                 domain + users_path.replace('#', '/') + nickname
     possible_cache_entry = \
         cache_path_start + '#' + nickname + '.json'
-    if os.path.isfile(possible_cache_entry):
+    if is_a_file(possible_cache_entry):
         return http_prefix + '://' + domain + '/' + nickname
     return http_prefix + '://' + domain + '/users/' + nickname
 
@@ -1268,7 +1269,7 @@ def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     the lines of the file
     """
     filename = acct_dir(base_dir, nickname, domain) + '/autotags.txt'
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return []
     fp_tags_str = load_string(filename,
                               'EX: unable to read auto tags ' + filename)
@@ -1411,7 +1412,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
 def load_dogwhistles(filename: str) -> {}:
     """Loads a list of dogwhistles from file
     """
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return {}
     dogwhistle_lines: list[str] = []
     dogwhistle_lines_str = \
@@ -1496,7 +1497,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     following = None
     petnames = None
     if '@' in words:
-        if os.path.isfile(following_filename):
+        if is_a_file(following_filename):
             following: list[str] = []
             following_str = load_string(following_filename,
                                         'EX: add_html_tags unable to read ' +
@@ -1544,14 +1545,14 @@ def add_html_tags(base_dir: str, http_prefix: str,
                 # emoji.json is generated so that it can be customized and
                 # the changes will be retained even if default_emoji.json
                 # is subsequently updated
-                if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+                if not is_a_file(base_dir + '/emoji/emoji.json'):
                     copyfile(base_dir + '/emoji/default_emoji.json',
                              base_dir + '/emoji/emoji.json')
             emoji_dict = load_json(base_dir + '/emoji/emoji.json')
 
             # append custom emoji to the dict
             custom_emoji_filename = base_dir + '/emojicustom/emoji.json'
-            if os.path.isfile(custom_emoji_filename):
+            if is_a_file(custom_emoji_filename):
                 custom_emoji_dict = load_json(custom_emoji_filename)
                 if custom_emoji_dict:
                     # combine emoji dicts one by one
@@ -1685,13 +1686,13 @@ def save_media_in_form_post(media_bytes, debug: bool,
             extension_types = get_image_extensions()
             for ex in extension_types:
                 possible_other_format = filename_base + '.' + ex
-                if os.path.isfile(possible_other_format):
+                if is_a_file(possible_other_format):
                     ex_text = \
                         'EX: save_media_in_form_post ' + \
                         'unable to delete other ' + \
                         str(possible_other_format)
                     erase_file(possible_other_format, ex_text)
-            if os.path.isfile(filename_base):
+            if is_a_file(filename_base):
                 ex_text = \
                     'EX: save_media_in_form_post ' + \
                     'unable to delete ' + str(filename_base)
@@ -1783,7 +1784,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
                 filename.replace('.temp', '').replace('.' +
                                                       detected_extension, '.' +
                                                       ex)
-            if os.path.isfile(possible_other_format):
+            if is_a_file(possible_other_format):
                 ex_text = \
                     'EX: save_media_in_form_post ' + \
                     'unable to delete other 2 ' + \
@@ -1814,7 +1815,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
     save_binary(media_bytes[start_pos:], filename,
                 'EX: save_media_in_form_post unable to write media')
 
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         if debug:
             print('WARN: Media file could not be written to file: ' +
                   filename)
@@ -2125,7 +2126,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
     """Imports emoji from the given filename
     Each line should be [emoji url], :emojiname:
     """
-    if not os.path.isfile(import_filename):
+    if not is_a_file(import_filename):
         return
     emoji_dict: dict = load_json(base_dir + '/emoji/default_emoji.json')
     added: int = 0
@@ -2144,7 +2145,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
             if emoji_dict.get(tag):
                 continue
             emoji_image_filename = base_dir + '/emoji/' + tag + '.png'
-            if os.path.isfile(emoji_image_filename):
+            if is_a_file(emoji_image_filename):
                 continue
             if download_image(session, url,
                               emoji_image_filename, True, False):
@@ -2274,7 +2275,7 @@ def remove_script(content: str, log_filename: str,
                     # write the detected script to a log file
                     log_str = actor + ' ' + url + ' ' + text + '\n'
                     write_type: str = 'a+'
-                    if os.path.isfile(log_filename):
+                    if is_a_file(log_filename):
                         write_type = 'w+'
                     if write_type == 'a+':
                         append_string(log_str, log_filename,
@@ -2295,7 +2296,7 @@ def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
         return False
     remove_twitter = \
         acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
-    if not os.path.isfile(remove_twitter):
+    if not is_a_file(remove_twitter):
         return False
     summary_lower = summary.lower()
     twitter_strings = ('twitter', '/x.com', ' x.com', 'birdsite')
@@ -2360,7 +2361,7 @@ def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
         url = emoji_id + '.png'
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
         updated = None
-        if os.path.isfile(emoji_filename):
+        if is_a_file(emoji_filename):
             updated = file_last_modified(emoji_filename)
         new_tag = {
             'icon': {
@@ -2432,7 +2433,7 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     the lines of the file
     """
     auto_cw_filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
-    if not os.path.isfile(auto_cw_filename):
+    if not is_a_file(auto_cw_filename):
         return []
     fp_auto_str = load_string(auto_cw_filename,
                               'EX: unable to load auto cw file ' +

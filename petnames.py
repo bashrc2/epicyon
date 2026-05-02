@@ -7,11 +7,11 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 from utils import acct_dir
 from data import load_string
 from data import save_string
 from data import append_string
+from data import is_a_file
 
 
 def set_pet_name(base_dir: str, nickname: str, domain: str,
@@ -30,7 +30,7 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
     entry = petname + ' ' + handle + '\n'
 
     # does this entry already exist?
-    if os.path.isfile(petnames_filename):
+    if is_a_file(petnames_filename):
         petnames_str: str = \
             load_string(petnames_filename,
                         'EX: set_pet_name unable to read ' + petnames_filename)
@@ -77,7 +77,7 @@ def get_pet_name(base_dir: str, nickname: str, domain: str,
         handle = handle[1:]
     petnames_filename = acct_dir(base_dir, nickname, domain) + '/petnames.txt'
 
-    if not os.path.isfile(petnames_filename):
+    if not is_a_file(petnames_filename):
         return ''
     petnames_str: str = \
         load_string(petnames_filename,
@@ -107,7 +107,7 @@ def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
         petname = petname[1:]
     petnames_filename = acct_dir(base_dir, nickname, domain) + '/petnames.txt'
 
-    if not os.path.isfile(petnames_filename):
+    if not is_a_file(petnames_filename):
         return ''
     petnames_str: str = \
         load_string(petnames_filename,

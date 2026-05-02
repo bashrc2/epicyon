@@ -9,7 +9,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from pprint import pprint
 from flags import has_group_type
 from flags import url_permitted
@@ -42,6 +41,7 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def no_of_announces(post_json_object: {}) -> int:
@@ -539,7 +539,7 @@ def announce_seen(base_dir: str, nickname: str, domain: str,
     if not post_filename:
         return False
     seen_filename = post_filename + '.seen'
-    if not os.path.isfile(seen_filename):
+    if not is_a_file(seen_filename):
         return False
 
     if text_in_file(announce_id, seen_filename):
@@ -564,7 +564,7 @@ def mark_announce_as_seen(base_dir: str, nickname: str, domain: str,
     if not post_filename:
         return
     seen_filename = post_filename + '.seen'
-    if os.path.isfile(seen_filename):
+    if is_a_file(seen_filename):
         return
     announce_id = remove_id_ending(message_json['id'])
     save_string(announce_id, seen_filename,
@@ -592,7 +592,7 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             ex_text = \
                 'EX: undo_announce_collection_entry ' + \
                 'unable to delete cached post ' + \
@@ -662,7 +662,7 @@ def update_announce_collection(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             print('update_announce_collection: removing ' +
                   cached_post_filename)
             ex_text = \

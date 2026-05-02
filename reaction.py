@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 import re
 import urllib.parse
 from pprint import pprint
@@ -41,6 +40,7 @@ from posts import get_person_box
 from data import load_list
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 # the maximum number of reactions from individual actors which can be
 # added to a post. Hence an adversary can't bombard you with sockpuppet
@@ -486,7 +486,7 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
     """
     common_reactions_filename = data_dir(base_dir) + '/common_reactions.txt'
     common_reactions = None
-    if os.path.isfile(common_reactions_filename):
+    if is_a_file(common_reactions_filename):
         common_reactions: list[str] = \
             load_list(common_reactions_filename,
                       'EX: unable to load common reactions file' +
@@ -546,7 +546,7 @@ def update_reaction_collection(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             erase_file(cached_post_filename,
                        'EX: update_reaction_collection unable to delete ' +
                        cached_post_filename)
@@ -714,7 +714,7 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             ex_text = \
                 'EX: undo_reaction_collection_entry ' + \
                 'unable to delete cached post ' + \

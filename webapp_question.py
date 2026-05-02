@@ -7,12 +7,12 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 import urllib.parse
 from question import is_question
 from utils import remove_id_ending
 from utils import acct_dir
 from utils import text_in_file
+from data import is_a_file
 
 
 def insert_question(base_dir: str, translate: {},
@@ -35,7 +35,7 @@ def insert_question(base_dir: str, translate: {},
         acct_dir(base_dir, nickname, domain) + '/questions.txt'
 
     show_question_results: bool = False
-    if os.path.isfile(votes_filename):
+    if is_a_file(votes_filename):
         if text_in_file(message_id, votes_filename):
             show_question_results = True
 

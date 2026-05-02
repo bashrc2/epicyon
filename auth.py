@@ -24,6 +24,7 @@ from data import append_string
 from data import save_string
 from data import load_list
 from data import move_file
+from data import is_a_file
 
 
 def _hash_password(password: str) -> str:
@@ -154,7 +155,7 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
               nickname + ' in Auth header')
         return False
     password_file = data_dir(base_dir) + '/passwords'
-    if not os.path.isfile(password_file):
+    if not is_a_file(password_file):
         if debug:
             print('DEBUG: passwords file missing')
         return False
@@ -193,7 +194,7 @@ def store_basic_credentials(base_dir: str,
 
     password_file = dir_str + '/passwords'
     store_str = nickname + ':' + _hash_password(password)
-    if os.path.isfile(password_file):
+    if is_a_file(password_file):
         if text_in_file(nickname + ':', password_file):
             # get the existing passwords
             passwords_list = \
@@ -240,7 +241,7 @@ def remove_password(base_dir: str, nickname: str) -> None:
     This is called during account removal
     """
     password_file = data_dir(base_dir) + '/passwords'
-    if os.path.isfile(password_file):
+    if is_a_file(password_file):
         # load the passwords file
         passwords_list = \
             load_list(password_file,
@@ -325,7 +326,7 @@ def record_login_failure(base_dir: str, ip_address: str,
 
     failure_log: str = data_dir(base_dir) + '/loginfailures.log'
     write_type: str = 'a+'
-    if not os.path.isfile(failure_log):
+    if not is_a_file(failure_log):
         write_type: str = 'w+'
     curr_time = date_utcnow()
     curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")

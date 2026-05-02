@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from petnames import get_pet_name
 from person import is_person_snoozed
@@ -45,6 +44,7 @@ from availability import get_availability
 from data import load_string
 from data import save_string
 from data import save_flag_file
+from data import is_a_file
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -58,7 +58,7 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
     domain = remove_domain_port(domain)
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(following_filename):
+    if not is_a_file(following_filename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
         return
@@ -75,7 +75,7 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
     # get the contents of the minimize file, which is
     # a set of handles
     minimize_handles: str = ''
-    if os.path.isfile(minimize_filename):
+    if is_a_file(minimize_filename):
         print('Minimize file exists')
         minimize_handles = \
             load_string(minimize_filename,
@@ -185,8 +185,8 @@ def html_person_options(default_timeline: str,
     options_domain_full = get_full_domain(options_domain, options_port)
 
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/options-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/options-background.jpg'):
+    if is_a_file(dir_str + '/options-background-custom.jpg'):
+        if not is_a_file(dir_str + '/options-background.jpg'):
             copyfile(dir_str + '/options-background.jpg',
                      dir_str + '/options-background.jpg')
 
@@ -235,7 +235,7 @@ def html_person_options(default_timeline: str,
             '    <input type="hidden" name="postUrl" value="' + \
             options_link + '">\n'
     css_filename = base_dir + '/epicyon-options.css'
-    if os.path.isfile(base_dir + '/options.css'):
+    if is_a_file(base_dir + '/options.css'):
         css_filename = base_dir + '/options.css'
 
     # To snooze, or not to snooze? That is the question
@@ -647,7 +647,7 @@ def html_person_options(default_timeline: str,
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToNews">' + \
                         translate['Save'] + '</button><br>\n'
-                    if os.path.isfile(newswire_blocked_filename):
+                    if is_a_file(newswire_blocked_filename):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     else:
                         newswire_posts_permitted = True
@@ -667,7 +667,7 @@ def html_person_options(default_timeline: str,
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitModNewsPosts">' + \
                     translate['Save'] + '</button><br>\n'
-                if not os.path.isfile(moderated_filename):
+                if not is_a_file(moderated_filename):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

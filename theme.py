@@ -32,12 +32,13 @@ from data import load_string
 from data import save_string
 from data import save_flag_file
 from data import erase_file
+from data import is_a_file
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
     """Imports a theme
     """
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return False
     temp_theme_dir = base_dir + '/imports/files'
     if os.path.isdir(temp_theme_dir):
@@ -46,7 +47,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
     unpack_archive(filename, temp_theme_dir, 'zip')
     essential_theme_files = ('name.txt', 'theme.json')
     for theme_file in essential_theme_files:
-        if not os.path.isfile(temp_theme_dir + '/' + theme_file):
+        if not is_a_file(temp_theme_dir + '/' + theme_file):
             print('WARN: ' + theme_file +
                   ' missing from imported theme')
             return False
@@ -79,7 +80,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
 
     # if the theme name in the default themes list?
     default_themes_filename = base_dir + '/defaultthemes.txt'
-    if os.path.isfile(default_themes_filename):
+    if is_a_file(default_themes_filename):
         test_str = new_theme_name.title() + '\n'
         if text_in_file(test_str, default_themes_filename):
             new_theme_name = new_theme_name + '2'
@@ -93,19 +94,19 @@ def import_theme(base_dir: str, filename: str) -> bool:
     if scan_themes_for_scripts(theme_dir):
         rmtree(theme_dir, ignore_errors=False, onexc=None)
         return False
-    return os.path.isfile(theme_dir + '/theme.json')
+    return is_a_file(theme_dir + '/theme.json')
 
 
 def export_theme(base_dir: str, theme: str) -> bool:
     """Exports a theme as a zip file
     """
     theme_dir = base_dir + '/theme/' + theme
-    if not os.path.isfile(theme_dir + '/theme.json'):
+    if not is_a_file(theme_dir + '/theme.json'):
         return False
     if not os.path.isdir(base_dir + '/exports'):
         os.mkdir(base_dir + '/exports')
     export_filename = base_dir + '/exports/' + theme + '.zip'
-    if os.path.isfile(export_filename):
+    if is_a_file(export_filename):
         ex_text = \
             'EX: export_theme unable to delete ' + str(export_filename)
         erase_file(export_filename, ex_text)
@@ -114,7 +115,7 @@ def export_theme(base_dir: str, theme: str) -> bool:
     except BaseException:
         print('EX: export_theme unable to archive ' +
               base_dir + '/exports/' + str(theme))
-    return os.path.isfile(export_filename)
+    return is_a_file(export_filename)
 
 
 def _get_theme_files() -> []:
@@ -130,7 +131,7 @@ def is_news_theme_name(base_dir: str, theme_name: str) -> bool:
     """Returns true if the given theme is a news instance
     """
     theme_dir = base_dir + '/theme/' + theme_name
-    if os.path.isfile(theme_dir + '/is_news_instance'):
+    if is_a_file(theme_dir + '/is_news_instance'):
         return True
     return False
 
@@ -182,7 +183,7 @@ def _set_theme_in_config(base_dir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
     config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
+    if not is_a_file(config_filename):
         return False
     config_json = load_json(config_filename)
     if not config_json:
@@ -195,7 +196,7 @@ def _set_newswire_publish_as_icon(base_dir: str, use_icon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
     config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
+    if not is_a_file(config_filename):
         return False
     config_json = load_json(config_filename)
     if not config_json:
@@ -208,7 +209,7 @@ def _set_rss_icon_at_top(base_dir: str, at_top: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
     config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
+    if not is_a_file(config_filename):
         return False
     config_json = load_json(config_filename)
     if not config_json:
@@ -222,7 +223,7 @@ def _set_publish_button_at_top(base_dir: str, at_top: bool) -> bool:
     in the newswire column
     """
     config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
+    if not is_a_file(config_filename):
         return False
     config_json = load_json(config_filename)
     if not config_json:
@@ -237,7 +238,7 @@ def _set_full_width_timeline_button_header(base_dir: str,
     calendar, etc as full width
     """
     config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
+    if not is_a_file(config_filename):
         return False
     config_json = load_json(config_filename)
     if not config_json:
@@ -250,7 +251,7 @@ def get_theme(base_dir: str) -> str:
     """Gets the current theme name from config.json
     """
     config_filename = base_dir + '/config.json'
-    if os.path.isfile(config_filename):
+    if is_a_file(config_filename):
         config_json = load_json(config_filename)
         if config_json:
             if config_json.get('theme'):
@@ -263,7 +264,7 @@ def _remove_theme(base_dir: str):
     """
     theme_files = _get_theme_files()
     for filename in theme_files:
-        if not os.path.isfile(base_dir + '/' + filename):
+        if not is_a_file(base_dir + '/' + filename):
             continue
         erase_file(base_dir + '/' + filename,
                    'EX: _remove_theme unable to delete ' +
@@ -342,13 +343,13 @@ def _set_theme_from_dict(base_dir: str, name: str,
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
         if dangerous_css(template_filename, allow_local_network_access) or \
-           not os.path.isfile(template_filename):
+           not is_a_file(template_filename):
             # use default css
             template_filename = base_dir + '/epicyon-' + filename
             if filename == 'epicyon.css':
                 template_filename = base_dir + '/epicyon-profile.css'
 
-        if not os.path.isfile(template_filename):
+        if not is_a_file(template_filename):
             continue
 
         css: str = load_string(template_filename,
@@ -406,7 +407,7 @@ def _set_background_format(base_dir: str,
     if extension == 'jpg':
         return
     css_filename = base_dir + '/' + background_type + '.css'
-    if not os.path.isfile(css_filename):
+    if not is_a_file(css_filename):
         return
 
     css = load_string(css_filename,
@@ -424,7 +425,7 @@ def enable_grayscale(base_dir: str) -> None:
     theme_files = _get_theme_files()
     for filename in theme_files:
         template_filename = base_dir + '/' + filename
-        if not os.path.isfile(template_filename):
+        if not is_a_file(template_filename):
             continue
         css = load_string(template_filename,
                           'EX: enable_grayscale unable to read ' +
@@ -441,7 +442,7 @@ def enable_grayscale(base_dir: str) -> None:
                     'EX: enable_grayscale unable to save ' +
                     filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
-    if not os.path.isfile(grayscale_filename):
+    if not is_a_file(grayscale_filename):
         save_flag_file(grayscale_filename,
                        'EX: enable_grayscale unable to write ' +
                        grayscale_filename + ' [ex]')
@@ -453,7 +454,7 @@ def disable_grayscale(base_dir: str) -> None:
     theme_files = _get_theme_files()
     for filename in theme_files:
         template_filename = base_dir + '/' + filename
-        if not os.path.isfile(template_filename):
+        if not is_a_file(template_filename):
             continue
         css = load_string(template_filename,
                           'EX: disable_grayscale unable to read ' +
@@ -468,7 +469,7 @@ def disable_grayscale(base_dir: str) -> None:
                     'EX: disable_grayscale unable to save ' +
                     filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
-    if os.path.isfile(grayscale_filename):
+    if is_a_file(grayscale_filename):
         erase_file(grayscale_filename,
                    'EX: disable_grayscale unable to delete ' +
                    grayscale_filename)
@@ -480,7 +481,7 @@ def _set_dyslexic_font(base_dir: str) -> bool:
     theme_files = _get_theme_files()
     for filename in theme_files:
         template_filename = base_dir + '/' + filename
-        if not os.path.isfile(template_filename):
+        if not is_a_file(template_filename):
             continue
 
         css = load_string(template_filename,
@@ -513,7 +514,7 @@ def _set_custom_font(base_dir: str):
     }
     for ext, ext_type in font_extension.items():
         filename = base_dir + '/fonts/custom.' + ext
-        if os.path.isfile(filename):
+        if is_a_file(filename):
             custom_font_ext = ext
             custom_font_type = ext_type
     if not custom_font_ext:
@@ -522,7 +523,7 @@ def _set_custom_font(base_dir: str):
     theme_files = _get_theme_files()
     for filename in theme_files:
         template_filename = base_dir + '/' + filename
-        if not os.path.isfile(template_filename):
+        if not is_a_file(template_filename):
             continue
 
         css = load_string(template_filename,
@@ -559,7 +560,7 @@ def reset_theme_designer_settings(base_dir: str) -> None:
     """Resets the theme designer settings
     """
     custom_variables_file = data_dir(base_dir) + '/theme.json'
-    if os.path.isfile(custom_variables_file):
+    if is_a_file(custom_variables_file):
         if erase_file(custom_variables_file,
                       'EX: ' +
                       'unable to remove theme designer settings on reset'):
@@ -578,7 +579,7 @@ def _read_variables_file(base_dir: str, theme_name: str,
 
     # set custom theme parameters
     custom_variables_file = data_dir(base_dir) + '/theme.json'
-    if os.path.isfile(custom_variables_file):
+    if is_a_file(custom_variables_file):
         custom_theme_params = load_json(custom_variables_file)
         if custom_theme_params:
             for variable_name, value in custom_theme_params.items():
@@ -601,7 +602,7 @@ def _set_theme_default(base_dir: str, allow_local_network_access: bool,
     _set_theme_in_config(base_dir, name)
 
     variables_file = base_dir + '/theme/' + name + '/theme.json'
-    if os.path.isfile(variables_file):
+    if is_a_file(variables_file):
         _read_variables_file(base_dir, name, variables_file,
                              allow_local_network_access,
                              system_language)
@@ -640,7 +641,7 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
         for filename in files:
             if string_ends_with(filename, ('.woff2', '.woff', '.ttf', '.otf')):
                 dest_filename = fonts_dir + '/' + filename
-                if os.path.isfile(dest_filename):
+                if is_a_file(dest_filename):
                     # font already exists in the destination location
                     continue
                 copyfile(theme_fonts_dir + '/' + filename,
@@ -690,7 +691,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                             base_dir + '/theme/' + theme_name_lower + '/' + \
                             background_type + '_background' + '.' + ext
 
-                    if os.path.isfile(background_image_filename):
+                    if is_a_file(background_image_filename):
                         try:
                             copyfile(background_image_filename,
                                      dir_str + '/' +
@@ -701,16 +702,16 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                                   background_image_filename)
                     # background image was not found
                     # so remove any existing file
-                    if os.path.isfile(dir_str + '/' +
-                                      background_type + '-background.' + ext):
+                    if is_a_file(dir_str + '/' +
+                                 background_type + '-background.' + ext):
                         erase_file(dir_str + '/' +
                                    background_type + '-background.' + ext,
                                    'EX: _set_theme_images unable to delete ' +
                                    dir_str + '/' +
                                    background_type + '-background.' + ext)
 
-            if os.path.isfile(profile_image_filename) and \
-               os.path.isfile(banner_filename):
+            if is_a_file(profile_image_filename) and \
+               is_a_file(banner_filename):
                 try:
                     copyfile(profile_image_filename,
                              account_dir + '/image.png')
@@ -726,7 +727,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                           banner_filename)
 
                 try:
-                    if os.path.isfile(search_banner_filename):
+                    if is_a_file(search_banner_filename):
                         copyfile(search_banner_filename,
                                  account_dir + '/search_banner.png')
                 except OSError:
@@ -734,11 +735,10 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                           search_banner_filename)
 
                 try:
-                    if os.path.isfile(left_col_image_filename):
+                    if is_a_file(left_col_image_filename):
                         copyfile(left_col_image_filename,
                                  account_dir + '/left_col_image.png')
-                    elif os.path.isfile(account_dir +
-                                        '/left_col_image.png'):
+                    elif is_a_file(account_dir + '/left_col_image.png'):
                         erase_file(account_dir + '/left_col_image.png',
                                    'EX: _set_theme_images unable to delete ' +
                                    account_dir + '/left_col_image.png')
@@ -747,12 +747,11 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                           left_col_image_filename)
 
                 try:
-                    if os.path.isfile(right_col_image_filename):
+                    if is_a_file(right_col_image_filename):
                         copyfile(right_col_image_filename,
                                  account_dir + '/right_col_image.png')
                     else:
-                        if os.path.isfile(account_dir +
-                                          '/right_col_image.png'):
+                        if is_a_file(account_dir + '/right_col_image.png'):
                             erase_file(account_dir + '/right_col_image.png',
                                        'EX: _set_theme_images ' +
                                        'unable to delete ' +
@@ -770,16 +769,16 @@ def set_news_avatar(base_dir: str, name: str,
     """
     nickname = 'news'
     new_filename = base_dir + '/theme/' + name + '/icons/avatar_news.png'
-    if not os.path.isfile(new_filename):
+    if not is_a_file(new_filename):
         new_filename = base_dir + '/theme/default/icons/avatar_news.png'
-    if not os.path.isfile(new_filename):
+    if not is_a_file(new_filename):
         return
     avatar_filename = \
         local_actor_url(http_prefix, domain_full, nickname) + '.png'
     avatar_filename = avatar_filename.replace('/', '-')
     filename = base_dir + '/cache/avatars/' + avatar_filename
 
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         erase_file(filename,
                    'EX: set_news_avatar unable to delete ' + filename)
     if os.path.isdir(base_dir + '/cache/avatars'):
@@ -839,7 +838,7 @@ def set_theme(base_dir: str, name: str, domain: str,
 
     # read theme settings from a json file in the theme directory
     variables_file = base_dir + '/theme/' + name + '/theme.json'
-    if os.path.isfile(variables_file):
+    if is_a_file(variables_file):
         _read_variables_file(base_dir, name, variables_file,
                              allow_local_network_access,
                              system_language)
@@ -854,12 +853,12 @@ def set_theme(base_dir: str, name: str, domain: str,
         base_dir + '/theme/' + name + '/icons/avatar_news.png'
     dir_str = data_dir(base_dir)
     if os.path.isdir(dir_str + '/news@' + domain):
-        if os.path.isfile(news_avatar_theme_filename):
+        if is_a_file(news_avatar_theme_filename):
             news_avatar_filename = dir_str + '/news@' + domain + '/avatar.png'
             copyfile(news_avatar_theme_filename, news_avatar_filename)
 
     grayscale_filename = dir_str + '/.grayscale'
-    if os.path.isfile(grayscale_filename):
+    if is_a_file(grayscale_filename):
         enable_grayscale(base_dir)
     else:
         disable_grayscale(base_dir)

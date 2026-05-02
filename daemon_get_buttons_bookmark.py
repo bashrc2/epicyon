@@ -9,7 +9,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 from utils import get_mutuals_of_person
 from utils import get_cached_post_filename
 from utils import load_json
@@ -28,6 +27,7 @@ from bookmarks import undo_bookmark_post
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
 from fitnessFunctions import fitness_performance
+from data import is_a_file
 
 
 def bookmark_button(self, calling_domain: str, path: str,
@@ -183,7 +183,7 @@ def bookmark_button(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     bookmark_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):
@@ -410,7 +410,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     bookmark_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):

@@ -26,6 +26,7 @@ from daemon_utils import log_epicyon_instances
 from data import load_string
 from data import load_binary
 from data import save_string
+from data import is_a_file
 
 
 def daemon_http_head(self) -> None:
@@ -109,7 +110,7 @@ def daemon_http_head(self) -> None:
                     nickname + '@' + self.server.domain + '/' + \
                     banner_file
 
-            if os.path.isfile(media_filename):
+            if is_a_file(media_filename):
                 check_path = media_filename
                 file_length = os.path.getsize(media_filename)
                 media_tm = os.path.getmtime(media_filename)
@@ -120,7 +121,7 @@ def daemon_http_head(self) -> None:
                 last_modified_time_str = \
                     last_modified_time.strftime(time_format_str)
                 media_tag_filename = media_filename + '.etag'
-                if os.path.isfile(media_tag_filename):
+                if is_a_file(media_tag_filename):
                     etag_str = load_string(media_tag_filename,
                                            'EX: do_HEAD unable to read ' +
                                            media_tag_filename)

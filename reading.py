@@ -25,6 +25,7 @@ from timeFunctions import date_from_string_format
 from data import save_string
 from data import load_string
 from data import prepend_string
+from data import is_a_file
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -273,7 +274,7 @@ def remove_reading_event(base_dir: str,
         books_cache['readers'] = {}
     if books_cache['readers'].get(actor):
         reader_books_json = books_cache['readers'][actor]
-    elif os.path.isfile(reader_books_filename):
+    elif is_a_file(reader_books_filename):
         # if not in cache then load from file
         reader_books_json = load_json(reader_books_filename)
     if not reader_books_json:
@@ -396,7 +397,7 @@ def _update_recent_books_list(base_dir: str, book_id: str,
     """prepend a book to the recent books list
     """
     recent_books_filename = data_dir(base_dir) + '/recent_books.txt'
-    if os.path.isfile(recent_books_filename):
+    if is_a_file(recent_books_filename):
         ex_str: str = \
             'EX: Failed to prepend entry to recent books ' + \
             recent_books_filename + ' [ex]'
@@ -414,7 +415,7 @@ def _deduplicate_recent_books_list(base_dir: str,
     """ Deduplicate and limit the length of the recent books list
     """
     recent_books_filename = data_dir(base_dir) + '/recent_books.txt'
-    if not os.path.isfile(recent_books_filename):
+    if not is_a_file(recent_books_filename):
         return
 
     # load recent books as a list
@@ -497,7 +498,7 @@ def store_book_events(base_dir: str,
         books_cache['readers'] = {}
     if books_cache['readers'].get(actor):
         reader_books_json = books_cache['readers'][actor]
-    elif os.path.isfile(reader_books_filename):
+    elif is_a_file(reader_books_filename):
         # if not in cache then load from file
         reader_books_json = load_json(reader_books_filename)
     if _add_book_to_reader(reader_books_json, book_dict, debug):
@@ -524,7 +525,7 @@ def store_book_events(base_dir: str,
     book_id = book_url.replace('/', '#')
     book_filename = books_path + '/' + book_id + '.json'
     book_json = {}
-    if os.path.isfile(book_filename):
+    if is_a_file(book_filename):
         book_json = load_json(book_filename)
     _add_reader_to_book(book_json, book_dict)
     if not save_json(book_json, book_filename):
@@ -549,7 +550,7 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
     reader_books_filename = \
         readers_path + '/' + actor.replace('/', '#') + '.json'
     reader_books_json = {}
-    if not os.path.isfile(reader_books_filename):
+    if not is_a_file(reader_books_filename):
         return ''
     reader_books_json = load_json(reader_books_filename)
     if not reader_books_json.get('timeline'):

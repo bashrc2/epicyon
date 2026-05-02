@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
-import os
 from flags import is_editor
 from flags import is_artist
 from utils import replace_strings
@@ -27,13 +26,14 @@ from webapp_utils import edit_text_field
 from shares import share_category_icon
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def _links_exist(base_dir: str) -> bool:
     """Returns true if links have been created
     """
     links_filename = data_dir(base_dir) + '/links.txt'
-    return os.path.isfile(links_filename)
+    return is_a_file(links_filename)
 
 
 def _get_left_column_shares(base_dir: str,
@@ -141,7 +141,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
 
         # show the image at the top of the column
         edit_image_class = 'leftColEdit'
-        if os.path.isfile(left_column_image_filename):
+        if is_a_file(left_column_image_filename):
             edit_image_class = 'leftColEditImage'
             html_str += \
                 '\n      <center>\n        <img class="leftColImg" ' + \
@@ -225,7 +225,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     links_filename = data_dir(base_dir) + '/links.txt'
     links_file_contains_entries: bool = False
     links_list: list[str] = None
-    if os.path.isfile(links_filename):
+    if is_a_file(links_filename):
         links_list = \
             load_list(links_filename,
                       'EX: get_left_column_content unable to read ' +
@@ -390,7 +390,7 @@ def html_links_mobile(base_dir: str,
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     # is the user a site editor?
@@ -469,7 +469,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
         return ''
 
     css_filename = base_dir + '/epicyon-links.css'
-    if os.path.isfile(base_dir + '/links.css'):
+    if is_a_file(base_dir + '/links.css'):
         css_filename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
@@ -515,7 +515,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
 
     links_filename = data_dir(base_dir) + '/links.txt'
     links_str: str = ''
-    if os.path.isfile(links_filename):
+    if is_a_file(links_filename):
         links_str = load_string(links_filename,
                                 'EX: html_edit_links unable to read ' +
                                 links_filename)
@@ -543,7 +543,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
         if nickname == admin_nickname:
             about_filename = data_dir(base_dir) + '/about.md'
             about_str: str = ''
-            if os.path.isfile(about_filename):
+            if is_a_file(about_filename):
                 about_str = \
                     load_string(about_filename,
                                 'EX: html_edit_links unable to read 2 ' +
@@ -566,7 +566,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
 
             tos_filename = data_dir(base_dir) + '/tos.md'
             tos_str: str = ''
-            if os.path.isfile(tos_filename):
+            if is_a_file(tos_filename):
                 tos_str = load_string(tos_filename,
                                       'EX: html_edit_links unable to read 3 ' +
                                       tos_filename)
@@ -588,7 +588,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
 
             specification_filename = data_dir(base_dir) + '/activitypub.md'
             specification_str: str = ''
-            if os.path.isfile(specification_filename):
+            if is_a_file(specification_filename):
                 specification_str = \
                     load_string(specification_filename,
                                 'EX: html_edit_links unable to read 4 ' +

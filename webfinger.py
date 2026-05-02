@@ -29,6 +29,7 @@ from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_yggdrasil_url
+from data import is_a_file
 
 
 def _parse_handle(handle: str) -> (str, str, bool):
@@ -424,7 +425,7 @@ def webfinger_lookup(path: str, base_dir: str,
     filename = base_dir + '/wfendpoints/' + handle + '.json'
     if debug:
         print('DEBUG: WEBFINGER filename ' + filename)
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         if debug:
             print('DEBUG: WEBFINGER filename not found ' + filename)
         return None

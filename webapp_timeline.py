@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 import time
 from shutil import copyfile
 from flags import is_editor
@@ -54,6 +53,7 @@ from question import is_question
 from data import load_string
 from data import load_list
 from data import erase_file
+from data import is_a_file
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -73,7 +73,7 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
     """
     # get the filename for help for this timeline
     help_filename = data_dir(base_dir) + '/help_' + box_name + '.md'
-    if not os.path.isfile(help_filename):
+    if not is_a_file(help_filename):
         language = \
             get_config_param(base_dir, 'language')
         if not language:
@@ -85,20 +85,20 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'help_' + box_name + '_' + language + '.md'
-            if not os.path.isfile(default_filename):
+            if not is_a_file(default_filename):
                 default_filename = None
         if not default_filename:
             default_filename = \
                 base_dir + '/defaultwelcome/' + \
                 'help_' + box_name + '_' + language + '.md'
-        if not os.path.isfile(default_filename):
+        if not is_a_file(default_filename):
             default_filename = \
                 base_dir + '/defaultwelcome/help_' + box_name + '_en.md'
-        if os.path.isfile(default_filename):
+        if is_a_file(default_filename):
             copyfile(default_filename, help_filename)
 
     # show help text
-    if os.path.isfile(help_filename):
+    if is_a_file(help_filename):
         instance_title = \
             get_config_param(base_dir, 'instanceTitle')
         if not instance_title:
@@ -502,7 +502,7 @@ def html_timeline(default_timeline: str,
     calendar_image = 'calendar.png'
     calendar_path = '/calendar'
     calendar_file = account_dir + '/.newCalendar'
-    if os.path.isfile(calendar_file):
+    if is_a_file(calendar_file):
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
         calendar_path_str = \
@@ -518,7 +518,7 @@ def html_timeline(default_timeline: str,
     # should the DM button be highlighted?
     new_dm: bool = False
     dm_file = account_dir + '/.newDM'
-    if os.path.isfile(dm_file):
+    if is_a_file(dm_file):
         new_dm = True
         if box_name == 'dm':
             erase_file(dm_file,
@@ -527,7 +527,7 @@ def html_timeline(default_timeline: str,
     # should the Replies button be highlighted?
     new_reply: bool = False
     reply_file = account_dir + '/.newReply'
-    if os.path.isfile(reply_file):
+    if is_a_file(reply_file):
         new_reply = True
         if box_name == 'tlreplies':
             erase_file(reply_file,
@@ -536,7 +536,7 @@ def html_timeline(default_timeline: str,
     # should the Shares button be highlighted?
     new_share: bool = False
     new_share_file = account_dir + '/.newShare'
-    if os.path.isfile(new_share_file):
+    if is_a_file(new_share_file):
         new_share = True
         if box_name == 'tlshares':
             erase_file(new_share_file,
@@ -546,7 +546,7 @@ def html_timeline(default_timeline: str,
     # should the Wanted button be highlighted?
     new_wanted: bool = False
     new_wanted_file = account_dir + '/.newWanted'
-    if os.path.isfile(new_wanted_file):
+    if is_a_file(new_wanted_file):
         new_wanted = True
         if box_name == 'tlwanted':
             erase_file(new_wanted_file,
@@ -556,7 +556,7 @@ def html_timeline(default_timeline: str,
     # should the Moderation/reports button be highlighted?
     new_report: bool = False
     new_report_file = account_dir + '/.newReport'
-    if os.path.isfile(new_report_file):
+    if is_a_file(new_report_file):
         new_report = True
         if box_name == 'moderation':
             erase_file(new_report_file,
@@ -566,7 +566,7 @@ def html_timeline(default_timeline: str,
     # show polls/votes?
     show_vote_posts: bool = True
     show_vote_file = account_dir + '/.noVotes'
-    if os.path.isfile(show_vote_file):
+    if is_a_file(show_vote_file):
         show_vote_posts = False
 
     separator_str: str = ''
@@ -575,7 +575,7 @@ def html_timeline(default_timeline: str,
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '1')
@@ -658,7 +658,7 @@ def html_timeline(default_timeline: str,
     follow_approvals: str = ''
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
-    if os.path.isfile(follow_requests_filename):
+    if is_a_file(follow_requests_filename):
         follow_requests_list: list[str] = \
             load_list(follow_requests_filename,
                       'EX: html_timeline unable to read ' +
@@ -1020,7 +1020,7 @@ def html_timeline(default_timeline: str,
 
         no_seen_posts_filename = account_dir + '/.noSeenPosts'
         no_seen_posts: bool = False
-        if os.path.isfile(no_seen_posts_filename):
+        if is_a_file(no_seen_posts_filename):
             no_seen_posts = True
 
         # get the list of mutuals for the current account

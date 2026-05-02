@@ -144,6 +144,7 @@ from data import load_string
 from data import append_string
 from data import prepend_string
 from data import erase_file
+from data import is_a_file
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -256,7 +257,7 @@ def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
     for subdir, _, files in os.walk(inbox_dir):
         for fname in files:
             filename = os.path.join(subdir, fname)
-            if not os.path.isfile(filename):
+            if not is_a_file(filename):
                 print('filename: ' + filename)
                 return False
             if text_in_file('postNickname', filename):
@@ -283,7 +284,7 @@ def valid_inbox_filenames(base_dir: str, nickname: str, domain: str,
         for fname in files:
             filename = os.path.join(subdir, fname)
             ctr += 1
-            if not os.path.isfile(filename):
+            if not is_a_file(filename):
                 print('filename: ' + filename)
                 return False
             if expected_str in filename:
@@ -417,8 +418,8 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
 
     # has this account specified to only receive replies from followers?
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
-        if not os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+    if not is_a_file(account_dir + '/.repliesFromFollowersOnly'):
+        if not is_a_file(account_dir + '/.repliesFromMutualsOnly'):
             return False
 
     # is the sending actor a follower?
@@ -427,7 +428,7 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
     if not is_follower_of_person(base_dir, nickname, domain,
                                  follower_nickname, follower_domain):
         return True
-    if os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+    if is_a_file(account_dir + '/.repliesFromMutualsOnly'):
         if not is_following_actor(base_dir, nickname, domain,
                                   sending_actor):
             return True
@@ -996,7 +997,7 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
     # populate a text file containing the ids of replies
     post_replies_filename = post_filename.replace('.json', '.replies')
     message_id = remove_id_ending(message_json['id'])
-    if os.path.isfile(post_replies_filename):
+    if is_a_file(post_replies_filename):
         num_lines = lines_in_file(post_replies_filename)
         if num_lines > max_replies:
             return False
@@ -1079,7 +1080,7 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
     if not os.path.isdir(account_dir):
         return
     dm_file = account_dir + '/.newDM'
-    if not os.path.isfile(dm_file):
+    if not is_a_file(dm_file):
         save_string(url, dm_file, 'EX: _dm_notify unable to write ' + dm_file)
 
 
@@ -1092,7 +1093,7 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     if not os.path.isdir(account_dir):
         return
     notify_file = account_dir + '/.newNotifiedPost'
-    if os.path.isfile(notify_file):
+    if is_a_file(notify_file):
         # check that the same notification is not repeatedly sent
         existing_notification_message = \
             load_string(notify_file,
@@ -1112,7 +1113,7 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
     if not os.path.isdir(account_dir):
         return
     reply_file = account_dir + '/.newReply'
-    if not os.path.isfile(reply_file):
+    if not is_a_file(reply_file):
         save_string(url, reply_file,
                     'EX: _reply_notify unable to write ' + reply_file)
 
@@ -1135,7 +1136,7 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     """Is the given account handle a group?
     """
     actor_file = acct_handle_dir(base_dir, handle) + '.json'
-    if not os.path.isfile(actor_file):
+    if not is_a_file(actor_file):
         return False
     actor_json = load_json(actor_file)
     if not actor_json:
@@ -1178,7 +1179,7 @@ def _send_to_group_members(server, session, session_onion,
             shared_items_federated_domains.append(domain_str)
 
     followers_file = acct_handle_dir(base_dir, handle) + '/followers.txt'
-    if not os.path.isfile(followers_file):
+    if not is_a_file(followers_file):
         return
     if not post_json_object.get('to'):
         return
@@ -1336,7 +1337,7 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     curr_time = date_utcnow()
     days_since_epoch = (curr_time - date_epoch()).days
     # has the value changed?
-    if os.path.isfile(last_seen_filename):
+    if is_a_file(last_seen_filename):
         days_since_epoch_file = \
             load_string(last_seen_filename,
                         'EX: _update_last_seen unable to read ' +
@@ -1495,7 +1496,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     # check for the flag file which indicates to
     # only receive DMs from people you are following
     follow_dms_filename = acct_dir(base_dir, nickname, domain) + '/.followDMs'
-    if not os.path.isfile(follow_dms_filename):
+    if not is_a_file(follow_dms_filename):
         # dm index will be updated
         update_index_list.append('dm')
         act_url = local_actor_url(http_prefix, nickname, domain)
@@ -1527,7 +1528,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 
     # check that the following file exists
     if not sending_to_self:
-        if not os.path.isfile(following_filename):
+        if not is_a_file(following_filename):
             print('No following.txt file exists for ' +
                   nickname + '@' + domain +
                   ' so not accepting DM from ' +
@@ -1795,7 +1796,7 @@ def _former_representations_to_edits(base_dir: str,
     post_history_filename = post_filename.replace('.json', '.edits')
 
     post_history_json = {}
-    if os.path.isfile(post_history_filename):
+    if is_a_file(post_history_filename):
         post_history_json = load_json(post_history_filename)
 
     # check each former post and add it to the edits file if needed
@@ -2302,7 +2303,7 @@ def _inbox_after_initial(server, inbox_start_time,
         print('copy queue file from ' + queue_filename +
               ' to ' + destination_filename)
 
-    if os.path.isfile(destination_filename):
+    if is_a_file(destination_filename):
         return True
 
     if message_json.get('postNickname'):
@@ -2470,7 +2471,7 @@ def _inbox_after_initial(server, inbox_start_time,
 
             show_vote_posts: bool = True
             show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
-            if os.path.isfile(show_vote_file):
+            if is_a_file(show_vote_file):
                 show_vote_posts = False
 
             if is_image_media(session, base_dir, http_prefix,
@@ -2590,14 +2591,14 @@ def _inbox_after_initial(server, inbox_start_time,
                 edits_filename = \
                     destination_filename.replace('.json', '.edits')
                 modified = edited_json['object']['published']
-                if os.path.isfile(edits_filename):
+                if is_a_file(edits_filename):
                     edits_json = load_json(edits_filename)
                     if edits_json:
                         if not edits_json.get(modified):
                             edits_json[modified] = edited_json
                             save_json(edits_json, edits_filename)
                 else:
-                    if os.path.isfile(prev_edits_filename):
+                    if is_a_file(prev_edits_filename):
                         if prev_edits_filename != edits_filename:
                             try:
                                 copyfile(prev_edits_filename, edits_filename)
@@ -2785,7 +2786,7 @@ def _inbox_after_initial(server, inbox_start_time,
         inbox_start_time = time.time()
 
     # if the post wasn't saved
-    if not os.path.isfile(destination_filename):
+    if not is_a_file(destination_filename):
         if debug:
             print("Inbox post was not saved " + destination_filename)
         return False
@@ -3035,7 +3036,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
             print('unrecognized @context: ' + unknown_context)
 
             already_unknown: bool = False
-            if os.path.isfile(unknown_contexts_file):
+            if is_a_file(unknown_contexts_file):
                 if text_in_file(unknown_context, unknown_contexts_file):
                     already_unknown = True
 
@@ -3050,7 +3051,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
             data_dir(base_dir) + '/unknownJsonSignatures.txt'
 
         already_unknown: bool = False
-        if os.path.isfile(unknown_signatures_file):
+        if is_a_file(unknown_signatures_file):
             if text_in_file(jwebsig_type, unknown_signatures_file):
                 already_unknown = True
 
@@ -3325,7 +3326,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
 
             print('Updating followers file: ' +
                   followers_filename + ' adding ' + approve_handle)
-            if os.path.isfile(followers_filename):
+            if is_a_file(followers_filename):
                 if not text_in_file(approve_handle, followers_filename):
                     group_account = \
                         has_group_type(base_dir,
@@ -3547,7 +3548,7 @@ def run_inbox_queue(server,
         # oldest item first
         queue.sort()
         queue_filename = queue[0]
-        if not os.path.isfile(queue_filename):
+        if not is_a_file(queue_filename):
             print("Queue: queue item rejected because it has no file: " +
                   queue_filename)
             if queue:
@@ -3569,7 +3570,7 @@ def run_inbox_queue(server,
             if queue:
                 queue.pop(0)
             # delete the queue file
-            if os.path.isfile(queue_filename):
+            if is_a_file(queue_filename):
                 ex_text = \
                     'EX: run_inbox_queue 1 unable to delete ' + \
                     str(queue_filename)
@@ -3660,7 +3661,7 @@ def run_inbox_queue(server,
                 # blocking based upon nickname
                 sender_nickname = get_nickname_from_actor(queue_json['actor'])
                 if evil_nickname(sender_nickname):
-                    if os.path.isfile(queue_filename):
+                    if is_a_file(queue_filename):
                         ex_text = \
                             'EX: run_inbox_queue 11 unable to delete ' + \
                             str(queue_filename)
@@ -3736,7 +3737,7 @@ def run_inbox_queue(server,
         if not pub_key:
             if debug:
                 print('Queue: public key could not be obtained from ' + key_id)
-            if os.path.isfile(queue_filename):
+            if is_a_file(queue_filename):
                 ex_text = \
                     'EX: run_inbox_queue 2 unable to delete ' + \
                     str(queue_filename)
@@ -3795,7 +3796,7 @@ def run_inbox_queue(server,
                       key_id + ' ' + str(original_json))
 
             if http_signature_failed or verify_all_signatures:
-                if os.path.isfile(queue_filename):
+                if is_a_file(queue_filename):
                     ex_text = \
                         'EX: run_inbox_queue 3 unable to delete ' + \
                         str(queue_filename)
@@ -3816,7 +3817,7 @@ def run_inbox_queue(server,
                     else:
                         print('WARN: jsonld inbox signature check failed ' +
                               key_id)
-                    if os.path.isfile(queue_filename):
+                    if is_a_file(queue_filename):
                         ex_text = \
                             'EX: run_inbox_queue 4 unable to delete ' + \
                             str(queue_filename)
@@ -3840,7 +3841,7 @@ def run_inbox_queue(server,
                 inbox_start_time = time.time()
 
         dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
-        if not os.path.isfile(dogwhistles_filename):
+        if not is_a_file(dogwhistles_filename):
             dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
         dogwhistles = load_dogwhistles(dogwhistles_filename)
 
@@ -4052,7 +4053,7 @@ def run_inbox_queue(server,
             if len(recipients_dict_followers.items()) > 0:
                 shared_inbox_post_filename = \
                     curr_destination.replace(inbox_handle, inbox_handle)
-                if not os.path.isfile(shared_inbox_post_filename):
+                if not is_a_file(shared_inbox_post_filename):
                     save_json(curr_post_json, shared_inbox_post_filename)
                 fitness_performance(inbox_start_time, server.fitness,
                                     'INBOX', 'shared_inbox_save',
@@ -4078,7 +4079,7 @@ def run_inbox_queue(server,
                 bold_reading: bool = False
                 bold_reading_filename = \
                     acct_handle_dir(base_dir, handle) + '/.boldReading'
-                if os.path.isfile(bold_reading_filename):
+                if is_a_file(bold_reading_filename):
                     bold_reading = True
                 _inbox_after_initial(server, inbox_start_time,
                                      recent_posts_cache,
@@ -4128,7 +4129,7 @@ def run_inbox_queue(server,
 
         # should the current queue item be removed?
         if remove_queue_item:
-            if os.path.isfile(queue_filename):
+            if is_a_file(queue_filename):
                 ex_text = \
                     'EX: run_inbox_queue 10 unable to delete ' + \
                     str(queue_filename)

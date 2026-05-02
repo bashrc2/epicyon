@@ -152,6 +152,7 @@ from data import append_string
 from data import prepend_string
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -189,7 +190,7 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
     given domain
     """
     filename: str = acct_handle_dir(base_dir, handle) + '/' + follow_file
-    if not os.path.isfile(filename):
+    if not is_a_file(filename):
         return 0
 
     ctr: int = 0
@@ -990,7 +991,7 @@ def delete_all_posts(base_dir: str,
         delete_filename = delete_filename.name
         file_path = os.path.join(box_dir, delete_filename)
         try:
-            if os.path.isfile(file_path):
+            if is_a_file(file_path):
                 os.unlink(file_path)
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onexc=None)
@@ -1048,19 +1049,19 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
         _save_last_published(base_dir, nickname, domain, published)
 
         inbox_filename = filename.replace('/outbox/', '/inbox/')
-        if os.path.isfile(inbox_filename):
+        if is_a_file(inbox_filename):
             save_json(post_json_object, inbox_filename)
             base_filename = \
                 filename.replace('/outbox/',
                                  '/postcache/').replace('.json', '')
             ssml_filename = base_filename + '.ssml'
-            if os.path.isfile(ssml_filename):
+            if is_a_file(ssml_filename):
                 erase_file(ssml_filename,
                            'EX: ' +
                            'save_post_to_box unable to delete ssml file ' +
                            ssml_filename)
             html_filename = base_filename + '.html'
-            if os.path.isfile(html_filename):
+            if is_a_file(html_filename):
                 erase_file(html_filename,
                            'EX: ' +
                            'save_post_to_box unable to delete html file ' +
@@ -1085,7 +1086,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
 
     new_post_id = new_post_id.replace('/', '#')
 
-    if not os.path.isfile(tags_filename):
+    if not is_a_file(tags_filename):
         days_diff = date_utcnow() - date_epoch()
         days_since_epoch = days_diff.days
         tag_line = \
@@ -1120,7 +1121,7 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
         acct_handle_dir(base_dir, handle) + '/schedule.index'
 
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
-    if os.path.isfile(schedule_index_filename):
+    if is_a_file(schedule_index_filename):
         if not text_in_file(index_str, schedule_index_filename):
             ex_str: str = \
                 'EX: Failed to prepend entry to scheduled posts index ' + \
@@ -2166,7 +2167,7 @@ def undo_pinned_post(base_dir: str, nickname: str, domain: str) -> None:
     """
     account_dir = acct_dir(base_dir, nickname, domain)
     pinned_filename = account_dir + '/pinToProfile.txt'
-    if not os.path.isfile(pinned_filename):
+    if not is_a_file(pinned_filename):
         return
     erase_file(pinned_filename,
                'EX: undo_pinned_post unable to delete ' + pinned_filename)
@@ -2181,7 +2182,7 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
     pinned_filename = account_dir + '/pinToProfile.txt'
     pinned_post_json = {}
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    if os.path.isfile(pinned_filename):
+    if is_a_file(pinned_filename):
         pinned_content = \
             load_string(pinned_filename,
                         'EX: get_pinned_post_as_json unable to read ' +
@@ -2248,7 +2249,7 @@ def regenerate_index_for_box(base_dir: str,
 
     if not os.path.isdir(box_dir):
         return
-    if os.path.isfile(box_index_filename):
+    if is_a_file(box_index_filename):
         return
 
     index_lines: list[str] = []
@@ -2411,7 +2412,7 @@ def _append_citations_to_blog_post(base_dir: str,
     # append citations tags, stored in a file
     citations_filename = \
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
-    if not os.path.isfile(citations_filename):
+    if not is_a_file(citations_filename):
         return
     citations_separator = '#####'
     citations: list[str] = \
@@ -2867,7 +2868,7 @@ def create_report_post(base_dir: str,
     # create the list of moderators from the moderators file
     moderators_list: list[str] = []
     moderators_file = data_dir(base_dir) + '/moderators.txt'
-    if os.path.isfile(moderators_file):
+    if is_a_file(moderators_file):
         moderators_list2: list[str] = \
             load_list(moderators_file,
                       'EX: create_report_post unable to read ' +
@@ -2974,7 +2975,7 @@ def create_report_post(base_dir: str,
         # save a notification file so that the moderator
         # knows something new has appeared
         new_report_file = acct_handle_dir(base_dir, handle) + '/.newReport'
-        if os.path.isfile(new_report_file):
+        if is_a_file(new_report_file):
             continue
         save_string(to_url + '/moderation', new_report_file,
                     'EX: create_report_post unable to write ' +
@@ -2994,7 +2995,7 @@ def _add_send_block(base_dir: str, nickname: str, domain: str,
     if inbox_url.endswith('/inbox\n'):
         inbox_url = inbox_url.replace('/inbox\n', '\n')
 
-    if not os.path.isfile(send_block_filename):
+    if not is_a_file(send_block_filename):
         save_string(inbox_url, send_block_filename,
                     'EX: _add_send_block unable to create ' +
                     send_block_filename)
@@ -3017,7 +3018,7 @@ def _remove_send_block(base_dir: str, nickname: str, domain: str,
     if inbox_url.endswith('/inbox\n'):
         inbox_url = inbox_url.replace('/inbox\n', '\n')
 
-    if not os.path.isfile(send_block_filename):
+    if not is_a_file(send_block_filename):
         return
 
     if not text_in_file(inbox_url, send_block_filename, False):
@@ -3110,7 +3111,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
         if debug:
             # save the log file
             post_log_filename = base_dir + '/post.log'
-            if os.path.isfile(post_log_filename):
+            if is_a_file(post_log_filename):
                 append_string(log_str + '\n', post_log_filename,
                               'EX: thread_send_post unable to append ' +
                               post_log_filename)
@@ -3370,7 +3371,7 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     """
     handle = nickname + '@' + domain
     followers_filename = acct_handle_dir(base_dir, handle) + '/followers.txt'
-    if not os.path.isfile(followers_filename):
+    if not is_a_file(followers_filename):
         return None
     grouped = {}
     followers_list: list[str] = \
@@ -4511,7 +4512,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
 
     if is_moderator(base_dir, nickname):
         moderation_index_file = data_dir(base_dir) + '/moderation.txt'
-        if os.path.isfile(moderation_index_file):
+        if is_a_file(moderation_index_file):
             lines: list[str] = \
                 load_list(moderation_index_file,
                           'EX: create_moderation unable to read ' +
@@ -4538,7 +4539,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
             for post_url in page_lines:
                 post_filename = \
                     box_dir + '/' + post_url.replace('/', '#') + '.json'
-                if os.path.isfile(post_filename):
+                if is_a_file(post_filename):
                     post_json_object = load_json(post_filename)
                     if post_json_object:
                         box_items['orderedItems'].append(post_json_object)
@@ -4597,12 +4598,12 @@ def _add_post_to_timeline(file_path: str, boxname: str,
 
     if file_path.endswith('.json'):
         replies_filename = file_path.replace('.json', '.replies')
-        if os.path.isfile(replies_filename):
+        if is_a_file(replies_filename):
             # append a replies identifier, which will later be removed
             post_str += '<hasReplies>'
 
         mitm_filename = file_path.replace('.json', '.mitm')
-        if os.path.isfile(mitm_filename):
+        if is_a_file(mitm_filename):
             # append a mitm identifier, which will later be removed
             post_str += '<postmitm>'
 
@@ -4667,7 +4668,7 @@ def _locate_news_arrival(base_dir: str, domain: str,
 
     account_dir = data_dir(base_dir) + '/news@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
-    if os.path.isfile(post_filename):
+    if is_a_file(post_filename):
         arrival = load_string(post_filename,
                               'EX: _locate_news_arrival unable to read ' +
                               post_filename)
@@ -4752,7 +4753,7 @@ def _create_box_items(base_dir: str,
         '/' + index_box_name + '.index'
     total_posts_count: int = 0
     posts_added_to_timeline: int = 0
-    if not os.path.isfile(index_filename):
+    if not is_a_file(index_filename):
         return total_posts_count, posts_added_to_timeline
 
     # format the first post into an hashed url
@@ -4839,7 +4840,7 @@ def _create_box_items(base_dir: str,
                                 original_domain, post_url, False)
                 if full_post_filename:
                     # has the post been rejected?
-                    if os.path.isfile(full_post_filename + '.reject'):
+                    if is_a_file(full_post_filename + '.reject'):
                         post_url2 = post_url.replace('/', '#') + '.json'
                         remove_post_from_index(post_url2, False,
                                                index_filename)
@@ -5107,7 +5108,7 @@ def _expire_announce_cache_for_person(base_dir: str,
         cache_filename = cache_filename.name
         # Time of file creation
         full_filename = os.path.join(cache_dir, cache_filename)
-        if not os.path.isfile(full_filename):
+        if not is_a_file(full_filename):
             continue
         last_modified = file_last_modified(full_filename)
         # get time difference
@@ -5137,7 +5138,7 @@ def _expire_conversations_for_person(base_dir: str,
             continue
         # Time of file creation
         full_filename = os.path.join(conv_dir, conv_filename)
-        if not os.path.isfile(full_filename):
+        if not is_a_file(full_filename):
             continue
         last_modified = file_last_modified(full_filename)
         # get time difference
@@ -5164,7 +5165,7 @@ def _expire_posts_cache_for_person(base_dir: str,
         cache_filename = cache_filename.name
         # Time of file creation
         full_filename = os.path.join(cache_dir, cache_filename)
-        if not os.path.isfile(full_filename):
+        if not is_a_file(full_filename):
             continue
         last_modified = file_last_modified(full_filename)
         # get time difference
@@ -5276,7 +5277,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
         if not post_filename.endswith('.json'):
             continue
         full_filename = os.path.join(box_dir, post_filename)
-        if not os.path.isfile(full_filename):
+        if not is_a_file(full_filename):
             continue
         post_json_object = load_json(full_filename)
         if not post_json_object:
@@ -5397,7 +5398,7 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
             continue
         # get the post json as text
         full_filename = os.path.join(box_dir, post_filename)
-        if not os.path.isfile(full_filename):
+        if not is_a_file(full_filename):
             continue
         content = \
             load_string(full_filename,
@@ -5456,7 +5457,7 @@ def get_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str) -> int:
     handle: str = nickname + '@' + domain
     expire_dms_filename = \
         acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
-    if os.path.isfile(expire_dms_filename):
+    if is_a_file(expire_dms_filename):
         keep_dms = False
     return keep_dms
 
@@ -5469,7 +5470,7 @@ def set_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str,
     expire_dms_filename = \
         acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
     if keep_dms:
-        if os.path.isfile(expire_dms_filename):
+        if is_a_file(expire_dms_filename):
             erase_file(expire_dms_filename,
                        'EX: unable to write set_post_expiry_keep_dms False ' +
                        expire_dms_filename)
@@ -5493,7 +5494,7 @@ def expire_posts(base_dir: str, http_prefix: str,
             domain = handle.split('@')[1]
             expire_posts_filename = \
                 acct_handle_dir(base_dir, handle) + '/.expire_posts_days'
-            if not os.path.isfile(expire_posts_filename):
+            if not is_a_file(expire_posts_filename):
                 continue
             keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
             expire_days_str = \
@@ -5525,7 +5526,7 @@ def get_post_expiry_days(base_dir: str, nickname: str, domain: str) -> int:
     handle = nickname + '@' + domain
     expire_posts_filename = \
         acct_handle_dir(base_dir, handle) + '/.expire_posts_days'
-    if not os.path.isfile(expire_posts_filename):
+    if not is_a_file(expire_posts_filename):
         return 0
     days_str = load_string(expire_posts_filename,
                            'EX: unable to write post expire days ' +
@@ -5577,7 +5578,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     handle = nickname + '@' + domain
     index_filename = \
         acct_handle_dir(base_dir, handle) + '/' + boxname + '.index'
-    if os.path.isfile(index_filename):
+    if is_a_file(index_filename):
         index_ctr: int = 0
         # get the existing index entries as a string
         new_index = ''
@@ -5613,7 +5614,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             full_original_filename = \
                 os.path.join(box_dir, original_post_filename)
             full_filename = os.path.join(box_dir, post_filename)
-            if not os.path.isfile(full_original_filename):
+            if not is_a_file(full_original_filename):
                 # if the original file doesn't exist (was remotely deleted by
                 # its author) then remove the corresponding edits
                 if erase_file(full_filename,
@@ -5623,7 +5624,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 else:
                     continue
             edit_files_ctr += 1
-            if os.path.isfile(full_filename):
+            if is_a_file(full_filename):
                 content = load_string(full_filename,
                                       'EX: unable to open content 2 ' +
                                       full_filename)
@@ -5657,7 +5658,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             remove_edits_ctr: int = 0
             for published_str, edit_filename in edits_in_box_sorted.items():
                 file_path = os.path.join(box_dir, edit_filename)
-                if not os.path.isfile(file_path):
+                if not is_a_file(file_path):
                     continue
                 if archive_dir:
                     archive_path = os.path.join(archive_dir, edit_filename)
@@ -5688,7 +5689,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             continue
         # Get the published time
         full_filename = os.path.join(box_dir, post_filename)
-        if os.path.isfile(full_filename):
+        if is_a_file(full_filename):
             content = load_string(full_filename,
                                   'EX: unable to open content 1 ' +
                                   full_filename)
@@ -5718,7 +5719,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     remove_ctr: int = 0
     for published_str, post_filename in posts_in_box_sorted.items():
         file_path = os.path.join(box_dir, post_filename)
-        if not os.path.isfile(file_path):
+        if not is_a_file(file_path):
             continue
         if archive_dir:
             archive_path = os.path.join(archive_dir, post_filename)
@@ -5732,14 +5733,14 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             )
             for ext in extensions:
                 ext_path = file_path.replace('.json', '.' + ext)
-                if os.path.isfile(ext_path):
+                if is_a_file(ext_path):
                     new_ext_path = archive_path.replace('.json', '.' + ext)
                     move_file(ext_path, new_ext_path,
                               'EX: unable to archive file ' + ext_path +
                               ' -> ' + new_ext_path)
                     continue
                 ext_path = file_path.replace('.json', '.json.' + ext)
-                if os.path.isfile(ext_path):
+                if is_a_file(ext_path):
                     new_ext_path = \
                         archive_path.replace('.json', '.json.' + ext)
                     move_file(ext_path, new_ext_path,
@@ -5754,7 +5755,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         post_cache_filename = \
             os.path.join(post_cache_dir, post_filename)
         post_cache_filename = post_cache_filename.replace('.json', '.html')
-        if os.path.isfile(post_cache_filename):
+        if is_a_file(post_cache_filename):
             erase_file(post_cache_filename,
                        'EX: archive_posts_for_person unable to delete ' +
                        post_cache_filename)
@@ -6026,7 +6027,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
         return []
 
     blocking_filename = data_dir(base_dir) + '/blocking.txt'
-    if not os.path.isfile(blocking_filename):
+    if not is_a_file(blocking_filename):
         return []
 
     # read the blocked domains as a single string
@@ -6086,7 +6087,7 @@ def check_domains(session, base_dir: str,
     follower_warning_filename = data_dir(base_dir) + '/followerWarnings.txt'
     update_follower_warnings: bool = False
     follower_warning_str = ''
-    if os.path.isfile(follower_warning_filename):
+    if is_a_file(follower_warning_filename):
         follower_warning_str = \
             load_string(follower_warning_filename,
                         'EX: check_domains unable to read ' +
@@ -6170,7 +6171,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     acct_dir(base_dir, nickname, domain) + '/' + \
                     boxname + '/' + \
                     message_id2.replace('/', '#') + '.json'
-                if os.path.isfile(search_filename):
+                if is_a_file(search_filename):
                     if authorized or \
                        text_in_file(pub_str, search_filename):
                         post_json_object = load_json(search_filename)
@@ -6197,7 +6198,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                     data_dir(base_dir) + '/inbox@' + \
                     domain + '/inbox/' + \
                     message_id2.replace('/', '#') + '.json'
-                if os.path.isfile(search_filename):
+                if is_a_file(search_filename):
                     if authorized or \
                        text_in_file(pub_str, search_filename):
                         # get the json of the reply and append it to
@@ -6227,7 +6228,7 @@ def _reject_announce(announce_filename: str,
                    recent_posts_cache, debug)
 
     # reject the post referenced by the announce activity object
-    if os.path.isfile(announce_filename + '.reject'):
+    if is_a_file(announce_filename + '.reject'):
         return
 
     save_flag_file(announce_filename + '.reject',
@@ -6277,10 +6278,10 @@ def download_announce(session, base_dir: str, http_prefix: str,
         announce_cache_dir + '/' + \
         post_json_object['object'].replace('/', '#') + '.json'
 
-    if os.path.isfile(announce_filename + '.reject'):
+    if is_a_file(announce_filename + '.reject'):
         return None
 
-    if os.path.isfile(announce_filename):
+    if is_a_file(announce_filename):
         if debug:
             print('Reading cached Announce content for ' +
                   post_json_object['object'])
@@ -6735,12 +6736,12 @@ def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
         conv_muted_filename = \
             acct_dir(base_dir, nickname, domain) + '/conversation/' + \
             conversation_id.replace('/', '#') + '.muted'
-        if os.path.isfile(conv_muted_filename):
+        if is_a_file(conv_muted_filename):
             return True
     post_filename = locate_post(base_dir, nickname, domain, post_id)
     if not post_filename:
         return False
-    if os.path.isfile(post_filename + '.muted'):
+    if is_a_file(post_filename + '.muted'):
         return True
     return False
 
@@ -6758,19 +6759,19 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
     post_dir = acct_dir(base_dir, nickname, domain)
     mute_filename = \
         post_dir + '/inbox/' + message_id.replace('/', '#') + '.json.muted'
-    if os.path.isfile(mute_filename):
+    if is_a_file(mute_filename):
         return True
     is_muted: bool = False
     mute_filename = \
         post_dir + '/outbox/' + \
         message_id.replace('/', '#') + '.json.muted'
-    if os.path.isfile(mute_filename):
+    if is_a_file(mute_filename):
         is_muted = True
     else:
         mute_filename = \
             data_dir(base_dir) + '/cache/announce/' + nickname + \
             '/' + message_id.replace('/', '#') + '.json.muted'
-        if os.path.isfile(mute_filename):
+        if is_a_file(mute_filename):
             is_muted = True
     return is_muted
 
@@ -6856,7 +6857,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return '', None
     post_id = remove_id_ending(post_json_object['object']['id'])
     lastpost_id = \
@@ -6982,7 +6983,7 @@ def get_max_profile_posts(base_dir: str, nickname: str, domain: str,
     max_posts_filename = \
         acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
     max_profile_posts: int = 4
-    if not os.path.isfile(max_posts_filename):
+    if not is_a_file(max_posts_filename):
         return max_profile_posts
     max_posts_str = \
         load_string(max_posts_filename,

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from pprint import pprint
 from flags import has_group_type
 from flags import url_permitted
@@ -34,6 +33,7 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
 from data import erase_file
+from data import is_a_file
 
 
 def no_of_likes(post_json_object: {}) -> int:
@@ -471,7 +471,7 @@ def update_likes_collection(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             erase_file(cached_post_filename,
                        'EX: update_likes_collection unable to delete ' +
                        cached_post_filename)
@@ -549,7 +549,7 @@ def undo_likes_collection_entry(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             ex_text = \
                 'EX: undo_likes_collection_entry ' + \
                 'unable to delete cached post ' + \

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
-import os
 from content import remove_long_words
 from content import limit_repeated_words
 from flags import is_editor
@@ -37,6 +36,7 @@ from webapp_utils import edit_text_field
 from textmode import text_mode_browser
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
@@ -105,7 +105,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
 
         # show the image at the top of the column
         edit_image_class = 'rightColEdit'
-        if os.path.isfile(right_column_image_filename):
+        if is_a_file(right_column_image_filename):
             edit_image_class = 'rightColEditImage'
             html_str += \
                 '\n      <center>\n' + \
@@ -175,7 +175,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
     # 3. show the edit icon
     if editor:
         dir_str = data_dir(base_dir)
-        if os.path.isfile(dir_str + '/newswiremoderation.txt'):
+        if is_a_file(dir_str + '/newswiremoderation.txt'):
             # show the edit icon highlighted
             html_str += \
                 '        <a href="' + \
@@ -269,7 +269,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
         if favicon_url:
             cached_favicon_filename = \
                 get_fav_filename_from_url(base_dir, favicon_url)
-            if os.path.isfile(cached_favicon_filename):
+            if is_a_file(cached_favicon_filename):
                 favicon_url = \
                     cached_favicon_filename.replace(base_dir, '')
             else:
@@ -279,7 +279,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                         get_fav_filename_from_url(base_dir, favicon_url)
                     cached_favicon_filename = \
                         cached_favicon_filename.replace('.ico', '.' + ext)
-                    if os.path.isfile(cached_favicon_filename):
+                    if is_a_file(cached_favicon_filename):
                         favicon_url = \
                             cached_favicon_filename.replace(base_dir, '')
 
@@ -383,7 +383,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     citations_filename = \
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
     citations_selected: list[str] = []
-    if os.path.isfile(citations_filename):
+    if is_a_file(citations_filename):
         citations_separator = '#####'
         citations: list[str] = \
             load_list(citations_filename,
@@ -401,7 +401,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -506,7 +506,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     if nickname == 'news':
@@ -592,7 +592,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         return ''
 
     css_filename = base_dir + '/epicyon-links.css'
-    if os.path.isfile(base_dir + '/links.css'):
+    if is_a_file(base_dir + '/links.css'):
         css_filename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
@@ -638,7 +638,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
     newswire_filename = data_dir(base_dir) + '/newswire.txt'
     newswire_str: str = ''
-    if os.path.isfile(newswire_filename):
+    if is_a_file(newswire_filename):
         newswire_str = \
             load_string(newswire_filename,
                         'EX: html_edit_newswire unable to read ' +
@@ -664,7 +664,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     filter_str: str = ''
     filter_filename = \
         data_dir(base_dir) + '/news@' + domain + '/filters.txt'
-    if os.path.isfile(filter_filename):
+    if is_a_file(filter_filename):
         filter_str = \
             load_string(filter_filename,
                         'EX: html_edit_newswire unable to read 2 ' +
@@ -699,7 +699,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
     hashtag_rules_str: str = ''
     hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
-    if os.path.isfile(hashtag_rules_filename):
+    if is_a_file(hashtag_rules_filename):
         hashtag_rules_str = \
             load_string(hashtag_rules_filename,
                         'EX: html_edit_newswire unable to read 3 ' +
@@ -753,7 +753,7 @@ def html_edit_news_post(translate: {}, base_dir: str, path: str,
         return ''
 
     css_filename = base_dir + '/epicyon-links.css'
-    if os.path.isfile(base_dir + '/links.css'):
+    if is_a_file(base_dir + '/links.css'):
         css_filename = base_dir + '/links.css'
 
     instance_title = \

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from utils import data_dir
 from utils import get_config_param
@@ -15,6 +14,7 @@ from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from markdown import markdown_to_html
 from data import load_string
+from data import is_a_file
 
 
 def html_about(base_dir: str, http_prefix: str,
@@ -24,17 +24,17 @@ def html_about(base_dir: str, http_prefix: str,
     """
     admin_nickname = get_config_param(base_dir, 'admin')
     dir_str = data_dir(base_dir)
-    if not os.path.isfile(dir_str + '/about.md'):
+    if not is_a_file(dir_str + '/about.md'):
         copyfile(base_dir + '/default_about.md',
                  dir_str + '/about.md')
 
-    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/login-background.jpg'):
+    if is_a_file(dir_str + '/login-background-custom.jpg'):
+        if not is_a_file(dir_str + '/login-background.jpg'):
             copyfile(dir_str + '/login-background-custom.jpg',
                      dir_str + '/login-background.jpg')
 
     about_text = 'Information about this instance goes here.'
-    if os.path.isfile(dir_str + '/about.md'):
+    if is_a_file(dir_str + '/about.md'):
         about_text = load_string(dir_str + '/about.md',
                                  'EX: html_about unable to read ' +
                                  dir_str + '/about.md')
@@ -43,7 +43,7 @@ def html_about(base_dir: str, http_prefix: str,
 
     about_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \

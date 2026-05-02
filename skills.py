@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
-import os
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
@@ -23,6 +22,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from utils import get_actor_from_post
+from data import is_a_file
 
 
 def set_skills_from_dict(actor_json: {}, skills_dict: {}) -> []:
@@ -121,7 +121,7 @@ def set_skill_level(base_dir: str, nickname: str, domain: str,
     if skill_level_percent < 0 or skill_level_percent > 100:
         return False
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return False
 
     actor_json = load_json(actor_filename)
@@ -133,7 +133,7 @@ def get_skills(base_dir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return False
 
     actor_json = load_json(actor_filename)

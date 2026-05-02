@@ -37,6 +37,7 @@ from blocking import is_blocked
 from session import create_session
 from data import load_list
 from data import load_string
+from data import is_a_file
 
 
 def html_moderation(default_timeline: str,
@@ -130,7 +131,7 @@ def html_account_info(translate: {},
 
     info_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -160,7 +161,7 @@ def html_account_info(translate: {},
     info_form += translate[msg_str1] + '</center><br><br>\n'
 
     proxy_type = 'tor'
-    if not os.path.isfile('/usr/bin/tor'):
+    if not is_a_file('/usr/bin/tor'):
         proxy_type = None
     if domain.endswith('.i2p'):
         proxy_type = None
@@ -355,7 +356,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     info_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -450,7 +451,7 @@ def html_moderation_info(translate: {}, base_dir: str,
         info_form += '</details>\n'
 
     suspended_filename = dir_str + '/suspended.txt'
-    if os.path.isfile(suspended_filename):
+    if is_a_file(suspended_filename):
         suspended_str = \
             load_string(suspended_filename,
                         'EX: html_moderation_info unable to read ' +
@@ -469,10 +470,10 @@ def html_moderation_info(translate: {}, base_dir: str,
             info_shown = True
 
     blocking_filename = dir_str + '/blocking.txt'
-    if os.path.isfile(blocking_filename):
+    if is_a_file(blocking_filename):
         blocking_reasons_filename = dir_str + '/blocking_reasons.txt'
         blocking_reasons_exist: bool = False
-        if os.path.isfile(blocking_reasons_filename):
+        if is_a_file(blocking_reasons_filename):
             blocking_reasons_exist = True
         blocked_lines: list[str] = \
             load_list(blocking_filename,
@@ -510,7 +511,7 @@ def html_moderation_info(translate: {}, base_dir: str,
         info_shown = True
 
     filters_filename = dir_str + '/filters.txt'
-    if os.path.isfile(filters_filename):
+    if is_a_file(filters_filename):
         filtered_str = \
             load_string(filters_filename,
                         'EX: html_moderation_info unable to read ' +

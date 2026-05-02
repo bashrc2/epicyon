@@ -23,6 +23,7 @@ from person import get_actor_json
 from data import load_list
 from data import save_string
 from data import append_string
+from data import is_a_file
 
 
 def _move_following_handles_for_account(base_dir: str,
@@ -39,7 +40,7 @@ def _move_following_handles_for_account(base_dir: str,
     ctr: int = 0
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(following_filename):
+    if not is_a_file(following_filename):
         return ctr
     following_handles = \
         load_list(following_filename,
@@ -155,7 +156,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if os.path.isfile(following_filename):
+    if is_a_file(following_filename):
         following_handles: list[str] = \
             load_list(following_filename,
                       'EX: _update_moved_handle unable to read ' +
@@ -187,7 +188,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                   moved_to_handle)
 
             # save the new handles to the refollow list
-            if os.path.isfile(refollow_filename):
+            if is_a_file(refollow_filename):
                 append_string(moved_to_handle + '\n', refollow_filename,
                               'EX: ' +
                               '_update_moved_handle unable to append ' +
@@ -202,7 +203,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if os.path.isfile(followers_filename):
+    if is_a_file(followers_filename):
         follower_handles: list[str] = \
             load_list(followers_filename,
                       'EX: _update_moved_handle unable to read ' +

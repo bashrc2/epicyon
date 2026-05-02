@@ -9,7 +9,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 import urllib.parse
 from utils import get_mutuals_of_person
 from utils import get_cached_post_filename
@@ -31,6 +30,7 @@ from reaction import undo_reaction_collection_entry
 from reaction import update_reaction_collection
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
+from data import is_a_file
 
 
 def reaction_button(self, calling_domain: str, path: str,
@@ -260,7 +260,7 @@ def reaction_button(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     reaction_post_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):
@@ -554,7 +554,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
             if not mitm:
                 mitm_filename = \
                     reaction_post_filename.replace('.json', '') + '.mitm'
-                if os.path.isfile(mitm_filename):
+                if is_a_file(mitm_filename):
                     mitm = True
             bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):

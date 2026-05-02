@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 from httpcodes import http_404
 from httpcodes import write2
 from httpheaders import set_headers
@@ -15,6 +14,7 @@ from httpheaders import set_headers_etag
 from utils import get_nickname_from_actor
 from blocking import export_blocking_file
 from data import load_binary
+from data import is_a_file
 
 
 def get_exported_blocks(self, path: str, base_dir: str,
@@ -43,7 +43,7 @@ def get_exported_theme(self, path: str, base_dir: str,
     """
     filename = path.split('/exports/', 1)[1]
     filename = base_dir + '/exports/' + filename
-    if os.path.isfile(filename):
+    if is_a_file(filename):
         export_binary = load_binary(filename,
                                     'EX: unable to read theme export ' +
                                     filename)

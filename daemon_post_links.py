@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 from socket import error as SocketError
 from flags import is_editor
@@ -20,6 +19,7 @@ from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 
 def _links_update_edited(fields: {}, links_filename: str) -> None:
@@ -43,7 +43,7 @@ def _links_update_edited(fields: {}, links_filename: str) -> None:
                         'EX: _links_update unable to write ' +
                         links_filename)
         else:
-            if os.path.isfile(links_filename):
+            if is_a_file(links_filename):
                 erase_file(links_filename,
                            'EX: _links_update unable to delete ' +
                            links_filename)
@@ -61,7 +61,7 @@ def _links_update_about(fields: {}, allow_local_network_access: bool,
                         'EX: unable to write about ' +
                         about_filename)
     else:
-        if os.path.isfile(about_filename):
+        if is_a_file(about_filename):
             erase_file(about_filename,
                        'EX: _links_update unable to delete ' +
                        about_filename)
@@ -78,7 +78,7 @@ def _links_update_tos(fields: {}, allow_local_network_access: bool,
             save_string(tos_str, tos_filename,
                         'EX: unable to write TOS ' + tos_filename)
     else:
-        if os.path.isfile(tos_filename):
+        if is_a_file(tos_filename):
             erase_file(tos_filename,
                        'EX: _links_update unable to delete ' +
                        tos_filename)
@@ -94,7 +94,7 @@ def _links_update_sepcification(fields: {},
                     'EX: unable to write specification ' +
                     specification_filename)
     else:
-        if os.path.isfile(specification_filename):
+        if is_a_file(specification_filename):
             erase_file(specification_filename,
                        'EX: _links_update_specification unable to delete ' +
                        specification_filename)

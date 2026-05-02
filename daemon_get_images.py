@@ -31,6 +31,7 @@ from person import save_person_qrcode
 from lxmf import save_lxmf_qrcode
 from data import load_string
 from data import load_binary
+from data import is_a_file
 
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
@@ -79,7 +80,7 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
         avatar_file = 'watermark_image.' + avatar_file_ext
     avatar_filename = \
         acct_dir(base_dir, avatar_nickname, domain) + '/' + avatar_file
-    if not os.path.isfile(avatar_filename):
+    if not is_a_file(avatar_filename):
         original_ext = avatar_file_ext
         original_avatar_file = avatar_file
         alt_ext = get_image_extensions()
@@ -93,7 +94,7 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
             avatar_filename = \
                 acct_dir(base_dir, avatar_nickname, domain) + \
                 '/' + avatar_file
-            if os.path.isfile(avatar_filename):
+            if is_a_file(avatar_filename):
                 alt_found = True
                 break
         if not alt_found:
@@ -131,7 +132,7 @@ def show_cached_avatar(self, referer_domain: str, path: str,
     """Shows an avatar image obtained from the cache
     """
     media_filename = base_dir + '/cache' + path
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         if etag_exists(self, media_filename):
             # The file has not changed
             http_304(self)
@@ -175,14 +176,14 @@ def show_help_screen_image(self, path: str,
     media_filename = \
         base_dir + '/theme/' + theme + '/helpimages/' + icon_filename
     # if there is no theme-specific help image then use the default one
-    if not os.path.isfile(media_filename):
+    if not is_a_file(media_filename):
         media_filename = \
             base_dir + '/theme/default/helpimages/' + icon_filename
     if etag_exists(self, media_filename):
         # The file has not changed
         http_304(self)
         return
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         media_binary = load_binary(media_filename,
                                    'EX: unable to read help image ' +
                                    media_filename)
@@ -230,7 +231,7 @@ def show_manual_image(self, path: str,
                             '_GET', 'show_manual_image',
                             debug)
         return
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         media_binary = load_binary(media_filename,
                                    'EX: unable to read manual image ' +
                                    media_filename)
@@ -279,7 +280,7 @@ def show_specification_image(self, path: str,
                             '_GET', 'show_specification_image',
                             debug)
         return
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         media_binary = load_binary(media_filename,
                                    'EX: unable to read specification image ' +
                                    media_filename)
@@ -311,7 +312,7 @@ def show_share_image(self, path: str,
 
     media_str = path.split('/sharefiles/')[1]
     media_filename = base_dir + '/sharefiles/' + media_str
-    if not os.path.isfile(media_filename):
+    if not is_a_file(media_filename):
         http_404(self, 102)
         return True
 
@@ -375,7 +376,7 @@ def show_icon(self, path: str,
         fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_icon', debug)
         return
-    if os.path.isfile(media_filename):
+    if is_a_file(media_filename):
         media_binary = load_binary(media_filename,
                                    'EX: unable to read icon image ' +
                                    media_filename)
@@ -405,7 +406,7 @@ def show_media(self, path: str, base_dir: str,
        path_is_audio(path):
         media_str = path.split('/media/')[1]
         media_filename = base_dir + '/media/' + media_str
-        if os.path.isfile(media_filename):
+        if is_a_file(media_filename):
             if etag_exists(self, media_filename):
                 # The file has not changed
                 http_304(self)
@@ -488,7 +489,7 @@ def show_qrcode(self, calling_domain: str, path: str,
         save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
         qr_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
-    if os.path.isfile(qr_filename):
+    if is_a_file(qr_filename):
         if etag_exists(self, qr_filename):
             # The file has not changed
             http_304(self)
@@ -531,11 +532,11 @@ def search_screen_banner(self, path: str,
         return True
     banner_filename = \
         acct_dir(base_dir, nickname, domain) + '/search_banner.png'
-    if not os.path.isfile(banner_filename):
-        if os.path.isfile(base_dir + '/theme/default/search_banner.png'):
+    if not is_a_file(banner_filename):
+        if is_a_file(base_dir + '/theme/default/search_banner.png'):
             copyfile(base_dir + '/theme/default/search_banner.png',
                      banner_filename)
-    if os.path.isfile(banner_filename):
+    if is_a_file(banner_filename):
         if etag_exists(self, banner_filename):
             # The file has not changed
             http_304(self)
@@ -577,7 +578,7 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
     banner_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + \
         side + '_col_image.png'
-    if os.path.isfile(banner_filename):
+    if is_a_file(banner_filename):
         if etag_exists(self, banner_filename):
             # The file has not changed
             http_304(self)
@@ -618,7 +619,7 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
     for ext in image_extensions:
         bg_filename = \
             base_dir + '/theme/' + theme_name + '/image.' + ext
-        if os.path.isfile(bg_filename):
+        if is_a_file(bg_filename):
             if etag_exists(self, bg_filename):
                 # The file has not changed
                 http_304(self)
@@ -668,7 +669,7 @@ def show_background_image(self, path: str,
                 bg_filename = \
                     data_dir(base_dir) + '/' + \
                     bg_im + '-background.' + ext
-                if os.path.isfile(bg_filename):
+                if is_a_file(bg_filename):
                     if etag_exists(self, bg_filename):
                         # The file has not changed
                         http_304(self)
@@ -711,9 +712,9 @@ def show_emoji(self, path: str,
     if is_image_file(path):
         emoji_str = path.split('/emoji/')[1]
         emoji_filename = base_dir + '/emoji/' + emoji_str
-        if not os.path.isfile(emoji_filename):
+        if not is_a_file(emoji_filename):
             emoji_filename = base_dir + '/emojicustom/' + emoji_str
-        if os.path.isfile(emoji_filename):
+        if is_a_file(emoji_filename):
             if etag_exists(self, emoji_filename):
                 # The file has not changed
                 http_304(self)

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from pprint import pprint
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
@@ -39,6 +38,7 @@ from data import load_string
 from data import save_string
 from data import prepend_string
 from data import erase_file
+from data import is_a_file
 
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
@@ -60,7 +60,7 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             ex_text = \
                 'EX: undo_bookmarks_collection_entry ' + \
                 'unable to delete cached post file ' + \
@@ -71,7 +71,7 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     # remove from the index
     bookmarks_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
-    if not os.path.isfile(bookmarks_index_filename):
+    if not is_a_file(bookmarks_index_filename):
         return
     if '/' in post_filename:
         bookmark_index = post_filename.split('/')[-1].strip()
@@ -180,7 +180,7 @@ def update_bookmarks_collection(recent_posts_cache: {},
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
     if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
+        if is_a_file(cached_post_filename):
             ex_text = \
                 'EX: update_bookmarks_collection ' + \
                 'unable to delete cached post ' + \
@@ -248,7 +248,7 @@ def update_bookmarks_collection(recent_posts_cache: {},
     bookmarks_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     bookmark_index = post_filename.split('/')[-1]
-    if os.path.isfile(bookmarks_index_filename):
+    if is_a_file(bookmarks_index_filename):
         if not text_in_file(bookmark_index, bookmarks_index_filename):
             if prepend_string(bookmark_index, bookmarks_index_filename,
                               'EX: ' +

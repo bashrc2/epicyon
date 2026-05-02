@@ -7,11 +7,11 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from utils import data_dir
 from data import load_string
 from data import erase_file
+from data import is_a_file
 
 
 def text_mode_browser(ua_str: str) -> bool:
@@ -44,7 +44,7 @@ def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
     text_mode_banner_filename = data_dir(base_dir) + '/banner.txt'
-    if os.path.isfile(text_mode_banner_filename):
+    if is_a_file(text_mode_banner_filename):
         banner_str = load_string(text_mode_banner_filename,
                                  'EX: unable to load text mode banner ' +
                                  text_mode_banner_filename)
@@ -57,7 +57,7 @@ def get_text_mode_logo(base_dir: str) -> str:
     """Returns the login screen logo used for shell browsers, like Lynx
     """
     text_mode_logo_filename = data_dir(base_dir) + '/logo.txt'
-    if not os.path.isfile(text_mode_logo_filename):
+    if not is_a_file(text_mode_logo_filename):
         text_mode_logo_filename = base_dir + '/img/logo.txt'
 
     logo_str = load_string(text_mode_logo_filename,
@@ -74,7 +74,7 @@ def set_text_mode_theme(base_dir: str, name: str) -> None:
     text_mode_logo_filename = \
         base_dir + '/theme/' + name + '/logo.txt'
     dir_str = data_dir(base_dir)
-    if os.path.isfile(text_mode_logo_filename):
+    if is_a_file(text_mode_logo_filename):
         try:
             copyfile(text_mode_logo_filename, dir_str + '/logo.txt')
         except OSError:
@@ -92,11 +92,11 @@ def set_text_mode_theme(base_dir: str, name: str) -> None:
     # set the text mode banner which appears in browsers such as Lynx
     text_mode_banner_filename = \
         base_dir + '/theme/' + name + '/banner.txt'
-    if os.path.isfile(dir_str + '/banner.txt'):
+    if is_a_file(dir_str + '/banner.txt'):
         erase_file(dir_str + '/banner.txt',
                    'EX: set_text_mode_theme unable to delete ' +
                    dir_str + '/banner.txt')
-    if os.path.isfile(text_mode_banner_filename):
+    if is_a_file(text_mode_banner_filename):
         try:
             copyfile(text_mode_banner_filename, dir_str + '/banner.txt')
         except OSError:

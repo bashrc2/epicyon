@@ -8,13 +8,13 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 
-import os
 import time
 from utils import acct_dir
 from datetime import datetime
 from datetime import timedelta
 from happening import day_events_check
 from webapp_utils import html_highlight_label
+from data import is_a_file
 
 
 def header_buttons_timeline(default_timeline: str,
@@ -117,7 +117,7 @@ def header_buttons_timeline(default_timeline: str,
 
             replies_index_filename = \
                 acct_dir(base_dir, nickname, domain) + '/tlreplies.index'
-            if os.path.isfile(replies_index_filename):
+            if is_a_file(replies_index_filename):
                 tl_str += \
                     '<a href="' + users_path + '/tlreplies" tabindex="2"'
                 if box_name == 'tlreplies':

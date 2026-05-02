@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 import json
 from roles import get_actor_roles_list
 from skills import no_of_actor_skills
@@ -34,6 +33,7 @@ from webapp_profile import html_profile
 from webapp_profile import html_edit_profile
 from fitnessFunctions import fitness_performance
 from securemode import secure_mode
+from data import is_a_file
 
 
 def show_person_profile(self, authorized: bool,
@@ -264,7 +264,7 @@ def show_roles(self, calling_domain: str, referer_domain: str,
     post_sections = named_status.split('/')
     nickname = post_sections[0]
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
+    if not is_a_file(actor_filename):
         return False
 
     actor_json = load_json(actor_filename)
@@ -423,7 +423,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
         post_sections = named_status.split('/')
         nickname = post_sections[0]
         actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-        if os.path.isfile(actor_filename):
+        if is_a_file(actor_filename):
             actor_json = load_json(actor_filename)
             if actor_json:
                 if no_of_actor_skills(actor_json) > 0:

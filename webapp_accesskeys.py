@@ -16,6 +16,7 @@ from utils import acct_dir
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_banner_file
+from data import is_a_file
 
 
 def load_access_keys_for_accounts(base_dir: str, key_shortcuts: {},
@@ -29,7 +30,7 @@ def load_access_keys_for_accounts(base_dir: str, key_shortcuts: {},
                 continue
             account_dir = os.path.join(dir_str, acct)
             access_keys_filename = account_dir + '/access_keys.json'
-            if not os.path.isfile(access_keys_filename):
+            if not is_a_file(access_keys_filename):
                 continue
             nickname = acct.split('@')[0]
             access_keys = load_json(access_keys_filename)
@@ -51,7 +52,7 @@ def html_access_keys(base_dir: str,
     """
     access_keys_filename = \
         acct_dir(base_dir, nickname, domain) + '/access_keys.json'
-    if os.path.isfile(access_keys_filename):
+    if is_a_file(access_keys_filename):
         access_keys_from_file = load_json(access_keys_filename)
         if access_keys_from_file:
             access_keys = access_keys_from_file
@@ -61,7 +62,7 @@ def html_access_keys(base_dir: str,
 
     access_keys_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \

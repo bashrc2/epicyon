@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 from shutil import copyfile
 from utils import data_dir
 from utils import get_config_param
@@ -16,6 +15,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from markdown import markdown_to_html
 from data import load_string
+from data import is_a_file
 
 
 def html_terms_of_service(base_dir: str,
@@ -24,17 +24,17 @@ def html_terms_of_service(base_dir: str,
     """
     admin_nickname = get_config_param(base_dir, 'admin')
     dir_str = data_dir(base_dir)
-    if not os.path.isfile(dir_str + '/tos.md'):
+    if not is_a_file(dir_str + '/tos.md'):
         copyfile(base_dir + '/default_tos.md',
                  dir_str + '/tos.md')
 
-    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/login-background.jpg'):
+    if is_a_file(dir_str + '/login-background-custom.jpg'):
+        if not is_a_file(dir_str + '/login-background.jpg'):
             copyfile(dir_str + '/login-background-custom.jpg',
                      dir_str + '/login-background.jpg')
 
     tos_text = 'Terms of Service go here.'
-    if os.path.isfile(dir_str + '/tos.md'):
+    if is_a_file(dir_str + '/tos.md'):
         tos_text_str = \
             load_string(dir_str + '/tos.md',
                         'EX: html_terms_of_service unable to read ' +
@@ -44,7 +44,7 @@ def html_terms_of_service(base_dir: str,
 
     tos_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \

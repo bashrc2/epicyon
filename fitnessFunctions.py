@@ -7,13 +7,13 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 import time
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from utils import data_dir
 from utils import get_config_param
 from utils import save_json
+from data import is_a_file
 
 
 def fitness_performance(start_time, fitness_state: {},
@@ -76,7 +76,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
     watch_points_list = sorted_watch_points(fitness, fitness_id)
 
     css_filename = base_dir + '/epicyon-graph.css'
-    if os.path.isfile(base_dir + '/graph.css'):
+    if is_a_file(base_dir + '/graph.css'):
         css_filename = base_dir + '/graph.css'
 
     instance_title = \

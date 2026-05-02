@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
-import os
 import html
 import datetime
 import urllib.parse
@@ -28,6 +27,7 @@ from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
 from session import get_json_valid
 from session import get_json
+from data import is_a_file
 
 MAX_LINK_LENGTH = 40
 
@@ -320,12 +320,12 @@ def html_podcast_episode(translate: {},
     """Returns html for a podcast episode, an item from the newswire
     """
     css_filename = base_dir + '/epicyon-podcast.css'
-    if os.path.isfile(base_dir + '/podcast.css'):
+    if is_a_file(base_dir + '/podcast.css'):
         css_filename = base_dir + '/podcast.css'
 
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/podcast-background-custom.jpg'):
-        if not os.path.isfile(dir_str + '/podcast-background.jpg'):
+    if is_a_file(dir_str + '/podcast-background-custom.jpg'):
+        if not is_a_file(dir_str + '/podcast-background.jpg'):
             copyfile(dir_str + '/podcast-background.jpg',
                      dir_str + '/podcast-background.jpg')
 

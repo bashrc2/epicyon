@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from follow import followed_account_accepts
 from follow import followed_account_rejects
 from follow import remove_from_follow_requests
@@ -31,6 +30,7 @@ from data import prepend_string
 from data import load_list
 from data import erase_file
 from data import move_file
+from data import is_a_file
 
 
 def manual_deny_follow_request2(session, session_onion, session_i2p,
@@ -56,7 +56,7 @@ def manual_deny_follow_request2(session, session_onion, session_i2p,
 
     # has this handle already been rejected?
     rejected_follows_filename = accounts_dir + '/followrejects.txt'
-    if os.path.isfile(rejected_follows_filename):
+    if is_a_file(rejected_follows_filename):
         if text_in_file(deny_handle, rejected_follows_filename):
             remove_from_follow_requests(base_dir, nickname, domain,
                                         deny_handle, debug)
@@ -145,7 +145,7 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
      re-follow later then they don't need to be manually approved again
     """
     approved_filename = account_dir + '/approved.txt'
-    if os.path.isfile(approved_filename):
+    if is_a_file(approved_filename):
         if not text_in_file(approve_handle, approved_filename):
             append_string(approve_handle + '\n', approved_filename,
                           'EX: _approve_follower_handle unable to append ' +
@@ -182,7 +182,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
           ' approving follow request from ' + approve_handle)
     account_dir = acct_handle_dir(base_dir, handle)
     approve_follows_filename = account_dir + '/followrequests.txt'
-    if not os.path.isfile(approve_follows_filename):
+    if not is_a_file(approve_follows_filename):
         print('Manual follow accept: follow requests file ' +
               approve_follows_filename + ' not found')
         return
@@ -257,7 +257,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
             requests_dir = account_dir + '/requests'
             follow_activity_filename = \
                 requests_dir + '/' + handle_of_follow_requester + '.follow'
-            if not os.path.isfile(follow_activity_filename):
+            if not is_a_file(follow_activity_filename):
                 update_approved_followers = True
                 continue
             follow_json = load_json(follow_activity_filename)
@@ -346,7 +346,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
     if update_approved_followers:
         # update the followers
         print('Manual follow accept: updating ' + followers_filename)
-        if os.path.isfile(followers_filename):
+        if is_a_file(followers_filename):
             if not text_in_file(approve_handle_full, followers_filename):
                 prepend_string(approve_handle_full, followers_filename,
                                'EX: Manual follow accept. ' +
@@ -376,7 +376,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                   approve_follows_filename)
         # remove the .follow file
         if follow_activity_filename:
-            if os.path.isfile(follow_activity_filename):
+            if is_a_file(follow_activity_filename):
                 erase_file(follow_activity_filename,
                            'EX: manual_approve_follow_request ' +
                            'unable to delete ' + follow_activity_filename)

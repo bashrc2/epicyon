@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 from utils import get_mutuals_of_person
 from utils import locate_post
 from utils import get_config_param
@@ -25,6 +24,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import add_emoji_to_display_name
 from webapp_post import individual_post_as_html
 from textmode import text_mode_browser
+from data import is_a_file
 
 
 def html_likers_of_post(base_dir: str, nickname: str,
@@ -59,7 +59,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
     """Returns html for a screen showing who liked a post
     """
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -96,7 +96,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
     # show the post which was liked
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm: bool = False
-    if os.path.isfile(filename.replace('.json', '') + '.mitm'):
+    if is_a_file(filename.replace('.json', '') + '.mitm'):
         mitm = True
     minimize_all_images: bool = False
     if nickname in min_images_for_accounts:

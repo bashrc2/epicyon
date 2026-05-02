@@ -29,6 +29,7 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
 from data import erase_file
+from data import is_a_file
 
 
 def send_delete_via_server(base_dir: str, session,
@@ -198,7 +199,7 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     for _, _, files in os.walk(base_dir + '/tags'):
         for fname in files:
             tags_filename = os.path.join(base_dir + '/tags', fname)
-            if not os.path.isfile(tags_filename):
+            if not is_a_file(tags_filename):
                 continue
             # get last modified datetime
             mod_time_since_epoc = os.path.getmtime(tags_filename)

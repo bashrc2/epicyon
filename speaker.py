@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Accessibility"
 
-import os
 import html
 import random
 import urllib.parse
@@ -35,6 +34,7 @@ from content import html_replace_inline_quotes
 from data import load_list
 from data import load_string
 from data import save_string
+from data import is_a_file
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -153,7 +153,7 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             "(": ",",
             ")": ","
         }
-    if os.path.isfile(pronounce_filename):
+    if is_a_file(pronounce_filename):
         pronounce_list: list[str] = \
             load_list(pronounce_filename,
                       'EX: _speaker_pronounce unable to read ' +
@@ -391,7 +391,7 @@ def get_ssml_box(base_dir: str, path: str,
         nickname = nickname.split('/')[0]
     speaker_filename = \
         acct_dir(base_dir, nickname, domain) + '/speaker.json'
-    if not os.path.isfile(speaker_filename):
+    if not is_a_file(speaker_filename):
         return None
     speaker_json = load_json(speaker_filename)
     if not speaker_json:
@@ -541,7 +541,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     follow_requests_list: list[str] = []
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
-    if os.path.isfile(approve_follows_filename):
+    if is_a_file(approve_follows_filename):
         follows: list[str] = \
             load_list(approve_follows_filename,
                       'EX: _post_to_speaker_json unable to read ' +
@@ -553,24 +553,24 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             follow_requests_list = follows
     post_dm: bool = False
     dm_filename = accounts_dir + '/.newDM'
-    if os.path.isfile(dm_filename):
+    if is_a_file(dm_filename):
         post_dm = True
     post_reply: bool = False
     reply_filename = accounts_dir + '/.newReply'
-    if os.path.isfile(reply_filename):
+    if is_a_file(reply_filename):
         post_reply = True
     liked_by = ''
     like_filename = accounts_dir + '/.newLike'
-    if os.path.isfile(like_filename):
+    if is_a_file(like_filename):
         liked_by = load_string(like_filename,
                                'EX: _post_to_speaker_json unable to read 2 ' +
                                like_filename)
         if liked_by is None:
             liked_by = ''
     calendar_filename = accounts_dir + '/.newCalendar'
-    post_cal = os.path.isfile(calendar_filename)
+    post_cal = is_a_file(calendar_filename)
     share_filename = accounts_dir + '/.newShare'
-    post_share = os.path.isfile(share_filename)
+    post_share = is_a_file(share_filename)
 
     return _speaker_endpoint_json(speaker_name, summary,
                                   content, say_content, image_description,

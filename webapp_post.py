@@ -148,6 +148,7 @@ from blog import html_blog_post_gemini_links
 from data import load_list
 from data import save_string
 from data import save_flag_file
+from data import is_a_file
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -2110,7 +2111,7 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
     }
 
     onion_domains_filename = data_dir(base_dir) + '/onion_domains.txt'
-    if os.path.isfile(onion_domains_filename):
+    if is_a_file(onion_domains_filename):
         onion_domains_list: list[str] = \
             load_list(onion_domains_filename,
                       'EX: unable to load onion domains file ' +
@@ -2535,7 +2536,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         show_vote_posts: bool = True
         show_vote_file: str = \
             acct_dir(base_dir, nickname, domain) + '/.noVotes'
-        if os.path.isfile(show_vote_file):
+        if is_a_file(show_vote_file):
             show_vote_posts = False
         post_json_announce: dict = \
             download_announce(session, base_dir, http_prefix,
@@ -2600,7 +2601,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # create a file for use by text-to-speech
             if is_recent_post(post_json_object, 3):
                 if post_json_object.get('actor'):
-                    if not os.path.isfile(announce_filename + '.tts'):
+                    if not is_a_file(announce_filename + '.tts'):
                         actor_url: str = get_actor_from_post(post_json_object)
                         update_speaker(base_dir, http_prefix,
                                        nickname, domain, domain_full,
@@ -2807,14 +2808,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
     hide_like_button_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.hideLikeButton'
     show_like_button: bool = True
-    if os.path.isfile(hide_like_button_file):
+    if is_a_file(hide_like_button_file):
         show_like_button = False
 
     # whether to show a reaction button
     hide_reaction_button_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.hideReactionButton'
     show_reaction_button: bool = True
-    if os.path.isfile(hide_reaction_button_file):
+    if is_a_file(hide_reaction_button_file):
         show_reaction_button = False
 
     like_json_object: dict = post_json_object
@@ -2937,7 +2938,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     edits_filename: str = account_dir + box_name + '/' + edits_post_url
     edits_str: str = ''
-    if os.path.isfile(edits_filename):
+    if is_a_file(edits_filename):
         edits_json = load_json(edits_filename)
         if edits_json:
             edits_str = create_edits_html(edits_json, post_json_object,
@@ -3623,8 +3624,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
             post_json_object = load_json(post_filename)
             if post_json_object:
                 mitm: bool = False
-                if os.path.isfile(post_filename.replace('.json', '') +
-                                  '.mitm'):
+                test_filename = post_filename.replace('.json', '') + '.mitm'
+                if is_a_file(test_filename):
                     mitm = True
                 post_str = \
                     individual_post_as_html(signing_priv_key_pem,
@@ -3668,7 +3669,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
     if post_filename:
         # is there a replies file for this post?
         replies_filename = post_filename.replace('.json', '.replies')
-        if os.path.isfile(replies_filename):
+        if is_a_file(replies_filename):
             # get items from the replies file
             replies_json = {
                 'orderedItems': []
@@ -3710,7 +3711,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             block_bluesky,
                                             block_nostr)
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = \
@@ -3809,7 +3810,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         block_nostr)
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
@@ -3886,7 +3887,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 block_nostr)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
-    if not os.path.isfile(reactions_filename):
+    if not is_a_file(reactions_filename):
         reactions_filename = base_dir + '/emoji/default_reactions.json'
     reactions_json = load_json(reactions_filename)
     emoji_picks_str: str = ''
@@ -3910,7 +3911,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
         emoji_picks_str += '</div>\n'
 
     css_filename = base_dir + '/epicyon-profile.css'
-    if os.path.isfile(base_dir + '/epicyon.css'):
+    if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     # filename of the banner shown at the top

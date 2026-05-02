@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon GET"
 
-import os
 import urllib.parse
 from fitnessFunctions import fitness_performance
 from httpheaders import set_headers_etag
@@ -20,6 +19,7 @@ from utils import get_config_param
 from utils import binary_is_image
 from formats import media_file_mime_type
 from data import load_binary
+from data import is_a_file
 
 
 def get_favicon(self, calling_domain: str,
@@ -51,7 +51,7 @@ def get_favicon(self, calling_domain: str,
         base_dir + '/theme/' + self.server.theme_name + \
         '/icons/' + fav_filename
     if not fav_filename.endswith('.ico'):
-        if not os.path.isfile(favicon_filename):
+        if not is_a_file(favicon_filename):
             if fav_filename.endswith('.webp'):
                 fav_filename = fav_filename.replace('.webp', '.ico')
             elif fav_filename.endswith('.avif'):
@@ -60,7 +60,7 @@ def get_favicon(self, calling_domain: str,
                 fav_filename = fav_filename.replace('.heic', '.ico')
             elif fav_filename.endswith('.jxl'):
                 fav_filename = fav_filename.replace('.jxl', '.ico')
-    if not os.path.isfile(favicon_filename):
+    if not is_a_file(favicon_filename):
         # default favicon
         favicon_filename = \
             base_dir + '/theme/default/icons/' + fav_filename
@@ -81,7 +81,7 @@ def get_favicon(self, calling_domain: str,
         if debug:
             print('Sent favicon from cache: ' + calling_domain)
         return
-    if os.path.isfile(favicon_filename):
+    if is_a_file(favicon_filename):
         fav_binary = load_binary(favicon_filename,
                                  'EX: unable to read favicon ' +
                                  favicon_filename)
@@ -122,7 +122,7 @@ def show_cached_favicon(self, referer_domain: str, path: str,
         fitness_performance(getreq_start_time, fitness,
                             '_GET', '_show_cached_favicon2', debug)
         return
-    if not os.path.isfile(fav_filename):
+    if not is_a_file(fav_filename):
         http_404(self, 44)
         return
     if etag_exists(self, fav_filename):

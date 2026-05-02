@@ -7,13 +7,13 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Calendar"
 
-import os
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import text_in_file
 from data import load_string
 from data import save_string
 from data import save_flag_file
+from data import is_a_file
 
 
 def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
@@ -27,7 +27,7 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
     domain = remove_domain_port(domain)
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(following_filename):
+    if not is_a_file(following_filename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
         return
@@ -44,7 +44,7 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
     # get the contents of the notifyOnPost file, which is
     # a set of handles
     following_handles: str = ''
-    if os.path.isfile(notify_on_post_filename):
+    if is_a_file(notify_on_post_filename):
         print('notify file exists')
         following_handles = \
             load_string(notify_on_post_filename,
@@ -125,7 +125,7 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
     notify_on_post_filename = \
         acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
     handle = following_nickname + '@' + following_domain
-    if not os.path.isfile(notify_on_post_filename):
+    if not is_a_file(notify_on_post_filename):
         # create a new notifyOnPost file
         save_flag_file(notify_on_post_filename,
                        'EX: notify_when_person_posts unable to write ' +

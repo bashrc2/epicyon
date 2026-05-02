@@ -17,6 +17,7 @@ from utils import get_invalid_characters
 from data import load_string
 from data import save_string
 from data import erase_file
+from data import is_a_file
 
 MAX_TAG_LENGTH = 42
 
@@ -27,12 +28,12 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
     """Returns the category for the hashtag
     """
     category_filename = base_dir + '/tags/' + hashtag + '.category'
-    if not os.path.isfile(category_filename):
+    if not is_a_file(category_filename):
         category_filename = base_dir + '/tags/' + hashtag.title() + '.category'
-        if not os.path.isfile(category_filename):
+        if not is_a_file(category_filename):
             category_filename = \
                 base_dir + '/tags/' + hashtag.upper() + '.category'
-            if not os.path.isfile(category_filename):
+            if not is_a_file(category_filename):
                 return ''
 
     category_str: str = \
@@ -64,7 +65,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
             if not cities_file.endswith('.txt'):
                 continue
             cities_filename = base_dir + '/data/cities/' + cities_file
-            if not os.path.isfile(cities_filename):
+            if not is_a_file(cities_filename):
                 continue
             cities: list[str] = []
             cities_str = \
@@ -81,7 +82,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
 
                 hashtag2 = replace_strings(hashtag, replacements2)
                 city_filename = base_dir + '/tags/' + hashtag2 + '.category'
-                if not os.path.isfile(city_filename):
+                if not is_a_file(city_filename):
                     save_string(category_str, city_filename,
                                 'EX: unable to write city category ' +
                                 city_filename)
@@ -93,7 +94,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                     hashtag2 = new_hashtag
                     city_filename = \
                         base_dir + '/tags/' + hashtag2 + '.category'
-                    if not os.path.isfile(city_filename):
+                    if not is_a_file(city_filename):
                         save_string(category_str, city_filename,
                                     'EX: unable to write city category2 ' +
                                     city_filename)
@@ -105,7 +106,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                     hashtag2 = new_hashtag
                     city_filename = \
                         base_dir + '/tags/' + hashtag2 + '.category'
-                    if not os.path.isfile(city_filename):
+                    if not is_a_file(city_filename):
                         save_string(category_str, city_filename,
                                     'EX: unable to write city category3 ' +
                                     city_filename)
@@ -127,7 +128,7 @@ def get_hashtag_categories(base_dir: str,
             if not catfile.endswith('.category'):
                 continue
             category_filename = os.path.join(base_dir + '/tags', catfile)
-            if not os.path.isfile(category_filename):
+            if not is_a_file(category_filename):
                 continue
             hashtag = catfile.split('.')[0]
             if len(hashtag) > MAX_TAG_LENGTH:
@@ -147,7 +148,7 @@ def get_hashtag_categories(base_dir: str,
 
             if recent:
                 tags_filename = base_dir + '/tags/' + hashtag + '.txt'
-                if not os.path.isfile(tags_filename):
+                if not is_a_file(tags_filename):
                     continue
                 mod_time_since_epoc = \
                     os.path.getmtime(tags_filename)
@@ -174,7 +175,7 @@ def update_hashtag_categories(base_dir: str) -> None:
     category_list_filename = data_dir(base_dir) + '/categoryList.txt'
     hashtag_categories = get_hashtag_categories(base_dir, False, None)
     if not hashtag_categories:
-        if os.path.isfile(category_list_filename):
+        if is_a_file(category_list_filename):
             erase_file(category_list_filename,
                        'EX: update_hashtag_categories ' +
                        'unable to delete cached category list ' +
@@ -232,13 +233,13 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
 
     if not force:
         hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
-        if not os.path.isfile(hashtag_filename):
+        if not is_a_file(hashtag_filename):
             hashtag = hashtag.title()
             hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
-            if not os.path.isfile(hashtag_filename):
+            if not is_a_file(hashtag_filename):
                 hashtag = hashtag.upper()
                 hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
-                if not os.path.isfile(hashtag_filename):
+                if not is_a_file(hashtag_filename):
                     return False
 
     if not os.path.isdir(base_dir + '/tags'):
@@ -246,7 +247,7 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
     category_filename = base_dir + '/tags/' + hashtag + '.category'
     if force:
         # don't overwrite any existing categories
-        if os.path.isfile(category_filename):
+        if is_a_file(category_filename):
             return False
 
     category_written: bool = False
