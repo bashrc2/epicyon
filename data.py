@@ -29,6 +29,26 @@ def _store_base(text: str, filename: str, exception_text: str,
     return False
 
 
+def save_with_err(text: str, filename: str, exception_text: str) -> bool:
+    """Saves a string to file and returns any error code
+    """
+    errno: int = 0
+    try:
+        with open(filename, 'w+', encoding='utf-8') as fp:
+            fp.write(text)
+            return True, errno
+    except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        errno = exc.errno
+        print(exception_text)
+    except UnicodeEncodeError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    return False, errno
+
+
 def load_string(filename: str, exception_text: str) -> str:
     """Loads a string from file
     """
@@ -115,7 +135,7 @@ def save_binary(text: str, filename: str, exception_text: str) -> bool:
     """Saves a binary to file
     """
     try:
-        with open(filename, 'wb') as fp:
+        with open(filename, 'wb+') as fp:
             fp.write(text)
             return True
     except OSError as exc:

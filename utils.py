@@ -24,6 +24,8 @@ from unicodetext import standardize_text
 from formats import get_image_extensions
 from data import load_list
 from data import save_string
+from data import save_with_err
+from data import prepend_string
 from data import save_flag_file
 from data import load_string
 from data import append_string
@@ -911,19 +913,19 @@ def save_json(json_object: {}, filename: str) -> bool:
             return False
 
     tries: int = 1
+    savestr = json.dumps(json_object)
     while tries <= 5:
-        try:
-            with open(filename, 'w+', encoding='utf-8') as fp_json:
-                fp_json.write(json.dumps(json_object))
-                return True
-        except OSError as exc:
-            print('EX: save_json ' + str(tries) + ' ' + str(filename) +
-                  ' ' + str(exc))
-            if exc.errno == 36:
-                # filename too long
-                break
-            time.sleep(1)
-            tries += 1
+        success, errno = \
+            save_with_err(savestr, filename,
+                          'EX: save_json ' + str(tries) + ' ' +
+                          str(filename) + ' [ex]')
+        if success:
+            return True
+        if errno == 36:
+            # filename too long
+            break
+        time.sleep(1)
+        tries += 1
     return False
 
 
@@ -1636,16 +1638,10 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                 print('DEBUG: follow already exists')
             return True
         # prepend to follow file
-        try:
-            with open(filename, 'r+', encoding='utf-8') as fp_foll:
-                content: str = fp_foll.read()
-                if handle_to_follow + '\n' not in content:
-                    fp_foll.seek(0, 0)
-                    fp_foll.write(handle_to_follow + '\n' + content)
-                    print('DEBUG: follow added')
-        except OSError as ex:
-            print('WARN: Failed to write entry to follow file ' +
-                  filename + ' ' + str(ex))
+        if prepend_string(handle_to_follow, filename,
+                          'EX: Failed to write entry to follow file ' +
+                          filename + ' [ex]'):
+            print('DEBUG: follow added')
     else:
         # first follow
         if debug:

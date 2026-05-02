@@ -247,6 +247,7 @@ from blog import html_blog_post_gemini_links
 from data import load_list
 from data import load_string
 from data import save_string
+from data import save_binary
 from data import erase_file
 from data import is_a_dir
 from data import makedir
@@ -4643,8 +4644,9 @@ def _test_danger_svg(base_dir: str) -> None:
         }
     }
 
-    with open(svg_image_filename, 'wb+') as fp_svg:
-        fp_svg.write(svg_content.encode('utf-8'))
+    binary_content = svg_content.encode('utf-8')
+    save_binary(binary_content, svg_image_filename,
+                'EX: save failed ' + svg_image_filename)
     assert os.path.isfile(svg_image_filename)
     assert svg_content != svg_clean
 
@@ -7250,11 +7252,8 @@ def _test_spoofed_geolocation() -> None:
 
     kml_str += '</Document>\n'
     kml_str += '</kml>'
-    try:
-        with open('unittest_decoy.kml', 'w+', encoding='utf-8') as fp_kml:
-            fp_kml.write(kml_str)
-    except OSError:
-        print('EX: unable to write unittest_decoy.kml')
+    save_string(kml_str, 'unittest_decoy.kml',
+                'EX: unable to write unittest_decoy.kml')
 
 
 def _test_skills() -> None:
