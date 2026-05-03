@@ -452,7 +452,7 @@ def _create_news_mirror(base_dir: str, domain: str,
     if '|' in url or '>' in url:
         return True
 
-    mirror_dir = data_dir(base_dir) + '/newsmirror'
+    mirror_dir: str = data_dir(base_dir) + '/newsmirror'
     if not is_a_dir(mirror_dir):
         makedir(mirror_dir)
 
@@ -462,7 +462,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         no_of_dirs = len(dirs)
         break
 
-    mirror_index_filename = data_dir(base_dir) + '/newsmirror.txt'
+    mirror_index_filename: str = data_dir(base_dir) + '/newsmirror.txt'
 
     if max_mirrored_articles > 0 and no_of_dirs > max_mirrored_articles:
         if not is_a_file(mirror_index_filename):
@@ -480,11 +480,11 @@ def _create_news_mirror(base_dir: str, domain: str,
                         # escape valve
                         break
 
-                    post_id = fp_index.readline()
+                    post_id: str = fp_index.readline()
                     if not post_id:
                         continue
                     post_id = post_id.strip()
-                    mirror_article_dir = mirror_dir + '/' + post_id
+                    mirror_article_dir: str = mirror_dir + '/' + post_id
                     if is_a_dir(mirror_article_dir):
                         rmtree(mirror_article_dir,
                                ignore_errors=False, onexc=None)
@@ -508,18 +508,18 @@ def _create_news_mirror(base_dir: str, domain: str,
                         'EX: _create_news_mirror unable to write ' +
                         mirror_index_filename)
 
-    mirror_article_dir = mirror_dir + '/' + post_id_number
+    mirror_article_dir: str = mirror_dir + '/' + post_id_number
     if is_a_dir(mirror_article_dir):
         # already mirrored
         return True
 
     # for onion instances mirror via tor
-    prefix_str = ''
+    prefix_str: str = ''
     if domain.endswith('.onion'):
         prefix_str = '/usr/bin/torsocks '
 
     # download the files
-    command_str = \
+    command_str: str = \
         prefix_str + '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
         ' -P ' + mirror_article_dir
     proc = Popen(command_str, shell=True)
