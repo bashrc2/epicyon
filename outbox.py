@@ -197,11 +197,13 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
         updatable_attachments = ('PGP', 'OpenPGP', 'Email')
 
         for new_property_value in updated_actor_json['attachment']:
-            name_value = None
+            name_value: str = None
             if new_property_value.get('name'):
-                name_value = new_property_value['name']
+                if isinstance(new_property_value['name'], str):
+                    name_value = new_property_value['name']
             elif new_property_value.get('schema:name'):
-                name_value = new_property_value['schema:name']
+                if isinstance(new_property_value['schema:name'], str):
+                    name_value = new_property_value['schema:name']
             if not name_value:
                 continue
             if name_value not in updatable_attachments:

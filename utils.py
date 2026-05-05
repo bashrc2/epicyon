@@ -181,11 +181,13 @@ def get_actor_languages_list(actor_json: {}) -> []:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not name_value.lower().startswith('languages'):
@@ -1389,9 +1391,11 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
                     continue
                 name_value = None
                 if tag.get('name'):
-                    name_value = tag['name']
+                    if isinstance(tag['name'], str):
+                        name_value = tag['name']
                 if tag.get('schema:name'):
-                    name_value = tag['schema:name']
+                    if isinstance(tag['schema:name'], str):
+                        name_value = tag['schema:name']
                 if not name_value:
                     continue
                 prop_value_name, _ = get_attachment_property_value(tag)
@@ -2868,14 +2872,16 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if not isinstance(property_value, dict):
             print("WARN: Actor attachment is not dict: " + str(property_value))
             continue
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         name_value_lower = name_value.lower()

@@ -23,11 +23,13 @@ def get_xmpp_address(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name'].lower()
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name'].lower()
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name'].lower()
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
         if not (name_value.startswith('xmpp') or
@@ -82,11 +84,13 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -113,11 +117,13 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):

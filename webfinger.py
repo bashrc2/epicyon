@@ -550,11 +550,13 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         property_name = name_value.lower()

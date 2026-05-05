@@ -79,7 +79,7 @@ def set_peertube(actor_json: {}, peertube: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
             if isinstance(property_value['name'], str):
                 name_value = property_value['name'].lower()
