@@ -1442,7 +1442,7 @@ def _get_blog_citations_html(box_name: str,
             '<cite>' + citation_name + '</cite></a></li>\n'
 
     if citations_str:
-        translated_citations_str = 'Citations'
+        translated_citations_str: str = 'Citations'
         if translate.get(translated_citations_str):
             translated_citations_str = translate[translated_citations_str]
         citations_str = '<p><b>' + translated_citations_str + ':</b></p>' + \
@@ -1453,7 +1453,7 @@ def _get_blog_citations_html(box_name: str,
 def _boost_own_post_html(translate: {}) -> str:
     """The html title for announcing your own post
     """
-    announces_str = 'announces'
+    announces_str: str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1469,12 +1469,12 @@ def _announce_unattributed_html(translate: {},
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
-    announces_str = 'announces'
+    announces_str: str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
-    post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + bookmark_from_id(post_id)
-    post_link = '/users/' + nickname + '?convthread=' + \
+    post_id: str = remove_id_ending(post_json_object['object']['id'])
+    post_bookmark: str = '#' + bookmark_from_id(post_id)
+    post_link: str = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '    <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
@@ -1492,12 +1492,12 @@ def _announce_with_display_name_html(translate: {},
                                      announce_handle: str) -> str:
     """Returns html for an announce having a display name
     """
-    announces_str = 'announces'
+    announces_str: str = 'announces'
     if translate.get(announces_str):
         announces_str = translate[announces_str]
-    post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + bookmark_from_id(post_id)
-    post_link = '/users/' + nickname + '?convthread=' + \
+    post_id: str = remove_id_ending(post_json_object['object']['id'])
+    post_bookmark: str = '#' + bookmark_from_id(post_id)
+    post_link: str = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '          <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
@@ -1533,7 +1533,7 @@ def _get_post_title_announce_html(base_dir: str,
     """
     title_str: str = ''
     reply_avatar_image_in_post: str = ''
-    obj_json = post_json_object['object']
+    obj_json: dict = post_json_object['object']
 
     # has no attribution
     if not obj_json.get('attributedTo'):
@@ -1542,9 +1542,9 @@ def _get_post_title_announce_html(base_dir: str,
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
-    attributed_to = get_attributed_to(obj_json['attributedTo'])
+    attributed_to: str = get_attributed_to(obj_json['attributedTo'])
     if attributed_to is None:
-        attributed_to: str = ''
+        attributed_to = ''
 
     # boosting your own post
     if attributed_to.startswith(post_actor):
@@ -1554,7 +1554,7 @@ def _get_post_title_announce_html(base_dir: str,
 
     # boosting another person's post
     _log_post_timing(enable_timing_log, post_start_time, '13.2')
-    announce_nickname = None
+    announce_nickname: str = None
     if attributed_to:
         announce_nickname = get_nickname_from_actor(attributed_to)
     if not announce_nickname:
@@ -1568,7 +1568,7 @@ def _get_post_title_announce_html(base_dir: str,
     announce_handle: str = ''
     if announce_nickname and announce_domain:
         announce_handle = announce_nickname + '@' + announce_domain
-    announce_display_name = \
+    announce_display_name: str = \
         get_display_name(base_dir, attributed_to, person_cache)
     if announce_display_name:
         if len(announce_display_name) < 2 or \
@@ -1595,12 +1595,12 @@ def _get_post_title_announce_html(base_dir: str,
     if announce_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
-    actor_type = get_actor_type(base_dir, attributed_to, person_cache)
-    bot_prefix = get_display_name_prefix(actor_type, announce_nickname,
-                                         translate)
+    actor_type: str = get_actor_type(base_dir, attributed_to, person_cache)
+    bot_prefix: str = \
+        get_display_name_prefix(actor_type, announce_nickname, translate)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
-    announce_display_name2 = \
+    announce_display_name2: str = \
         mutual_prefix + bot_prefix + announce_display_name
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
@@ -1613,8 +1613,8 @@ def _get_post_title_announce_html(base_dir: str,
     title_str += _get_instance_software_html(title_str, software_name)
 
     # show avatar of person replied to
-    announce_actor = attributed_to
-    announce_avatar_url = \
+    announce_actor: str = attributed_to
+    announce_avatar_url: str = \
         get_person_avatar_url(base_dir, announce_actor, person_cache)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.4')
@@ -1622,9 +1622,9 @@ def _get_post_title_announce_html(base_dir: str,
     if not announce_avatar_url:
         announce_avatar_url: str = ''
 
-    idx = 'Show options for this person'
+    idx: str = 'Show options for this person'
     if '/users/news/' not in announce_avatar_url:
-        show_options_for_this_person_str = idx
+        show_options_for_this_person_str: str = idx
         if translate.get(idx):
             show_options_for_this_person_str = translate[idx]
         reply_avatar_image_in_post = \
@@ -1647,10 +1647,10 @@ def _get_post_title_announce_html(base_dir: str,
 def _reply_to_yourself_html(translate: {}, software_name: str) -> str:
     """Returns html for a title which is a reply to yourself
     """
-    replying_to_themselves_str = 'replying to themselves'
+    replying_to_themselves_str: str = 'replying to themselves'
     if translate.get(replying_to_themselves_str):
         replying_to_themselves_str = translate[replying_to_themselves_str]
-    title_str = \
+    title_str: str = \
         '    <img loading="lazy" decoding="async" title="' + \
         replying_to_themselves_str + \
         '" alt="' + replying_to_themselves_str + \
@@ -1664,7 +1664,7 @@ def _reply_to_yourself_html(translate: {}, software_name: str) -> str:
 def _replying_to_with_scope(post_json_object: {}, translate: {}) -> str:
     """Returns the replying to string
     """
-    replying_to_str = 'replying to'
+    replying_to_str: str = 'replying to'
     if is_followers_post(post_json_object):
         replying_to_str = 'replying to followers'
     elif is_public_post(post_json_object):
@@ -1682,12 +1682,12 @@ def _reply_to_unknown_html(translate: {},
                            software_name: str) -> str:
     """Returns the html title for a reply to an unknown handle
     """
-    replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + bookmark_from_id(post_id)
-    post_link = '/users/' + nickname + '?convthread=' + \
+    replying_to_str: str = _replying_to_with_scope(post_json_object, translate)
+    post_id: str = get_reply_to(post_json_object['object'])
+    post_bookmark: str = '#' + bookmark_from_id(post_id)
+    post_link: str = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
-    title_str = \
+    title_str: str = \
         '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/icons' + \
@@ -1709,15 +1709,15 @@ def _reply_with_unknown_path_html(translate: {},
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/ or an equivalent separator
     """
-    replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + bookmark_from_id(post_id)
-    post_link = '/users/' + nickname + '?convthread=' + \
+    replying_to_str: str = _replying_to_with_scope(post_json_object, translate)
+    post_id: str = get_reply_to(post_json_object['object'])
+    post_bookmark: str = '#' + bookmark_from_id(post_id)
+    post_link: str = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     mitm_str: str = ''
     if post_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
-    title_str = \
+    title_str: str = \
         '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
@@ -1749,14 +1749,14 @@ def _get_reply_html(translate: {},
     reply_nickname: str = ''
     if '@' in reply_nickname:
         reply_nickname = reply_handle.split('@')[0]
-    bot_prefix = get_display_name_prefix(actor_type, reply_nickname,
-                                         translate)
+    bot_prefix: str = \
+        get_display_name_prefix(actor_type, reply_nickname, translate)
 
-    replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_bookmark = '#' + bookmark_from_id(in_reply_to)
-    post_link = '/users/' + nickname + '?convthread=' + \
+    replying_to_str: str = _replying_to_with_scope(post_json_object, translate)
+    post_bookmark: str = '#' + bookmark_from_id(in_reply_to)
+    post_link: str = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('--', '/') + post_bookmark
-    title_str = \
+    title_str: str = \
         '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
@@ -1797,17 +1797,17 @@ def _get_post_title_reply_html(base_dir: str,
     """
     title_str: str = ''
     reply_avatar_image_in_post: str = ''
-    obj_json = post_json_object['object']
+    obj_json: dict = post_json_object['object']
 
     # not a reply
-    reply_id = get_reply_to(obj_json)
+    reply_id: str = get_reply_to(obj_json)
     if not reply_id:
         title_str += _get_instance_software_html(title_str, software_name)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
-    container_class_icons = 'containericons darker'
-    container_class = 'container darker'
+    container_class_icons: str = 'containericons darker'
+    container_class: str = 'container darker'
 
     # reply to self
     if reply_id.startswith(post_actor):
@@ -1816,22 +1816,22 @@ def _get_post_title_reply_html(base_dir: str,
                 container_class_icons, container_class)
 
     # has a reply
-    reply_actor = None
-    in_reply_to = None
+    reply_actor: str = None
+    in_reply_to: str = None
     if contains_statuses(reply_id):
-        reply_url = reply_id
-        post_domain = reply_url
-        prefixes = get_protocol_prefixes()
+        reply_url: str = reply_id
+        post_domain: str = reply_url
+        prefixes: list[str] = get_protocol_prefixes()
         for prefix in prefixes:
             post_domain = post_domain.replace(prefix, '')
         if '/' in post_domain:
             post_domain = post_domain.split('/', 1)[0]
         # resolve inReplyTo to obtain attributedTo
-        profile_str = 'https://www.w3.org/ns/activitystreams'
-        headers = {
+        profile_str: str = 'https://www.w3.org/ns/activitystreams'
+        headers: dict = {
             'Accept': 'application/ld+json; profile="' + profile_str + '"'
         }
-        reply_post_json = \
+        reply_post_json: dict = \
             get_json(signing_priv_key_pem,
                      session, reply_url,
                      headers, None, debug, mitm_servers,
@@ -1939,7 +1939,7 @@ def _get_post_title_reply_html(base_dir: str,
     _log_post_timing(enable_timing_log, post_start_time, '13.8')
 
     if reply_avatar_url:
-        show_profile_str = 'Show profile'
+        show_profile_str: str = 'Show profile'
         if translate.get(show_profile_str):
             show_profile_str = translate[show_profile_str]
         reply_avatar_image_in_post = \
@@ -1987,7 +1987,7 @@ def _get_post_title_html(base_dir: str,
     if not is_announced and box_name == 'search' and \
        post_json_object.get('object'):
         if post_json_object['object'].get('attributedTo'):
-            attrib = \
+            attrib: str = \
                 get_attributed_to(post_json_object['object']['attributedTo'])
             if attrib != post_actor:
                 is_announced = True
@@ -2048,7 +2048,7 @@ def _get_footer_with_icons(show_icons: bool,
     if not show_icons:
         return None
 
-    footer_str = '\n      <nav>\n'
+    footer_str: str = '\n      <nav>\n'
     footer_str += '      <div class="' + container_class_icons + '">\n'
     footer_str += \
         reply_str + announce_str + like_str + bookmark_str + reaction_str
@@ -2059,8 +2059,8 @@ def _get_footer_with_icons(show_icons: bool,
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         # show the date
-        post_bookmark = '#' + bookmark_from_id(published_link)
-        date_link = '/users/' + nickname + '?convthread=' + \
+        post_bookmark: str = '#' + bookmark_from_id(published_link)
+        date_link: str = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
@@ -2080,32 +2080,32 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
     """Replace clearnet domains with onion domains
     """
     # any common sites which have onion equivalents
-    bbc_onion = \
+    bbc_onion: str = \
         'bbcweb3hytmzhn5d532owbu6oqadra5z3ar726vq5kgwwn6aucdccrad.onion'
-    ddg_onion = \
+    ddg_onion: str = \
         'duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion'
-    guardian_onion = \
+    guardian_onion: str = \
         'guardian2zotagl6tmjucg3lrhxdk4dw3lhbqnkvvkywawy3oqfoprid.onion'
-    propublica_onion = \
+    propublica_onion: str = \
         'p53lf57qovyuvwsc6xnrppyply3vtqm7l6pcobkmyqsiofyeznfu5uqd.onion'
     # woe betide anyone following a facebook link, but if you must
     # then do it safely
-    facebook_onion = \
+    facebook_onion: str = \
         'facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion'
-    protonmail_onion = \
+    protonmail_onion: str = \
         'protonmailrmez3lotccipshtkleegetolb73fuirgj7r4o4vfu7ozyd.onion'
-    riseup_onion = \
+    riseup_onion: str = \
         'vww6ybal4bd7szmgncyruucpgfkqahzddi37ktceo3ah7ngmcopnpyyd.onion'
-    keybase_onion = \
+    keybase_onion: str = \
         'keybase5wmilwokqirssclfnsqrjdsi7jdir5wy7y7iu3tanwmtp6oid.onion'
-    zerobin_onion = \
+    zerobin_onion: str = \
         'zerobinftagjpeeebbvyzjcqyjpmjvynj5qlexwyxe7l3vqejxnqv5qd.onion'
-    securedrop_onion = \
+    securedrop_onion: str = \
         'sdolvtfhatvsysc6l34d65ymdwxcujausv7k5jk4cy5ttzhjoi6fzvyd.onion'
     # the hell site 🔥
-    twitter_onion = \
+    twitter_onion: str = \
         'twitter3e4tixl4xyajtrzo62zg5vztmjuricljdp2c5kshju4avyoid.onion'
-    onion_domains = {
+    onion_domains: dict = {
         "bbc.com": bbc_onion,
         "bbc.co.uk": bbc_onion,
         "theguardian.com": guardian_onion,
@@ -2122,7 +2122,7 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
         "twitter.com": twitter_onion
     }
 
-    onion_domains_filename = data_dir(base_dir) + '/onion_domains.txt'
+    onion_domains_filename: str = data_dir(base_dir) + '/onion_domains.txt'
     if is_a_file(onion_domains_filename):
         onion_domains_list: list[str] = \
             load_list(onion_domains_filename,
@@ -2130,17 +2130,17 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
                       onion_domains_filename)
         if onion_domains_list:
             onion_domains = {}
-            separators = (' ', ',', '->')
+            separators: list[str] = (' ', ',', '->')
             for line in onion_domains_list:
-                line = line.strip()
+                line: str = line.strip()
                 if line.startswith('#'):
                     continue
                 for sep in separators:
                     if sep not in line:
                         continue
-                    clearnet = line.split(sep, 1)[0].strip()
-                    onion1 = line.split(sep, 1)[1].strip()
-                    onion = remove_eol(onion1)
+                    clearnet: str = line.split(sep, 1)[0].strip()
+                    onion1: str = line.split(sep, 1)[1].strip()
+                    onion: str = remove_eol(onion1)
                     if clearnet and onion:
                         onion_domains[clearnet] = onion
                     break
@@ -2157,15 +2157,15 @@ def _add_dogwhistle_warnings(summary: str, content: str,
     """
     if not dogwhistles:
         return summary
-    content_str = str(summary) + ' ' + content
-    detected = detect_dogwhistles(content_str, dogwhistles)
+    content_str: str = str(summary) + ' ' + content
+    detected: dict = detect_dogwhistles(content_str, dogwhistles)
     if not detected:
         return summary
 
     for _, item in detected.items():
         if not item.get('category'):
             continue
-        whistle_str = item['category']
+        whistle_str: str = item['category']
         if translate.get(whistle_str):
             whistle_str = translate[whistle_str]
         if summary:
@@ -2185,31 +2185,38 @@ def _get_content_license(post_json_object: {}) -> str:
                 return None
 
     if post_json_object['object'].get('schema:license'):
-        value = post_json_object['object']['schema:license']
-        if '://' not in value:
-            value = license_link_from_name(value)
-        return value
+        value: str = post_json_object['object']['schema:license']
+        if isinstance(value, str):
+            if '://' not in value:
+                value = license_link_from_name(value)
+            return value
 
     if post_json_object['object'].get('license'):
-        value = post_json_object['object']['license']
-        if '://' not in value:
-            value = license_link_from_name(value)
-        return value
+        value: str = post_json_object['object']['license']
+        if isinstance(value, str):
+            if '://' not in value:
+                value = license_link_from_name(value)
+            return value
 
     post_attachments = get_post_attachments(post_json_object)
     for item in post_attachments:
         if not item.get('name'):
+            continue
+        if not isinstance(item['name'], str):
             continue
         name_lower = item['name'].lower()
         if 'license' not in name_lower and \
            'copyright' not in name_lower and \
            'licence' not in name_lower:
             continue
+        value: str = None
         if item.get('value'):
-            value = remove_html(item['value'])
+            if isinstance(item['value'], str):
+                value = remove_html(item['value'])
         elif item.get('href'):
-            value = remove_html(item['href'])
-        else:
+            if isinstance(item['href'], str):
+                value = remove_html(item['href'])
+        if not value:
             continue
         if '://' not in value:
             value = license_link_from_name(value)
@@ -2222,7 +2229,7 @@ def _get_copyright_footer(content_license_url: str,
     """Returns the footer copyright link
     """
     # show the CC symbol
-    icon_filename = 'license_cc.png'
+    icon_filename: str = 'license_cc.png'
     if '/zero/' in content_license_url:
         icon_filename = 'license_cc0.png'
     elif 'unlicense' in content_license_url:
@@ -2232,10 +2239,11 @@ def _get_copyright_footer(content_license_url: str,
     elif '/fdl' in content_license_url:
         icon_filename = 'license_fdl.png'
 
-    description = 'Content License'
+    description: str = 'Content License'
     if translate.get('Content License'):
         description = translate['Content License']
-    copyright_str = \
+
+    copyright_str: str = \
         '        ' + \
         '<a class="imageAnchor" href="' + content_license_url + \
         '" title="' + description + '" tabindex="10" rel="license">' + \
@@ -2251,8 +2259,8 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
     """
     if not buy_links:
         return ''
-    icon_filename = 'buy.png'
-    description = translate['Buy']
+    icon_filename: str = 'buy.png'
+    description: str = translate['Buy']
     buy_str: str = ''
     for _, buy_url in buy_links.items():
         buy_str = \
@@ -2269,7 +2277,7 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
 def remove_incomplete_code_tags(content: str) -> str:
     """Remove any uncompleted code tags
     """
-    tags = ('code', 'pre')
+    tags: list[str] = ('code', 'pre')
     for tag_name in tags:
         if '<' + tag_name not in content and \
            '</' + tag_name not in content:
@@ -3516,7 +3524,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          block_nostr: {}) -> str:
     """Show an individual post as html
     """
-    original_post_json = post_json_object
+    original_post_json: dict = post_json_object
     post_str: str = ''
     by_str: str = ''
     by_text: str = ''
@@ -3616,10 +3624,10 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 block_government,
                                 block_bluesky,
                                 block_nostr)
-    message_id = remove_id_ending(post_json_object['id'])
+    message_id: str = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
-    obj = post_json_object
+    obj: dict = post_json_object
     if has_object_dict(post_json_object):
         obj = post_json_object['object']
         post_id = True
@@ -3722,14 +3730,15 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             block_government,
                                             block_bluesky,
                                             block_nostr)
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = \
+    instance_title: str = \
         get_config_param(base_dir, 'instanceTitle')
-    metadata_str = _html_post_metadata_open_graph(domain, original_post_json,
-                                                  system_language)
+    metadata_str: str = \
+        _html_post_metadata_open_graph(domain, original_post_json,
+                                       system_language)
     if post_json_object.get('id'):
         # https://swicg.github.io/activitypub-html-discovery/#html-link-element
         # link to the activitypub post
@@ -3741,7 +3750,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         # activitypub-html-discovery/#discovering-author-html
         # link to the author's actor
         if obj.get('attributedTo'):
-            actor = get_attributed_to(obj['attributedTo'])
+            actor: str = get_attributed_to(obj['attributedTo'])
             if actor:
                 metadata_str += \
                     '    <link rel="author" ' + \
@@ -3821,14 +3830,14 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         block_bluesky,
                                         block_nostr)
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     metadata: str = ''
     preload_images: list[str] = []
-    header_str = \
+    header_str: str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
                                         preload_images)
     return header_str + replies_str + html_footer()
@@ -3867,7 +3876,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     reacted_to_post_str = \
         '<br><center><label class="followText">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
@@ -3898,31 +3908,32 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 block_bluesky,
                                 block_nostr)
 
-    reactions_filename = base_dir + '/emoji/reactions.json'
+    reactions_filename: str = base_dir + '/emoji/reactions.json'
     if not is_a_file(reactions_filename):
         reactions_filename = base_dir + '/emoji/default_reactions.json'
-    reactions_json = load_json(reactions_filename)
+    reactions_json: dict = load_json(reactions_filename)
     emoji_picks_str: str = ''
-    base_url = '/users/' + nickname
-    post_id = remove_id_ending(post_json_object['id'])
-    actor_url = get_actor_from_post(post_json_object)
+    base_url: str = '/users/' + nickname
+    post_id: str = remove_id_ending(post_json_object['id'])
+    actor_url: str = get_actor_from_post(post_json_object)
     for _, item in reactions_json.items():
         emoji_picks_str += '<div class="container">\n'
         for emoji_content in item:
             emoji_content_encoded = urllib.parse.quote_plus(emoji_content)
-            emoji_url = \
+            emoji_url: str = \
                 base_url + '?react=' + post_id + \
                 '?actor=' + actor_url + \
                 '?tl=' + box_name + \
                 '?page=' + str(page_number) + \
                 '?emojreact=' + emoji_content_encoded
-            emoji_label = '<label class="rlab">' + emoji_content + '</label>'
+            emoji_label: str = \
+                '<label class="rlab">' + emoji_content + '</label>'
             emoji_picks_str += \
                 '  <a href="' + emoji_url + '" tabindex="10">' + \
                 emoji_label + '</a>\n'
         emoji_picks_str += '</div>\n'
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -3930,10 +3941,10 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme_name)
 
-    instance_title = get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     metadata: str = ''
     preload_images: list[str] = []
-    header_str = \
+    header_str: str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
                                         preload_images)
 
