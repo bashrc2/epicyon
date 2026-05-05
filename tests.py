@@ -4869,6 +4869,9 @@ def _test_translation_labels() -> None:
     print('test_translation_labels')
     lang_json = load_json('translations/en.json')
     assert lang_json
+    # NOTE: the splitting up into two strings here is deliberate
+    # to avoid analysis within this function
+    translate_str = 'translate' + '['
     for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
@@ -4883,9 +4886,9 @@ def _test_translation_labels() -> None:
                             source_file)
             if not source_str:
                 continue
-            if 'translate[' not in source_str:
+            if translate_str not in source_str:
                 continue
-            sections: list[str] = source_str.split('translate[')
+            sections: list[str] = source_str.split(translate_str)
             ctr: int = 0
             for text in sections:
                 if ctr == 0:
