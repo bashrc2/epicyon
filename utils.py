@@ -75,7 +75,7 @@ def remove_zero_length_strings(text: str) -> str:
     return text.replace('​', '')
 
 
-def get_url_from_post(url_field) -> str:
+def get_url_from_post(url_field: str | list) -> str:
     """Returns a url from a post object
     """
     if isinstance(url_field, str):
