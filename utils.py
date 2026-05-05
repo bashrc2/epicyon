@@ -120,7 +120,7 @@ def get_person_icon(person_json: {}) -> str:
     return ''
 
 
-def get_attributed_to(field) -> str:
+def get_attributed_to(field: str | list) -> str:
     """Returns the actor
     """
     if isinstance(field, str):
