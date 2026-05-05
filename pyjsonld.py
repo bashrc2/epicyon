@@ -2257,7 +2257,7 @@ class JsonLdProcessor(object):
         # continue to hash bnode quads while bnodes are assigned names
         unnamed = None
         next_unnamed = bnodes.keys()
-        duplicates = None
+        duplicates: dict = None
         while True:
             unnamed = next_unnamed
             next_unnamed = []

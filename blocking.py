@@ -602,15 +602,16 @@ def update_blocked_cache(base_dir: str,
     if blocked_cache_last_updated > curr_time:
         print('WARN: Cache updated in the future')
         blocked_cache_last_updated: int = 0
-    seconds_since_last_update = curr_time - blocked_cache_last_updated
+    seconds_since_last_update: int = curr_time - blocked_cache_last_updated
     if seconds_since_last_update < blocked_cache_update_secs:
         return blocked_cache_last_updated
-    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
+    global_blocking_filename: str = data_dir(base_dir) + '/blocking.txt'
     if not is_a_file(global_blocking_filename):
         return blocked_cache_last_updated
-    blocked_lines = load_list(global_blocking_filename,
-                              'EX: update_blocked_cache unable to read ' +
-                              global_blocking_filename + ' [ex]')
+    blocked_lines: list[str] = \
+        load_list(global_blocking_filename,
+                  'EX: update_blocked_cache unable to read ' +
+                  global_blocking_filename + ' [ex]')
     if blocked_lines is None:
         return blocked_cache_last_updated
     # remove newlines
@@ -627,7 +628,7 @@ def _get_short_domain(domain: str) -> str:
     who constantly change their subdomain
     e.g. subdomain123.mydomain.com becomes mydomain.com
     """
-    sections = domain.split('.')
+    sections: list[str] = domain.split('.')
     no_of_sections = len(sections)
     if no_of_sections > 2:
         return sections[no_of_sections-2] + '.' + sections[-1]

@@ -102,7 +102,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
     search_str = search_str.lower().strip()
 
     if '+' in search_str:
-        search_words = search_str.split('+')
+        search_words: list[str] = search_str.split('+')
         for index, _ in enumerate(search_words):
             search_words[index] = search_words[index].strip()
         print('SEARCH: ' + str(search_words))
@@ -160,7 +160,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     search_str = search_str.lower().strip()
 
     if '+' in search_str:
-        search_words = search_str.split('+')
+        search_words: list[str] = search_str.split('+')
         for index, _ in enumerate(search_words):
             search_words[index] = search_words[index].strip()
         print('SEARCH: ' + str(search_words))

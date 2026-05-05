@@ -384,7 +384,7 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
     """Returns all attached media descriptions as a single text.
     This is used for filtering
     """
-    post_attachments = get_post_attachments(post_json_object)
+    post_attachments: list[dict] = get_post_attachments(post_json_object)
     if not post_attachments:
         return ''
     descriptions: str = ''
@@ -707,10 +707,10 @@ def get_memorials(base_dir: str) -> str:
     if not is_a_file(memorial_file):
         return ''
 
-    memorial_str = load_string(memorial_file,
-                               'EX: unable to read ' + memorial_file)
+    memorial_str: str = \
+        load_string(memorial_file, 'EX: unable to read ' + memorial_file)
     if memorial_str is None:
-        memorial_str: str = ''
+        memorial_str = ''
     return memorial_str
 
 

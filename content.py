@@ -1472,7 +1472,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
         content = content.replace('#' + now_playing_lower_str,
                                   '#' + now_playing_str)
     content = _add_music_tag(content, now_playing_str)
-    words = _get_simplified_content(content).split(' ')
+    words: list[str] = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
     new_words: list[str] = []
