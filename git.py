@@ -240,11 +240,13 @@ def get_repo_url(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if name_value.lower() not in repo_type:
@@ -268,7 +270,7 @@ def get_repo_url(actor_json: {}) -> str:
         repo_url = remove_html(repo_url)
         return remove_link_tracking(repo_url)
 
-    repo_sites = ('github.com', 'gitlab.com', 'codeberg.org')
+    repo_sites: list[str] = ('github.com', 'gitlab.com', 'codeberg.org')
 
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):

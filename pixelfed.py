@@ -30,11 +30,13 @@ def get_pixelfed(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name'].lower()
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name'].lower()
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name'].lower()
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
         if not string_contains(name_value, pixelfed_fieldnames):
@@ -47,12 +49,12 @@ def get_pixelfed(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        pixelfed_text = remove_html(property_value[prop_value_name])
+        pixelfed_text: str = remove_html(property_value[prop_value_name])
         if not resembles_url(pixelfed_text):
             if '@' not in pixelfed_text:
                 continue
             # a pixelfed handle has been given, rather than a url
-            nickname = get_nickname_from_actor(pixelfed_text)
+            nickname: str = get_nickname_from_actor(pixelfed_text)
             domain, port = get_domain_from_actor(pixelfed_text)
             if not nickname or not domain:
                 continue
@@ -102,9 +104,11 @@ def set_pixelfed(actor_json: {}, pixelfed: str) -> None:
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name'].lower()
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name'].lower()
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name'].lower()
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -123,9 +127,11 @@ def set_pixelfed(actor_json: {}, pixelfed: str) -> None:
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):

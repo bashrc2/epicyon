@@ -55,14 +55,16 @@ def get_email_address(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
-        name_value_lower = name_value.lower()
+        name_value_lower: str = name_value.lower()
         if 'email' not in name_value_lower:
             if 'e-mail' not in name_value_lower:
                 if 'electronic mail' not in name_value_lower:
@@ -75,7 +77,7 @@ def get_email_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        value_str = remove_html(property_value[prop_value_name])
+        value_str: str = remove_html(property_value[prop_value_name])
         if '://' in value_str:
             continue
         if '@' not in value_str:
@@ -101,11 +103,13 @@ def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         found: bool = False
@@ -123,7 +127,7 @@ def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        value_str = remove_html(property_value[prop_value_name])
+        value_str: str = remove_html(property_value[prop_value_name])
         if 'https://' not in value_str and \
            'http://' not in value_str:
             continue
@@ -140,11 +144,13 @@ def get_pgp_pub_key(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not name_value.lower().startswith('pgp'):
@@ -174,9 +180,11 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not name_value.lower().startswith('openpgp'):
@@ -212,16 +220,18 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         actor_json['attachment']: list[dict] = []
 
     # remove any existing value
-    property_found = None
+    property_found: dict = None
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -239,11 +249,13 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -296,6 +308,8 @@ def set_deltachat_invite(actor_json: {}, invite_link: str,
             continue
         if not property_value.get('name'):
             continue
+        if not isinstance(property_value['name'], str):
+            continue
         if not property_value.get('type'):
             continue
         if property_value['name'].lower() not in match_strings:
@@ -336,11 +350,13 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -360,9 +376,11 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -405,11 +423,13 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -427,11 +447,13 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):

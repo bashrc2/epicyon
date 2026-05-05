@@ -36,14 +36,16 @@ def get_donation_url(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
-        name_value_lower = name_value.lower()
+        name_value_lower: str = name_value.lower()
         found: bool = False
         for donation_type_str in donation_type_list:
             if donation_type_str in name_value_lower:
@@ -64,13 +66,14 @@ def get_donation_url(actor_json: {}) -> str:
         if not property_value['type'].endswith('PropertyValue'):
             continue
         if '<a href="' in property_value[prop_value_name]:
-            donate_url = property_value[prop_value_name].split('<a href="')[1]
+            donate_url: str = \
+                property_value[prop_value_name].split('<a href="')[1]
             if '"' in donate_url:
                 donate_url = donate_url.split('"')[0]
                 donate_url = remove_html(donate_url)
                 return remove_link_tracking(donate_url)
         else:
-            donate_url = remove_html(property_value[prop_value_name])
+            donate_url: str = remove_html(property_value[prop_value_name])
             if ' ' in donate_url:
                 donate_url = donate_url.split(' ')[0]
             if '://' in donate_url:
@@ -108,11 +111,13 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -135,11 +140,13 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):

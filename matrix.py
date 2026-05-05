@@ -23,14 +23,16 @@ def get_matrix_address(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
-        name_value_lower = name_value.lower()
+        name_value_lower: str = name_value.lower()
         if not name_value_lower.startswith('matrix'):
             if not name_value_lower.startswith('chat'):
                 continue
@@ -45,7 +47,7 @@ def get_matrix_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        address_text = remove_html(property_value[prop_value_name])
+        address_text: str = remove_html(property_value[prop_value_name])
         if 'xmpp' in address_text.lower():
             continue
         if 'jabber' in address_text.lower():
@@ -82,11 +84,13 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -115,11 +119,13 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):

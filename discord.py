@@ -26,11 +26,13 @@ def get_discord(actor_json: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name'].lower()
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name'].lower()
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name'].lower()
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
         if not string_contains(name_value, discord_fieldnames):
@@ -43,7 +45,7 @@ def get_discord(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        discord_text = property_value[prop_value_name]
+        discord_text: str = property_value[prop_value_name]
         return remove_html(discord_text)
     return ''
 
@@ -55,16 +57,18 @@ def set_discord(actor_json: {}, discord: str) -> None:
         actor_json['attachment']: list[dict] = []
 
     # remove any existing value
-    property_found = None
+    property_found: dict = None
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         name_value = None
         if property_value.get('name'):
-            name_value = property_value['name'].lower()
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name'].lower()
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name'].lower()
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
         if not property_value.get('type'):
@@ -81,11 +85,13 @@ def set_discord(actor_json: {}, discord: str) -> None:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if not property_value.get('type'):
