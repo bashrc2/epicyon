@@ -71,6 +71,8 @@ def get_email_address(actor_json: {}) -> str:
                     continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -121,6 +123,8 @@ def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -157,6 +161,8 @@ def get_pgp_pub_key(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -190,6 +196,8 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
         if not name_value.lower().startswith('openpgp'):
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
@@ -259,6 +267,8 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         if not name_value.lower().startswith('email'):
             continue
@@ -385,6 +395,8 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         if not name_value.lower().startswith('pgp'):
             continue
         if not property_value['type'].endswith('PropertyValue'):
@@ -457,6 +469,8 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         if not name_value.lower().startswith('openpgp'):
             continue

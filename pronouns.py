@@ -39,6 +39,8 @@ def get_pronouns(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -95,6 +97,8 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         name_value = name_value.lower()
         if not string_contains(name_value, pronoun_fieldnames):

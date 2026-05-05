@@ -37,6 +37,8 @@ def get_music_site_url(actor_json: {}) -> str:
             continue
         if not isinstance(property_value['type'], str):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
         prop_value_name, _ = \
@@ -101,6 +103,8 @@ def set_music_site_url(actor_json: {}, music_site_url: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         name_value = name_value.lower()
         if not string_contains(name_value, music_fieldnames):

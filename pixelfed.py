@@ -43,6 +43,8 @@ def get_pixelfed(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -74,6 +76,8 @@ def get_pixelfed(actor_json: {}) -> str:
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
@@ -135,6 +139,8 @@ def set_pixelfed(actor_json: {}, pixelfed: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         name_value = name_value.lower()
         if not string_contains(name_value, pixelfed_fieldnames):

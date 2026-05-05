@@ -39,6 +39,8 @@ def get_peertube(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -53,6 +55,8 @@ def get_peertube(actor_json: {}) -> str:
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
@@ -112,6 +116,8 @@ def set_peertube(actor_json: {}, peertube: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         name_value = name_value.lower()
         if not string_contains(name_value, peertube_fieldnames):

@@ -194,6 +194,8 @@ def get_actor_languages_list(actor_json: {}) -> []:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -2889,6 +2891,8 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
            not name_value_lower.endswith(property_name):
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)

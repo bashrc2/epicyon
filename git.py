@@ -253,6 +253,8 @@ def get_repo_url(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, prop_value = \
             get_attachment_property_value(property_value)
         if not prop_value:
@@ -277,6 +279,8 @@ def get_repo_url(actor_json: {}) -> str:
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         prop_value_name, prop_value = \
             get_attachment_property_value(property_value)

@@ -359,6 +359,8 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         if not name_value.lower().startswith(property_name_lower):
             continue
         if not property_value['type'].endswith('PropertyValue'):

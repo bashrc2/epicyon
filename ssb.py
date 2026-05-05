@@ -36,6 +36,8 @@ def get_ssb_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:
@@ -118,6 +120,8 @@ def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         if not name_value.lower().startswith('ssb'):
             continue

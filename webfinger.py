@@ -571,6 +571,8 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, _ = \
             get_attachment_property_value(property_value)
         if not prop_value_name:

@@ -126,6 +126,8 @@ def set_art_site_url(actor_json: {}, art_site_url: str) -> None:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         name_value = name_value.lower()
         if not string_contains(name_value, art_fieldnames):
             continue

@@ -59,6 +59,8 @@ def get_donation_url(actor_json: {}) -> str:
                 continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, prop_value = \
             get_attachment_property_value(property_value)
         if not prop_value:
@@ -150,6 +152,8 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         if name_value.lower() != donate_name:
             continue

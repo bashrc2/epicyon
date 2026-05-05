@@ -36,6 +36,8 @@ def get_cwtch_address(actor_json: {}) -> str:
             continue
         if not property_value.get('type'):
             continue
+        if not isinstance(property_value['type'], str):
+            continue
         prop_value_name, prop_value = \
             get_attachment_property_value(property_value)
         if not prop_value:
@@ -113,6 +115,8 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
         if not name_value:
             continue
         if not property_value.get('type'):
+            continue
+        if not isinstance(property_value['type'], str):
             continue
         if not name_value.lower().startswith('cwtch'):
             continue
