@@ -1365,12 +1365,12 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
     actor = get_actor_from_post_id(actor)
     if not person_cache.get(actor):
         return default_gender
-    bio_found = None
+    bio_found: str = None
     if translate:
-        pronoun_str = translate['pronoun'].lower()
+        pronoun_str: str = translate['pronoun'].lower()
     else:
-        pronoun_str = 'pronoun'
-    actor_json = None
+        pronoun_str: str = 'pronoun'
+    actor_json: dict = None
     if person_cache[actor].get('actor'):
         actor_json = person_cache[actor]['actor']
     else:
@@ -1389,7 +1389,7 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
             for tag in tags_list:
                 if not isinstance(tag, dict):
                     continue
-                name_value = None
+                name_value: str = None
                 if tag.get('name'):
                     if isinstance(tag['name'], str):
                         name_value = tag['name']
