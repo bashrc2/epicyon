@@ -147,7 +147,7 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     if not actor_json.get('attachment'):
         actor_json['attachment']: list[dict] = []
 
-    match_strings = _get_website_strings()
+    match_strings: list[str] = _get_website_strings()
     match_strings.append(translate['Website'].lower())
 
     # remove any existing value
@@ -157,6 +157,8 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         if not property_value.get('name'):
+            continue
+        if not isinstance(property_value['name'], str):
             continue
         if not property_value.get('type'):
             continue
@@ -169,7 +171,7 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     if not_url:
         return
 
-    new_entry = {
+    new_entry: dict = {
         "name": 'Website',
         "type": "PropertyValue",
         "value": website_url
@@ -194,7 +196,7 @@ def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
     if not actor_json.get('attachment'):
         actor_json['attachment']: list[dict] = []
 
-    match_strings = _get_gemini_strings()
+    match_strings: list[str] = _get_gemini_strings()
 
     # remove any existing value
     property_found = None
@@ -203,6 +205,8 @@ def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
         if not property_value.get('name'):
+            continue
+        if not isinstance(property_value['name'], str):
             continue
         if not property_value.get('type'):
             continue
