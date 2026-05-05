@@ -629,7 +629,7 @@ def _get_short_domain(domain: str) -> str:
     e.g. subdomain123.mydomain.com becomes mydomain.com
     """
     sections: list[str] = domain.split('.')
-    no_of_sections = len(sections)
+    no_of_sections: int = len(sections)
     if no_of_sections > 2:
         return sections[no_of_sections-2] + '.' + sections[-1]
     return None

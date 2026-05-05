@@ -580,7 +580,7 @@ def is_valid_date(date_str: str) -> bool:
         return False
     if '-' not in date_str:
         return False
-    date_sections = date_str.split('-')
+    date_sections: list[str] = date_str.split('-')
     if len(date_sections) != 3:
         return False
     date_sect_ctr: int = 0

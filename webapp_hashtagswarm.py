@@ -165,7 +165,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                             break
                         if '  ' not in line:
                             break
-                        sections = line.split('  ')
+                        sections: list[str] = line.split('  ')
                         if len(sections) != 3:
                             break
                         post_days_since_epoch_str = sections[0]

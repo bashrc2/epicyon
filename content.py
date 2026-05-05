@@ -113,7 +113,7 @@ def remove_html_tag(html_str: str, tag: str) -> str:
         if match_str not in html_str:
             tag_found = False
             break
-        sections = html_str.split(match_str, 1)
+        sections: list[str] = html_str.split(match_str, 1)
         if '"' not in sections[1]:
             tag_found = False
             break
@@ -205,7 +205,7 @@ def html_replace_inline_quotes(content: str) -> str:
     """
     if '<p class="quote-inline">' not in content:
         return content
-    sections = content.split('<p class="quote-inline">')
+    sections: list[str] = content.split('<p class="quote-inline">')
     ctr: int = 0
     new_content = ''
     for section in sections:
@@ -237,9 +237,9 @@ def html_replace_quote_marks(content: str) -> str:
     if content.count('&quot;') > 4:
         return content
 
-    new_content = content
+    new_content: str = content
     if '"' in content:
-        sections = content.split('"')
+        sections: list[str] = content.split('"')
         if len(sections) > 1:
             new_content: str = ''
             open_quote: bool = True
@@ -264,7 +264,7 @@ def html_replace_quote_marks(content: str) -> str:
         new_content: str = ''
         ctr: int = 0
         sections: list = content.split('&quot;')
-        no_of_sections = len(sections)
+        no_of_sections: int = len(sections)
         for sec in sections:
             new_content += sec
             if ctr < no_of_sections - 1:
@@ -2043,8 +2043,8 @@ def contains_invalid_local_links(domain_full: str,
             continue
         # extract the urls and check whether they are for the local domain
         ctr: int = 0
-        sections = content.split(match_str)
-        final_section_index = len(sections) - 1
+        sections: list[str] = content.split(match_str)
+        final_section_index: int = len(sections) - 1
         for section_str in sections:
             if ctr == final_section_index:
                 continue
@@ -2260,7 +2260,7 @@ def remove_script(content: str, log_filename: str,
         ending: str = '/script' + sep[1]
         if prefix not in content:
             continue
-        sections = content.split(prefix)
+        sections: list[str] = content.split(prefix)
         ctr: int = 0
         for text in sections:
             if ctr == 0:
@@ -2477,7 +2477,7 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
     for cw_rule in auto_cw_list:
         if '->' not in cw_rule:
             continue
-        sections = cw_rule.split('->')
+        sections: list[str] = cw_rule.split('->')
         rulematch = sections[0].strip()
         if rulematch not in content:
             continue

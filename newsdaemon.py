@@ -277,9 +277,9 @@ def hashtag_rule_tree(operators: [],
             continue
         tree = [oper]
         if opmatch in conditions_str:
-            sections = conditions_str.split(opmatch)
+            sections: list[str] = conditions_str.split(opmatch)
         else:
-            sections = conditions_str.split(oper + ' ', 1)
+            sections: list[str] = conditions_str.split(oper + ' ', 1)
         for sub_condition_str in sections:
             result = hashtag_rule_tree(operators[ctr + 1:],
                                        sub_condition_str,

@@ -463,7 +463,7 @@ def _prepare_media_post_from_html_cache(post_html: str,
     text mode browsers, so that Lynx doesn't just say something like
     'this tag is not supported in your browser'
     """
-    sections = post_html.split('<' + media_type)
+    sections: list[str] = post_html.split('<' + media_type)
     new_post_html: str = ''
     for section_str in sections:
         ending_tag = '</' + media_type + '>'
@@ -2286,27 +2286,27 @@ def _mentions_to_person_options(html_str: str, nickname: str, domain: str,
     if '"u-url mention"' not in html_str:
         return html_str
 
-    sections = html_str.split('<')
+    sections: list[str] = html_str.split('<')
     for markup_str in sections:
         if '>' not in markup_str:
             continue
-        markup_str = markup_str.split('>')[0]
+        markup_str: str = markup_str.split('>')[0]
         if 'href="' not in markup_str or \
            '"u-url mention"' not in markup_str:
             continue
-        link = markup_str.split('href="')[1]
+        link: str = markup_str.split('href="')[1]
         if '"' not in link:
             continue
-        post_actor = link.split('"')[0]
+        post_actor: str = link.split('"')[0]
         # look up the avatar image for the mention
-        avatar_url = \
+        avatar_url: str = \
             get_avatar_image_url(session, base_dir, http_prefix, domain,
                                  post_actor, person_cache,
                                  None, allow_downloads,
                                  signing_priv_key_pem,
                                  mitm_servers)
 
-        replace_link = \
+        replace_link: str = \
             "/users/" + nickname + "?options=" + post_actor + \
             ";2;" + avatar_url
         html_str = html_str.replace('href="' + post_actor + '"',

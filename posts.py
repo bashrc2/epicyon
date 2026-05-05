@@ -2426,7 +2426,7 @@ def _append_citations_to_blog_post(base_dir: str,
     for line in citations:
         if citations_separator not in line:
             continue
-        sections = line.strip().split(citations_separator)
+        sections: list[str] = line.strip().split(citations_separator)
         if len(sections) != 3:
             continue
         # date_str = sections[0]

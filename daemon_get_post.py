@@ -273,8 +273,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
             liked_by = liked_by.split('?')[0]
         path = path.split('?likedBy=')[0]
 
-    react_by = None
-    react_emoji = None
+    react_by: str = None
+    react_emoji: str = None
     if '?reactBy=' in path:
         react_by = path.split('?reactBy=')[1].strip()
         if ';' in react_by:
@@ -285,14 +285,14 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                 react_emoji = react_emoji.split(';')[0]
         path = path.split('?reactBy=')[0]
 
-    named_status = path.split('/users/')[1]
+    named_status: str = path.split('/users/')[1]
     if '/' not in named_status:
         return False
-    post_sections = named_status.split('/')
+    post_sections: list[str] = named_status.split('/')
     if len(post_sections) < 3:
         return False
-    nickname = post_sections[0]
-    status_number = post_sections[2]
+    nickname: str = post_sections[0]
+    status_number: str = post_sections[2]
     if len(status_number) <= 10 or (not status_number.isdigit()):
         return False
 
@@ -638,11 +638,11 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
         nickname = named_status
         return False
 
-    post_sections = named_status.split('/')
+    post_sections: list[str] = named_status.split('/')
     if len(post_sections) != 2:
         return False
-    nickname = post_sections[0]
-    status_number = post_sections[1]
+    nickname: str = post_sections[0]
+    status_number: str = post_sections[1]
     if len(status_number) <= 10 or not status_number.isdigit():
         return False
 
@@ -974,28 +974,28 @@ def show_replies_to_post(self, authorized: bool,
     if not ('/statuses/' in path and '/users/' in path):
         return False
 
-    named_status = path.split('/users/')[1]
+    named_status: str = path.split('/users/')[1]
     if '/' not in named_status:
         return False
 
-    post_sections = named_status.split('/')
+    post_sections: list[str] = named_status.split('/')
     if len(post_sections) < 4:
         return False
 
     if not post_sections[3].startswith('replies'):
         return False
-    nickname = post_sections[0]
-    status_number = post_sections[2]
+    nickname: str = post_sections[0]
+    status_number: str = post_sections[2]
     if not (len(status_number) > 10 and status_number.isdigit()):
         return False
 
-    boxname = 'outbox'
+    boxname: str = 'outbox'
     # get the replies file
-    post_dir = \
+    post_dir: str = \
         acct_dir(base_dir, nickname, domain) + '/' + boxname
-    orig_post_url = http_prefix + ':##' + domain_full + '#users#' + \
+    orig_post_url: str = http_prefix + ':##' + domain_full + '#users#' + \
         nickname + '#statuses#' + status_number
-    post_replies_filename = \
+    post_replies_filename: str = \
         post_dir + '/' + orig_post_url + '.replies'
     if not is_a_file(post_replies_filename):
         # There are no replies,

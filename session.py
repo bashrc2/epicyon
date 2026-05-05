@@ -510,7 +510,7 @@ def verify_html(session, url: str, debug: bool,
         return False
 
     # ensure that there are not too many rel="me" links
-    sections = verification_site_html.split(' rel="me" ')
+    sections: list[str] = verification_site_html.split(' rel="me" ')
     me_links_count = len(sections) - 1
     if me_links_count > 5:
         return False

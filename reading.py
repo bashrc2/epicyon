@@ -35,7 +35,7 @@ def get_book_link_from_content(content: str) -> str:
     if '://' not in content or \
        '"' not in content:
         return None
-    sections = content.split('://')
+    sections: list[str] = content.split('://')
     if '"' not in sections[0] or '"' not in sections[1]:
         return None
     previous_str = sections[0].split('"')[-1]

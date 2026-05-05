@@ -4885,7 +4885,7 @@ def _test_translation_labels() -> None:
                 continue
             if 'translate[' not in source_str:
                 continue
-            sections = source_str.split('translate[')
+            sections: list[str] = source_str.split('translate[')
             ctr: int = 0
             for text in sections:
                 if ctr == 0:
@@ -5799,7 +5799,7 @@ def _test_thread_functions():
             modules[mod_name]['lines'] = lines
 
     for mod_name in threads_called_in_modules:
-        thread_sections = \
+        thread_sections: list[str] = \
             modules[mod_name]['source'].split('thread_with_trace(')
         ctr: int = 0
         for thread_str in thread_sections:

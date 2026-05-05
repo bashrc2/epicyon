@@ -877,7 +877,7 @@ def _dav_decode_token(token: str) -> (int, int, str):
     """
     if '_' not in token or '--' not in token:
         return None, None, None
-    token_sections = token.split('_')
+    token_sections: list[str] = token.split('_')
     if len(token_sections) != 3:
         return None, None, None
     if not token_sections[0].isdigit():

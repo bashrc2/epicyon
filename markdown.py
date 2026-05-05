@@ -104,7 +104,7 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '` ': '</em> '
     }
 
-    sections = _markdown_get_sections(markdown)
+    sections: list[str] = _markdown_get_sections(markdown)
     markdown = ''
     for section_text in sections:
         if '<code>' in section_text:
@@ -185,7 +185,7 @@ def _markdown_replace_links(markdown: str) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
-    sections = _markdown_get_sections(markdown)
+    sections: list[str] = _markdown_get_sections(markdown)
     result: str = ''
     for section_text in sections:
         if '<code>' in section_text or \
@@ -254,7 +254,7 @@ def _markdown_replace_misskey(markdown: str) -> str:
     }
     if '$[' not in markdown or ']' not in markdown:
         return markdown
-    sections = _markdown_get_sections(markdown)
+    sections: list[str] = _markdown_get_sections(markdown)
     result: str = ''
     for section_text in sections:
         if '<code>' in section_text or \

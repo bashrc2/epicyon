@@ -164,7 +164,7 @@ def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
                 start_time_str = start_time_str.split('+')[0]
             if '-' in start_time_str:
                 start_time_str = start_time_str.split('-')[0]
-            start_time_sections = start_time_str.split(':')
+            start_time_sections: list[str] = start_time_str.split(':')
             if len(start_time_sections) < 2:
                 return None, None, None, None
             start_time_str = \
@@ -181,7 +181,8 @@ def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
                         if '-' in end_time_str:
                             end_time_str = end_time_str.split('-')[0]
                         if ':' in end_time_str:
-                            end_time_sections = end_time_str.split(':')
+                            end_time_sections: list[str] = \
+                                end_time_str.split(':')
                             if len(end_time_sections) >= 2:
                                 end_time_str = \
                                     end_time_sections[0] + ':' + \
@@ -420,7 +421,7 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
             start_time_str = start_time_str.split('+')[0]
         if '-' in start_time_str:
             start_time_str = start_time_str.split('-')[0]
-        start_time_sections = start_time_str.split(':')
+        start_time_sections: list[str] = start_time_str.split(':')
         if len(start_time_sections) < 2:
             return None, None, None, None
         start_time_str = \
@@ -437,7 +438,7 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
                     if '-' in end_time_str:
                         end_time_str = end_time_str.split('-')[0]
                     if ':' in end_time_str:
-                        end_time_sections = end_time_str.split(':')
+                        end_time_sections: list[str] = end_time_str.split(':')
                         if len(end_time_sections) >= 2:
                             end_time_str = \
                                 end_time_sections[0] + ':' + \
@@ -583,7 +584,7 @@ def _geocoords_from_osmand_link(url: str) -> (int, float, float):
     if '#' in url:
         coords_str = url.split('#')[1]
         if '/' in coords_str:
-            sections = coords_str.split('/')
+            sections: list[str] = coords_str.split('/')
             if len(sections) == 3:
                 zoom_str = sections[0]
                 latitude_str = sections[1]
@@ -602,13 +603,13 @@ def _geocoords_from_geo_link(url: str) -> (int, float, float):
     """Returns geocoordinates from an geo link
     https://en.wikipedia.org/wiki/Geo_URI_scheme
     """
-    latitude = None
-    longitude = None
+    latitude: float = None
+    longitude: float = None
     zoom: int = 10
 
-    coords_str = url.split('geo:')[1]
+    coords_str: str = url.split('geo:')[1]
     if ',' in coords_str:
-        coords_sections = coords_str.split(',')
+        coords_sections: list[str] = coords_str.split(',')
         if len(coords_sections) >= 2:
             latitude_str = coords_sections[0]
             longitude_str = coords_sections[1]
@@ -965,7 +966,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
     """Returns a list of map links
     """
     osm_domain = 'openstreetmap.org'
-    sections = content.split('://')
+    sections: list[str] = content.split('://')
     map_links: list[str] = []
     ctr: int = 0
     for link_str in sections:
@@ -1000,7 +1001,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
 
     # https://en.wikipedia.org/wiki/Geo_URI_scheme
     ctr: int = 0
-    sections = content.split('geo:')
+    sections: list[str] = content.split('geo:')
     for link_str in sections:
         if ctr == 0:
             ctr += 1
@@ -1014,7 +1015,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
             coords_str += char
         if ',' not in coords_str:
             continue
-        coord_sections = coords_str.split(',')
+        coord_sections: list[str] = coords_str.split(',')
         if len(coord_sections) < 2:
             continue
         if not is_float(coord_sections[0]) or \

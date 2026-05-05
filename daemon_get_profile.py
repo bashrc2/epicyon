@@ -257,17 +257,17 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                hide_recent_posts: {}) -> bool:
     """Show roles within profile screen
     """
-    named_status = path.split('/users/')[1]
+    named_status: str = path.split('/users/')[1]
     if '/' not in named_status:
         return False
 
-    post_sections = named_status.split('/')
-    nickname = post_sections[0]
-    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    post_sections: list[str] = named_status.split('/')
+    nickname: str = post_sections[0]
+    actor_filename: str = acct_dir(base_dir, nickname, domain) + '.json'
     if not is_a_file(actor_filename):
         return False
 
-    actor_json = load_json(actor_filename)
+    actor_json: dict = load_json(actor_filename)
     if not actor_json:
         return False
 
@@ -418,11 +418,11 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                 hide_recent_posts: {}) -> bool:
     """Show skills on the profile screen
     """
-    named_status = path.split('/users/')[1]
+    named_status: str = path.split('/users/')[1]
     if '/' in named_status:
-        post_sections = named_status.split('/')
-        nickname = post_sections[0]
-        actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+        post_sections: list[str] = named_status.split('/')
+        nickname: str = post_sections[0]
+        actor_filename: str = acct_dir(base_dir, nickname, domain) + '.json'
         if is_a_file(actor_filename):
             actor_json = load_json(actor_filename)
             if actor_json:

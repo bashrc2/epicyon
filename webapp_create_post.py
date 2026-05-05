@@ -945,7 +945,8 @@ def html_new_post(edit_post_params: {},
                 for line in citations:
                     if citations_separator not in line:
                         continue
-                    sections = line.strip().split(citations_separator)
+                    sections: list[str] = \
+                        line.strip().split(citations_separator)
                     if len(sections) != 3:
                         continue
                     title = sections[1]

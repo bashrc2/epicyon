@@ -393,7 +393,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
             for line in citations:
                 if citations_separator not in line:
                     continue
-                sections = line.strip().split(citations_separator)
+                sections: list[str] = line.strip().split(citations_separator)
                 if len(sections) != 3:
                     continue
                 date_str = sections[0]

@@ -207,7 +207,7 @@ def html_blog_post_gemini_links(content: str) -> str:
     if '=> ' not in content:
         return content
     ctr: int = 0
-    sections = content.split('=> ')
+    sections: list[str] = content.split('=> ')
     new_content: str = ''
     for section in sections:
         if ctr == 0:
@@ -278,7 +278,7 @@ def html_blog_post_markdown(content: str) -> str:
     for markdown_text, html_header in replacements.items():
         if markdown_text not in new_content:
             continue
-        sections = new_content.split(markdown_text)
+        sections: list[str] = new_content.split(markdown_text)
         ctr: int = 0
         new_content2: str = ''
         for section in sections:
