@@ -163,7 +163,7 @@ def _get_instance_software_html(title_str: str, software_name: str) -> str:
         return ''
     if software_name in title_str:
         return ''
-    instance_str = \
+    instance_str: str = \
         '<br><label class="instanceSoftware">' + \
         '<span itemprop="software">' + \
         software_name + '</span></label>\n'
@@ -188,14 +188,14 @@ def get_instance_software(base_dir: str, session,
     if instance_software.get(instance_domain):
         return instance_domain + ' ' + instance_software[instance_domain]
     # get the initial nodeinfo url
-    nodeinfo1_url = \
+    nodeinfo1_url: str = \
         instance_http_prefix + '://' + instance_domain + \
         '/.well-known/nodeinfo'
-    profile_str = 'https://www.w3.org/ns/activitystreams'
-    headers = {
+    profile_str: str = 'https://www.w3.org/ns/activitystreams'
+    headers: dict = {
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    nodeinfo1_json = \
+    nodeinfo1_json: dict = \
         get_json(signing_priv_key_pem,
                  session, nodeinfo1_url,
                  headers, None, debug, mitm_servers,
@@ -205,17 +205,17 @@ def get_instance_software(base_dir: str, session,
     if debug:
         print('DEBUG get_instance_software: ' + str(nodeinfo1_json))
     # get the nodeinfo data
-    nodeinfo_url = None
+    nodeinfo_url: str = None
     if nodeinfo1_json.get('links'):
         if isinstance(nodeinfo1_json['links'], list):
             if nodeinfo1_json['links']:
                 if nodeinfo1_json['links'][0].get('href'):
-                    href = nodeinfo1_json['links'][0]['href']
+                    href: str = nodeinfo1_json['links'][0]['href']
                     if isinstance(href, str):
                         nodeinfo_url = href
     if not nodeinfo_url:
         return ''
-    nodeinfo_json = \
+    nodeinfo_json: dict = \
         get_json(signing_priv_key_pem,
                  session, nodeinfo_url,
                  headers, None, debug, mitm_servers,
@@ -230,13 +230,13 @@ def get_instance_software(base_dir: str, session,
         return ''
     if not nodeinfo_json['software'].get('name'):
         return ''
-    software_name = nodeinfo_json['software']['name']
+    software_name: str = nodeinfo_json['software']['name']
     if not isinstance(software_name, str):
         return ''
     software_name = remove_html(software_name)
     instance_software[instance_domain] = software_name
     if store:
-        instance_software_filename = \
+        instance_software_filename: str = \
             data_dir(base_dir) + '/instance_software.json'
         save_json(instance_software, instance_software_filename)
     return instance_domain + ' ' + software_name
@@ -250,7 +250,7 @@ def _enforce_max_display_name_length(display_name: str) -> str:
         return display_name
 
     if ':' in display_name:
-        display_name_short = display_name.split(':')[0].strip()
+        display_name_short: str = display_name.split(':')[0].strip()
         if len(display_name_short) > 2:
             display_name = display_name_short
 
@@ -264,7 +264,7 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                                    system_language: str) -> str:
     """Returns html OpenGraph metadata for a post
     """
-    metadata = \
+    metadata: str = \
         "    <link rel=\"schema.DC\" " + \
         "href=\"http://purl.org/dc/elements/1.1/\" />\n"
     metadata += \
@@ -274,7 +274,7 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         "    <meta content=\"" + domain + "\" property=\"og:site_name\" />\n"
     metadata += \
         "    <meta content=\"article\" property=\"og:type\" />\n"
-    obj_json = post_json_object
+    obj_json: dict = post_json_object
     if has_object_dict(post_json_object):
         obj_json = post_json_object['object']
     if obj_json.get('id'):
@@ -284,13 +284,13 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         metadata += "    <meta name=\"DC.title\" " + \
             "content=\"" + obj_json['summary'] + "\">\n"
     if obj_json.get('attributedTo'):
-        attrib_str = get_attributed_to(obj_json['attributedTo'])
+        attrib_str: str = get_attributed_to(obj_json['attributedTo'])
         if attrib_str:
             attrib = attrib_str
-            actor_nick = get_nickname_from_actor(attrib)
+            actor_nick: str = get_nickname_from_actor(attrib)
             actor_domain, _ = get_domain_from_actor(attrib)
             if actor_nick and actor_domain:
-                actor_handle = actor_nick + '@' + actor_domain
+                actor_handle: str = actor_nick + '@' + actor_domain
                 metadata += \
                     "    <meta name=\"DC.creator\" " + \
                     "scheme=\"DCTERMS.URI\" content=\"" + \
@@ -299,8 +299,8 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                     "    <meta content=\"@" + actor_handle + \
                     "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
-        url_str = get_url_from_post(obj_json['url'])
-        obj_url = remove_html(url_str)
+        url_str: str = get_url_from_post(obj_json['url'])
+        obj_url: str = remove_html(url_str)
         metadata += \
             "    <meta content=\"" + obj_url + \
             "\" property=\"og:url\" />\n"
@@ -314,11 +314,11 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
     post_attachments = get_post_attachments(obj_json)
     if not post_attachments or obj_json.get('sensitive'):
         if 'content' in obj_json and not obj_json.get('sensitive'):
-            obj_content = obj_json['content']
+            obj_content: str = obj_json['content']
             if 'contentMap' in obj_json:
                 if obj_json['contentMap'].get(system_language):
                     obj_content = obj_json['contentMap'][system_language]
-            description = remove_html(obj_content)
+            description: str = remove_html(obj_content)
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -337,7 +337,7 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
             continue
         if not attach_json.get('name'):
             continue
-        description = None
+        description: str = None
         if attach_json['mediaType'].startswith('image/'):
             description = 'Attached: 1 image'
         elif attach_json['mediaType'].startswith('video/'):
@@ -389,7 +389,7 @@ def _log_post_timing(enable_timing_log: bool, post_start_time,
     """
     if not enable_timing_log:
         return
-    time_diff = int((time.time() - post_start_time) * 1000)
+    time_diff: int = int((time.time() - post_start_time) * 1000)
     if time_diff > 100:
         print('TIMING INDIV ' + debug_id + ' = ' + str(time_diff))
 
@@ -404,12 +404,12 @@ def prepare_html_post_nickname(nickname: str, post_html: str) -> str:
     This function changes the nicknames for the icon links.
     """
     # replace the nickname
-    users_str = ' href="/users/'
+    users_str: str = ' href="/users/'
     if users_str not in post_html:
         return post_html
 
-    user_found = True
-    post_str = post_html
+    user_found: bool = True
+    post_str: str = post_html
     new_post_str: str = ''
     while user_found:
         if users_str not in post_str:
@@ -437,11 +437,11 @@ def replace_link_variable(link: str, variable_name: str, value: str,
                           separator: str) -> str:
     """Replaces a variable within the given link
     """
-    full_var = separator + variable_name + '='
+    full_var: str = separator + variable_name + '='
     if full_var not in link:
         return link
 
-    curr_str = link
+    curr_str: str = link
     result: str = ''
     while full_var in curr_str:
         prefix = curr_str.split(full_var, 1)[0] + full_var
@@ -470,8 +470,8 @@ def _prepare_media_post_from_html_cache(post_html: str,
         if ending_tag not in section_str:
             new_post_html += section_str
             continue
-        markup = section_str.split(ending_tag)[0]
-        ending = section_str.split(ending_tag)[1]
+        markup: str = section_str.split(ending_tag)[0]
+        ending: str = section_str.split(ending_tag)[1]
         url: str = ''
         description: str = ''
         # get the video/audio url if it exists
@@ -530,14 +530,14 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
                 post_html.replace('?page=' + page_number_str, '?page=-999')
 
     # add the page number
-    with_page_number = \
+    with_page_number: str = \
         post_html.replace(';-999;', ';' + str(page_number) + ';')
     with_page_number = \
         with_page_number.replace('?page=-999', '?page=' + str(page_number))
 
     # add first post in the timeline
     if first_post_id is None:
-        first_post_id: str = ''
+        first_post_id = ''
 
     first_post_id = first_post_id.replace('#', '/')
     if '?firstpost=' in with_page_number:
@@ -564,9 +564,9 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
     This is so that it can be quickly reloaded on subsequent
     refresh of the timeline
     """
-    html_post_cache_dir = \
+    html_post_cache_dir: str = \
         get_cached_post_directory(base_dir, nickname, domain)
-    cached_post_filename = \
+    cached_post_filename: str = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if not cached_post_filename:
         return False
@@ -633,7 +633,7 @@ def _get_post_from_recent_cache(session,
 
     _log_post_timing(enable_timing_log, post_start_time, '2.2')
 
-    post_html = \
+    post_html: str = \
         load_individual_post_as_html_from_cache(base_dir, nickname, domain,
                                                 post_json_object)
     if not post_html:
@@ -665,7 +665,7 @@ def _get_avatar_image_html(show_avatar_options: bool,
         avatar_link = \
             '        <a class="imageAnchor" href="' + \
             post_actor + '" tabindex="10">'
-        show_profile_str = 'Show profile'
+        show_profile_str: str = 'Show profile'
         if translate.get(show_profile_str):
             show_profile_str = translate[show_profile_str]
         avatar_link += \
@@ -739,7 +739,8 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
         attrib = get_attributed_to(post_json_object['object']['attributedTo'])
         if attrib:
             reply_to_link += '?mention=' + attrib
-    content = get_base_content_from_post(post_json_object, system_language)
+    content: str = \
+        get_base_content_from_post(post_json_object, system_language)
     if content:
         mentioned_actors = \
             get_mentions_from_html(content,
@@ -823,7 +824,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
     """Returns html for the edit icon/button
     """
     edit_str: str = ''
-    actor = get_actor_from_post(post_json_object)
+    actor: str = get_actor_from_post(post_json_object)
     # This should either be a post which you created,
     # or it could be generated from the newswire (see
     # _add_blogs_to_newswire) in which case anyone with
@@ -832,13 +833,13 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
         (is_editor(base_dir, nickname) and
          actor.endswith('/' + domain_full + '/users/news'))):
 
-        post_id = remove_id_ending(post_json_object['object']['id'])
+        post_id: str = remove_id_ending(post_json_object['object']['id'])
 
         if '/statuses/' not in post_id:
             return edit_str
 
         reply_to: str = ''
-        reply_id = get_reply_to(post_json_object['object'])
+        reply_id: str = get_reply_to(post_json_object['object'])
         if reply_id:
             reply_to = ';replyTo=' + reply_id
 
@@ -847,7 +848,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             first_post_str = ';firstpost=' + first_post_id
 
         if is_blog_post(post_json_object):
-            edit_blog_post_str = 'Edit blog post'
+            edit_blog_post_str: str = 'Edit blog post'
             if translate.get(edit_blog_post_str):
                 edit_blog_post_str = translate[edit_blog_post_str]
             if not is_news_post(post_json_object):
@@ -873,7 +874,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                     edit_blog_post_str + '" alt="' + edit_blog_post_str + \
                     ' |" src="/icons/edit.png"/></a>\n'
         elif is_event:
-            edit_event_str = 'Edit event'
+            edit_event_str: str = 'Edit event'
             if translate.get(edit_event_str):
                 edit_event_str = translate[edit_event_str]
             edit_str += \
@@ -888,7 +889,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 ' |" src="/icons/edit.png"/></a>\n'
         elif is_public_post(post_json_object):
             # Edit a public post
-            edit_post_str = 'Edit post'
+            edit_post_str: str = 'Edit post'
             if translate.get(edit_post_str):
                 edit_post_str = translate[edit_post_str]
             edit_str += \
@@ -903,7 +904,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 ' |" src="/icons/edit.png"/></a>\n'
         elif is_reminder(post_json_object):
             # Edit a reminder
-            edit_post_str = 'Edit reminder'
+            edit_post_str: str = 'Edit reminder'
             if translate.get(edit_post_str):
                 edit_post_str = translate[edit_post_str]
             edit_str += \
@@ -918,7 +919,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 ' |" src="/icons/edit.png"/></a>\n'
         elif is_dm(post_json_object):
             # Edit a DM
-            edit_post_str = 'Edit post'
+            edit_post_str: str = 'Edit post'
             if translate.get(edit_post_str):
                 edit_post_str = translate[edit_post_str]
             edit_str += \
@@ -933,7 +934,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 ' |" src="/icons/edit.png"/></a>\n'
         elif is_unlisted_post(post_json_object):
             # Edit an unlisted post
-            edit_post_str = 'Edit post'
+            edit_post_str: str = 'Edit post'
             if translate.get(edit_post_str):
                 edit_post_str = translate[edit_post_str]
             edit_str += \
@@ -948,7 +949,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                 ' |" src="/icons/edit.png"/></a>\n'
         elif is_followers_post(post_json_object):
             # Edit a followers only post
-            edit_post_str = 'Edit post'
+            edit_post_str: str = 'Edit post'
             if translate.get(edit_post_str):
                 edit_post_str = translate[edit_post_str]
             edit_str += \
@@ -990,17 +991,17 @@ def _get_announce_icon_html(is_announced: bool,
         return announce_str
 
     # don't allow announce/repeat of your own posts
-    announce_icon = 'repeat_inactive.png'
-    announce_link = 'repeat'
+    announce_icon: str = 'repeat_inactive.png'
+    announce_link: str = 'repeat'
     announce_emoji: str = ''
     if not is_public_repeat:
         announce_link = 'repeatprivate'
-    repeat_this_post_str = 'Repeat this post'
+    repeat_this_post_str: str = 'Repeat this post'
     if translate.get(repeat_this_post_str):
         repeat_this_post_str = translate[repeat_this_post_str]
-    announce_title = repeat_this_post_str
+    announce_title: str = repeat_this_post_str
     unannounce_link_str: str = ''
-    announce_count = no_of_announces(post_json_object)
+    announce_count: int = no_of_announces(post_json_object)
 
     announce_count_str: str = ''
     if announce_count > 0:
@@ -1083,13 +1084,13 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     if not show_like_button or is_moderation_post:
         return ''
     like_str: str = ''
-    like_icon = 'like_inactive.png'
-    like_link = 'like'
-    like_title = 'Like this post'
+    like_icon: str = 'like_inactive.png'
+    like_link: str = 'like'
+    like_title: str = 'Like this post'
     if translate.get(like_title):
         like_title = translate[like_title]
     like_emoji: str = ''
-    like_count = no_of_likes(post_json_object)
+    like_count: int = no_of_likes(post_json_object)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.1')
 
@@ -1176,10 +1177,10 @@ def _get_bookmark_icon_html(base_dir: str,
     if not locate_post(base_dir, nickname, domain, post_url):
         return bookmark_str
 
-    bookmark_icon = 'bookmark_inactive.png'
-    bookmark_link = 'bookmark'
+    bookmark_icon: str = 'bookmark_inactive.png'
+    bookmark_link: str = 'bookmark'
     bookmark_emoji: str = ''
-    bookmark_title = 'Bookmark this post'
+    bookmark_title: str = 'Bookmark this post'
     if translate.get(bookmark_title):
         bookmark_title = translate[bookmark_title]
     if bookmarked_by_person(post_json_object, nickname, domain_full):
@@ -1190,7 +1191,7 @@ def _get_bookmark_icon_html(base_dir: str,
         if translate.get(bookmark_title):
             bookmark_title = translate[bookmark_title]
     _log_post_timing(enable_timing_log, post_start_time, '12.6')
-    bookmark_post_id = \
+    bookmark_post_id: str = \
         remove_hash_from_post_id(post_json_object['object']['id'])
     bookmark_post_id = remove_id_ending(bookmark_post_id)
 
@@ -1198,8 +1199,8 @@ def _get_bookmark_icon_html(base_dir: str,
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
-    actor_url = get_actor_from_post(post_json_object)
-    bookmark_str = \
+    actor_url: str = get_actor_from_post(post_json_object)
+    bookmark_str: str = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmark_link + '=' + bookmark_post_id + \
         page_number_param + \
@@ -1232,12 +1233,12 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
     if not show_reaction_button or is_moderation_post:
         return reaction_str
 
-    reaction_icon = 'reaction.png'
-    reaction_title = 'Select reaction'
+    reaction_icon: str = 'reaction.png'
+    reaction_title: str = 'Select reaction'
     if translate.get(reaction_title):
         reaction_title = translate[reaction_title]
     _log_post_timing(enable_timing_log, post_start_time, '12.65')
-    reaction_post_id = \
+    reaction_post_id: str = \
         remove_hash_from_post_id(post_json_object['object']['id'])
     reaction_post_id = remove_id_ending(reaction_post_id)
 
@@ -1245,8 +1246,8 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
-    actor_url = get_actor_from_post(post_json_object)
-    reaction_str = \
+    actor_url: str = get_actor_from_post(post_json_object)
+    reaction_str: str = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reaction_post_id + page_number_param + \
         '?actor=' + actor_url + \
@@ -1285,7 +1286,7 @@ def _get_mute_icon_html(is_muted: bool,
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
     if not is_muted:
-        mute_this_post_str = 'Mute this post'
+        mute_this_post_str: str = 'Mute this post'
         if translate.get('Mute this post'):
             mute_this_post_str = translate[mute_this_post_str]
         mute_str = \
@@ -1300,7 +1301,7 @@ def _get_mute_icon_html(is_muted: bool,
             ' |" title="' + mute_this_post_str + \
             '" src="/icons/mute.png"/></a>\n'
     else:
-        undo_mute_str = 'Undo mute'
+        undo_mute_str: str = 'Undo mute'
         if translate.get(undo_mute_str):
             undo_mute_str = translate[undo_mute_str]
         mute_str = \
