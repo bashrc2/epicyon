@@ -1418,15 +1418,25 @@ def _get_blog_citations_html(box_name: str,
             continue
         if not tag_json.get('type'):
             continue
+        if not isinstance(tag_json['type'], str):
+            continue
         if tag_json['type'] != 'Article':
             continue
         if not tag_json.get('name'):
             continue
+        if not isinstance(tag_json['name'], str):
+            continue
         if not tag_json.get('url'):
             continue
-        url_str = get_url_from_post(tag_json['url'])
-        citation_url = remove_html(url_str)
-        citation_name = remove_html(tag_json['name'])
+        url_str: str = get_url_from_post(tag_json['url'])
+        if not url_str:
+            continue
+        citation_url: str = remove_html(url_str)
+        if not citation_url:
+            continue
+        citation_name: str = remove_html(tag_json['name'])
+        if not citation_name:
+            continue
         citations_str += \
             '<li><a href="' + citation_url + '" tabindex="10">' + \
             '<cite>' + citation_name + '</cite></a></li>\n'
