@@ -31,6 +31,8 @@ def get_website(actor_json: {}, translate: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    if not isinstance(actor_json['attachment'], list):
+        return ''
     website_str = translate['Website'].lower()
     match_strings = _get_website_strings()
     match_strings.append(website_str)
@@ -38,15 +40,17 @@ def get_website(actor_json: {}, translate: {}) -> str:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         found: bool = False
-        name_value_lower = name_value.lower()
+        name_value_lower: str = name_value.lower()
         if name_value_lower.endswith(' ' + website_str) or \
            name_value_lower.endswith(' homepage'):
             found = True
@@ -65,7 +69,7 @@ def get_website(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        value_str = remove_html(property_value[prop_value_name])
+        value_str: str = remove_html(property_value[prop_value_name])
         if 'https://' not in value_str and \
            'http://' not in value_str:
             continue
@@ -78,16 +82,20 @@ def get_gemini_link(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    if not isinstance(actor_json['attachment'], list):
+        return ''
     match_strings = _get_gemini_strings()
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
             continue
-        name_value = None
+        name_value: str = None
         if property_value.get('name'):
-            name_value = property_value['name']
+            if isinstance(property_value['name'], str):
+                name_value = property_value['name']
         elif property_value.get('schema:name'):
-            name_value = property_value['schema:name']
+            if isinstance(property_value['schema:name'], str):
+                name_value = property_value['schema:name']
         if not name_value:
             continue
         if name_value.lower() not in match_strings:
@@ -100,7 +108,7 @@ def get_gemini_link(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        url = remove_html(property_value[prop_value_name])
+        url: str = remove_html(property_value[prop_value_name])
         return remove_link_tracking(url)
 
     for property_value in actor_json['attachment']:
@@ -115,7 +123,7 @@ def get_gemini_link(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        url = remove_html(property_value[prop_value_name])
+        url: str = remove_html(property_value[prop_value_name])
         if 'gemini://' not in url:
             continue
         return remove_link_tracking(url)
