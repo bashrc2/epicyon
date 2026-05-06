@@ -17,7 +17,7 @@ def _get_variable_from_css(css_str: str, variable: str) -> str:
     """
     if '--' + variable + ':' not in css_str:
         return None
-    value = css_str.split('--' + variable + ':')[1]
+    value: str = css_str.split('--' + variable + ':')[1]
     if ';' in value:
         value = value.split(';')[0].strip()
     value = remove_html(value)
@@ -29,18 +29,18 @@ def _get_variable_from_css(css_str: str, variable: str) -> str:
 def get_pwa_theme_colors(css_filename: str) -> (str, str):
     """Gets the theme/statusbar color for progressive web apps
     """
-    default_pwa_theme_color = 'apple-mobile-web-app-status-bar-style'
-    pwa_theme_color = default_pwa_theme_color
+    default_pwa_theme_color: str = 'apple-mobile-web-app-status-bar-style'
+    pwa_theme_color: str = default_pwa_theme_color
 
-    default_pwa_theme_background_color = 'black-translucent'
-    pwa_theme_background_color = default_pwa_theme_background_color
+    default_pwa_theme_background_color: str = 'black-translucent'
+    pwa_theme_background_color: str = default_pwa_theme_background_color
 
     if not is_a_file(css_filename):
         return pwa_theme_color, pwa_theme_background_color
 
-    css_str = load_string(css_filename,
-                          'EX: get_pwa_theme_colors unable to read ' +
-                          css_filename)
+    css_str: str = load_string(css_filename,
+                               'EX: get_pwa_theme_colors unable to read ' +
+                               css_filename)
     if css_str is None:
         css_str: str = ''
 
@@ -60,13 +60,13 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
 def pwa_manifest(base_dir: str) -> {}:
     """Returns progressive web app manifest
     """
-    css_filename = base_dir + '/epicyon.css'
+    css_filename: str = base_dir + '/epicyon.css'
     pwa_theme_color, pwa_theme_background_color = \
         get_pwa_theme_colors(css_filename)
 
-    app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
-    app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
-    app3 = \
+    app1: str = "https://f-droid.org/en/packages/eu.siacs.conversations"
+    app2: str = "https://staging.f-droid.org/en/packages/im.vector.app"
+    app3: str = \
         "https://f-droid.org/en/packages/" + \
         "com.stoutner.privacybrowser.standard"
     return {

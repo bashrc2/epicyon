@@ -146,7 +146,7 @@ BLOCKFILE_FORMATS = '.csv'
 def _import_export_blocks(translate: {}) -> str:
     """ import and export blocks on edit profile screen
     """
-    edit_profile_form = \
+    edit_profile_form: str = \
         '      <label class="labels">' + \
         translate['Import Blocks'] + '</label>\n'
     edit_profile_form += '      <input type="file" id="importBlocks" '
@@ -164,7 +164,7 @@ def _import_export_blocks(translate: {}) -> str:
 def _get_profile_short_description(profile_description: str) -> str:
     """Returns a short version of the profile description
     """
-    profile_description_short = profile_description
+    profile_description_short: str = profile_description
     if '\n' in profile_description:
         if len(profile_description.split('\n')) > 6:
             profile_description_short: str = ''
@@ -206,7 +206,7 @@ def _valid_profile_preview_post(post_json_object: {},
         cc_list: list[str] = []
         if post_json_object.get('cc'):
             cc_list = post_json_object['cc']
-        new_post_json_object = {
+        new_post_json_object: dict = {
             'object': post_json_object,
             'to': post_json_object['to'],
             'cc': cc_list,
@@ -225,14 +225,14 @@ def _valid_profile_preview_post(post_json_object: {},
     if has_object_dict(post_json_object):
         # convert attributedTo actor back to id
         if post_json_object['object'].get('attributedTo'):
-            attrib_field = post_json_object['object']['attributedTo']
+            attrib_field: str = post_json_object['object']['attributedTo']
             if attrib_field:
                 if isinstance(attrib_field, dict):
-                    attrib = get_attributed_to(attrib_field)
+                    attrib: str = get_attributed_to(attrib_field)
                     if attrib:
                         post_json_object['object']['attributedTo'] = attrib
         if not is_announced_feed_item:
-            actor_url = get_actor_from_post(post_json_object)
+            actor_url: str = get_actor_from_post(post_json_object)
             if actor_url != person_url and \
                post_json_object['object']['type'] != 'Page':
                 return False, None
@@ -289,7 +289,7 @@ def html_profile_after_search(authorized: bool,
         ipfs = True
     elif http_prefix == 'ipns':
         ipns = True
-    from_domain = domain
+    from_domain: str = domain
     if onion_domain:
         if '.onion/' in profile_handle or profile_handle.endswith('.onion'):
             from_domain = onion_domain
@@ -320,21 +320,21 @@ def html_profile_after_search(authorized: bool,
     if not profile_json.get('id'):
         return None
 
-    person_url = profile_json['id']
-    person_url2 = person_url
+    person_url: str = profile_json['id']
+    person_url2: str = person_url
     if profile_json.get('url'):
         if isinstance(profile_json['url'], str):
             person_url2 = remove_html(profile_json['url'])
     search_domain, search_port = get_domain_from_actor(person_url)
     if not search_domain:
         return None
-    search_nickname = get_nickname_from_actor(person_url)
+    search_nickname: str = get_nickname_from_actor(person_url)
     if not search_nickname:
         return None
-    search_domain_full = get_full_domain(search_domain, search_port)
+    search_domain_full: str = get_full_domain(search_domain, search_port)
 
     profile_str: str = ''
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -345,17 +345,17 @@ def html_profile_after_search(authorized: bool,
 
     # shared items attached to the actor
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-    attached_shared_items = \
+    attached_shared_items: str = \
         actor_attached_shares_as_html(profile_json, max_shares_on_profile)
 
     avatar_url: str = ''
     if profile_json.get('icon'):
-        url_str = get_person_icon(profile_json)
+        url_str: str = get_person_icon(profile_json)
         if url_str:
             avatar_url = remove_html(url_str)
     if not avatar_url:
         avatar_url = get_person_avatar_url(base_dir, person_url, person_cache)
-    display_name = search_nickname
+    display_name: str = search_nickname
     if profile_json.get('name'):
         display_name = profile_json['name']
     display_name = remove_html(display_name)
@@ -365,29 +365,29 @@ def html_profile_after_search(authorized: bool,
                                   nickname, domain,
                                   display_name, False, translate)
 
-    locked_account = get_locked_account(profile_json)
+    locked_account: bool = get_locked_account(profile_json)
     if locked_account:
         display_name += '🔒'
 
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            bot_prefix = get_display_name_prefix(profile_json['type'],
-                                                 search_nickname,
-                                                 translate)
+            bot_prefix: str = \
+                get_display_name_prefix(profile_json['type'], search_nickname,
+                                        translate)
             if bot_prefix:
                 display_name = bot_prefix + ' ' + display_name
 
-    pronouns = get_pronouns(profile_json)
-    discord = get_discord(profile_json)
-    art_site_url = get_art_site_url(profile_json)
-    music_site_url = get_music_site_url(profile_json)
-    youtube = get_youtube(profile_json)
-    peertube = get_peertube(profile_json)
-    pixelfed = get_pixelfed(profile_json)
-    donate_url = get_donation_url(profile_json)
-    blog_url = get_blog_address(profile_json)
-    lxmf_address = get_lxmf_address(profile_json)
+    pronouns: str = get_pronouns(profile_json)
+    discord: str = get_discord(profile_json)
+    art_site_url: str = get_art_site_url(profile_json)
+    music_site_url: str = get_music_site_url(profile_json)
+    youtube: str = get_youtube(profile_json)
+    peertube: str = get_peertube(profile_json)
+    pixelfed: str = get_pixelfed(profile_json)
+    donate_url: str = get_donation_url(profile_json)
+    blog_url: str = get_blog_address(profile_json)
+    lxmf_address: str = get_lxmf_address(profile_json)
 
     moved_to: str = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -402,17 +402,17 @@ def html_profile_after_search(authorized: bool,
                 moved_to = moved_to.split('"')[1]
             display_name += ' ⌂'
 
-    you_follow = \
+    you_follow: str = \
         is_following_actor(base_dir,
                            nickname, domain, person_url)
 
-    follows_you = \
+    follows_you: str = \
         is_follower_of_person(base_dir,
                               nickname, domain,
                               search_nickname,
                               search_domain_full)
 
-    profile_status = get_actor_status(profile_json)
+    profile_status: str = get_actor_status(profile_json)
     if profile_status:
         if actor_status_expired(profile_json['sm:status']):
             profile_status: str = ''
@@ -436,9 +436,9 @@ def html_profile_after_search(authorized: bool,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
-    featured_hashtags = \
+    featured_hashtags: str = \
         get_featured_hashtags_as_html(profile_json, profile_description)
-    outbox_url = None
+    outbox_url: str = None
     if not profile_json.get('outbox'):
         if debug:
             pprint(profile_json)
@@ -453,11 +453,11 @@ def html_profile_after_search(authorized: bool,
     #         profileBackgroundImage = remove_html(url_str)
 
     # url to return to
-    back_url = path
+    back_url: str = path
     if not back_url.endswith('/inbox'):
         back_url += '/inbox'
 
-    profile_description_short = \
+    profile_description_short: str = \
         _get_profile_short_description(profile_description)
     # remove formatting from profile description used on title
     avatar_description: str = ''
@@ -473,26 +473,26 @@ def html_profile_after_search(authorized: bool,
     image_url: str = ''
     if profile_json.get('image'):
         if profile_json['image'].get('url'):
-            url_str = get_url_from_post(profile_json['image']['url'])
+            url_str: str = get_url_from_post(profile_json['image']['url'])
             image_url = remove_html(url_str)
 
-    also_known_as = None
+    also_known_as: str = None
     if profile_json.get('alsoKnownAs'):
         also_known_as = remove_html(profile_json['alsoKnownAs'])
     elif profile_json.get('sameAs'):
         also_known_as = remove_html(profile_json['sameAs'])
 
-    joined_date = None
+    joined_date: str = None
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
             joined_date = remove_html(profile_json['published'])
 
-    available = get_availability(base_dir, nickname, domain, profile_json)
+    available: str = get_availability(base_dir, nickname, domain, profile_json)
 
-    actor_proxied = ap_proxy_type(profile_json)
+    actor_proxied: str = ap_proxy_type(profile_json)
 
-    website_url = get_website(profile_json, translate)
-    repo_url = get_repo_url(profile_json)
+    website_url: str = get_website(profile_json, translate)
+    repo_url: str = get_repo_url(profile_json)
 
     # is sending posts to this account blocked?
     send_blocks_str: str = ''
@@ -511,7 +511,7 @@ def html_profile_after_search(authorized: bool,
     if profile_json.get('vcard:bday'):
         birth_date = profile_json['vcard:bday']
 
-    profile_str = \
+    profile_str: str = \
         _get_profile_header_after_search(base_dir, nickname, domain,
                                          default_timeline,
                                          search_nickname,
@@ -539,7 +539,7 @@ def html_profile_after_search(authorized: bool,
                                          art_site_url,
                                          donate_url)
 
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
 
     follow_is_permitted: bool = True
     if not profile_json.get('followers'):
@@ -552,12 +552,12 @@ def html_profile_after_search(authorized: bool,
         # don't follow yourself!
         follow_is_permitted = False
 
-    blocked = \
+    blocked: bool = \
         is_blocked(base_dir, nickname, domain, search_nickname, search_domain,
                    None, None)
 
     if follow_is_permitted:
-        follow_str = 'Follow'
+        follow_str: str = 'Follow'
         if is_group:
             follow_str = 'Join'
 
@@ -615,9 +615,9 @@ def html_profile_after_search(authorized: bool,
             '  </form>\n' + \
             '</div>\n'
 
-    text_mode_separator = '<div class="transparent"><hr></div>'
+    text_mode_separator: str = '<div class="transparent"><hr></div>'
 
-    user_feed = \
+    user_feed: list[dict] = \
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
                         http_prefix, from_domain, debug, 0,
@@ -637,13 +637,13 @@ def html_profile_after_search(authorized: bool,
                 if str(item['type']) == 'Announce' and \
                    isinstance(item['object'], str):
                     # resolve the announce
-                    profile_str2 = 'https://www.w3.org/ns/activitystreams'
-                    as_header2_str = 'application/ld+json; profile="' + \
+                    profile_str2: str = 'https://www.w3.org/ns/activitystreams'
+                    as_header2_str: str = 'application/ld+json; profile="' + \
                         profile_str2 + '"'
-                    as_header2 = {
+                    as_header2: dict = {
                         'Accept': as_header2_str
                     }
-                    item = \
+                    item: dict = \
                         get_json(signing_priv_key_pem, session, item['object'],
                                  as_header2, None, debug, mitm_servers,
                                  __version__, http_prefix, from_domain)
@@ -665,9 +665,10 @@ def html_profile_after_search(authorized: bool,
                 continue
 
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, nickname, domain)
 
-            profile_post_html = \
+            profile_post_html: str = \
                 individual_post_as_html(signing_priv_key_pem,
                                         True, recent_posts_cache,
                                         max_recent_posts,
@@ -716,7 +717,7 @@ def html_profile_after_search(authorized: bool,
     elif is_private_browser(ua_str):
         profile_str = replace_embedded_map_with_link(profile_str, translate)
 
-    instance_title = get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
     return html_header_with_external_style(css_filename,
                                            instance_title, None,
@@ -760,7 +761,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     """
     banner_file, _ = \
         get_profile_background_file(base_dir, nickname, domain, theme)
-    html_str = \
+    html_str: str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
@@ -796,9 +797,9 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if not actor_proxied:
         actor_proxied: str = ''
     else:
-        actor_proxied = remove_html(actor_proxied)
+        actor_proxied: str = remove_html(actor_proxied)
         if resembles_url(actor_proxied):
-            proxy_str = 'Proxy'
+            proxy_str: str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
             actor_proxied = '<a href="' + actor_proxied + \
@@ -810,7 +811,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
 
     # show blog icon if this account has a blog
     acct_blog_str: str = ''
-    has_blog = account_has_blog(base_dir, nickname, domain)
+    has_blog: bool = account_has_blog(base_dir, nickname, domain)
     if has_blog:
         acct_blog_str = \
             ' <a href="/blog/' + nickname + '" title="' + \
@@ -820,7 +821,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '    <p><b>@' + nickname + '@' + domain_full + \
         actor_proxied + acct_blog_str + '</b><br>\n'
     if joined_date:
-        joined_str = translate['Joined']
+        joined_str: str = translate['Joined']
         if time_days_ago(joined_date) < 7:
             joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += \
@@ -831,20 +832,20 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '    <p>' + translate['Availability'] + \
             ': ' + remove_html(available).title() + '</p>\n'
     if moved_to:
-        moved_to = remove_html(moved_to)
-        new_nickname = get_nickname_from_actor(moved_to)
+        moved_to: str = remove_html(moved_to)
+        new_nickname: str = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
-            new_domain_full = get_full_domain(new_domain, new_port)
+            new_domain_full: str = get_full_domain(new_domain, new_port)
             html_str += \
                 '    <p>' + translate['New account'] + ': ' + \
                 '<a href="' + moved_to + '">@' + \
                 new_nickname + '@' + new_domain_full + '</a><br>\n'
     elif also_known_as:
-        other_accounts_html = \
+        other_accounts_html: str = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = local_actor_url(http_prefix, nickname, domain_full)
+        actor: str = local_actor_url(http_prefix, nickname, domain_full)
         ctr: int = 0
         if isinstance(also_known_as, list):
             for alt_actor in also_known_as:
@@ -870,7 +871,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         if ctr > 0:
             html_str += other_accounts_html
     if is_valid_date(birth_date):
-        birth_date = remove_html(birth_date)
+        birth_date: str = remove_html(birth_date)
         html_str += \
             '    <p>' + translate['Birthday'] + ': ' + \
             birth_date + '</p>\n'
@@ -885,7 +886,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if profile_status:
         # https://codeberg.org/fediverse/fep/src/branch/main/
         # fep/82f6/fep-82f6.md
-        status_str = 'Status'
+        status_str: str = 'Status'
         if translate.get('Status'):
             status_str = translate['Status']
         html_str += \
@@ -962,7 +963,7 @@ def _get_profile_header_after_search(base_dir: str,
     """
     if not image_url:
         image_url = '/defaultprofilebackground'
-    html_str = \
+    html_str: str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
         nickname + '/' + default_timeline + '" title="' + \
@@ -985,9 +986,9 @@ def _get_profile_header_after_search(base_dir: str,
     if not actor_proxied:
         actor_proxied: str = ''
     else:
-        actor_proxied = remove_html(actor_proxied)
+        actor_proxied: str = remove_html(actor_proxied)
         if resembles_url(actor_proxied):
-            proxy_str = 'Proxy'
+            proxy_str: str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
             actor_proxied = '<a href="' + actor_proxied + \
@@ -1008,7 +1009,7 @@ def _get_profile_header_after_search(base_dir: str,
         '@' + search_nickname + '@' + search_domain_full + \
         actor_proxied + '</b><br>\n'
     if joined_date:
-        joined_str = translate['Joined']
+        joined_str: str = translate['Joined']
         if time_days_ago(joined_date) < 7:
             joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += '        <p>' + joined_str + ' ' + \
@@ -1027,15 +1028,15 @@ def _get_profile_header_after_search(base_dir: str,
     if send_blocks_str:
         html_str += '        <p><b>' + send_blocks_str + '</b></p>\n'
     if moved_to:
-        new_nickname = get_nickname_from_actor(moved_to)
+        new_nickname: str = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
-            new_domain_full = get_full_domain(new_domain, new_port)
-            new_handle = new_nickname + '@' + new_domain_full
+            new_domain_full: str = get_full_domain(new_domain, new_port)
+            new_handle: str = new_nickname + '@' + new_domain_full
             html_str += '        <p>' + translate['New account'] + \
                 ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
     elif also_known_as:
-        other_accounts_html = \
+        other_accounts_html: str = \
             '        <p>' + translate['Other accounts'] + ': '
 
         ctr: int = 0
@@ -1064,7 +1065,7 @@ def _get_profile_header_after_search(base_dir: str,
         if ctr > 0:
             html_str += other_accounts_html
     if is_valid_date(birth_date):
-        birth_date = remove_html(birth_date)
+        birth_date: str = remove_html(birth_date)
         html_str += \
             '    <p>' + translate['Birthday'] + ': ' + \
             birth_date + '</p>\n'
@@ -1074,7 +1075,7 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += '  <p>🌐 <a href="' + website_url + '">' + \
             website_url + '</a></p>\n'
     if blog_url:
-        blog_str = 'Blog'
+        blog_str: str = 'Blog'
         if translate.get('Blog'):
             blog_str = translate['Blog']
         html_str += '  <p>' + blog_str + ': <a href="' + blog_url + '">' + \
@@ -1095,7 +1096,7 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += '  <p>Discord: <a href="' + discord + '">' + \
             discord + '</a></p>\n'
     if donate_url:
-        donate_str = 'Donate'
+        donate_str: str = 'Donate'
         if translate.get('Donate'):
             donate_str = translate['Donate']
         html_str += '  <p>' + donate_str + ': <a href="' + \
@@ -1110,7 +1111,7 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += '  <p>💻 <a href="' + repo_url + '">' + \
             repo_url + '</a></p>\n'
     if profile_status:
-        status_str = 'Status'
+        status_str: str = 'Status'
         if translate.get('Status'):
             status_str = translate['Status']
         html_str += \
@@ -1120,11 +1121,11 @@ def _get_profile_header_after_search(base_dir: str,
         featured_hashtags
     # show any notes about this account
     if authorized:
-        handle = search_nickname + '@' + search_domain_full
-        person_notes = \
+        handle: str = search_nickname + '@' + search_domain_full
+        person_notes: str = \
             get_person_notes(base_dir, nickname, domain, handle)
         if person_notes:
-            person_notes_html = person_notes.replace('\n', '<br>')
+            person_notes_html: str = person_notes.replace('\n', '<br>')
             html_str += '        <p><b>' + \
                 translate['Notes'].upper() + ': ' + \
                 person_notes_html + '</b></p>\n'
@@ -1184,11 +1185,11 @@ def html_profile(signing_priv_key_pem: str,
     """
     show_moved_accounts: bool = False
     if authorized:
-        moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
+        moved_accounts_filename: str = data_dir(base_dir) + '/actors_moved.txt'
         if is_a_file(moved_accounts_filename):
             show_moved_accounts = True
 
-    nickname = profile_json['preferredUsername']
+    nickname: str = profile_json['preferredUsername']
     if not nickname:
         return ""
     if is_system_account(nickname):
@@ -1221,7 +1222,7 @@ def html_profile(signing_priv_key_pem: str,
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
-    display_name = remove_html(profile_json['name'])
+    display_name: str = remove_html(profile_json['name'])
     display_name = standardize_text(display_name)
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
@@ -1236,8 +1237,8 @@ def html_profile(signing_priv_key_pem: str,
             if bot_prefix:
                 display_name = bot_prefix + ' ' + display_name
 
-    domain_full = get_full_domain(domain, port)
-    profile_status = get_actor_status(profile_json)
+    domain_full: str = get_full_domain(domain, port)
+    profile_status: str = get_actor_status(profile_json)
     if profile_status:
         if actor_status_expired(profile_json['sm:status']):
             profile_status: str = ''
@@ -1260,16 +1261,16 @@ def html_profile(signing_priv_key_pem: str,
                                   profile_description, False, translate)
     if profile_description:
         profile_description = standardize_text(profile_description)
-    featured_hashtags = \
+    featured_hashtags: str = \
         get_featured_hashtags_as_html(profile_json, profile_description)
-    posts_button = 'button'
-    following_button = 'button'
-    moved_button = 'button'
-    moved_button = 'button'
-    inactive_button = 'button'
-    followers_button = 'button'
-    roles_button = 'button'
-    skills_button = 'button'
+    posts_button: str = 'button'
+    following_button: str = 'button'
+    moved_button: str = 'button'
+    moved_button: str = 'button'
+    inactive_button: str = 'button'
+    followers_button: str = 'button'
+    roles_button: str = 'button'
+    skills_button: str = 'button'
 #    shares_button = 'button'
 #    wanted_button = 'button'
     if selected == 'posts':
@@ -1296,36 +1297,36 @@ def html_profile(signing_priv_key_pem: str,
     follow_approvals: bool = False
     edit_profile_str: str = ''
     logout_str: str = ''
-    actor = profile_json['id']
-    users_path = '/users/' + actor.split('/users/')[1]
+    actor: str = profile_json['id']
+    users_path: str = '/users/' + actor.split('/users/')[1]
 
     donate_section: str = ''
-    donate_url = get_donation_url(profile_json)
-    website_url = get_website(profile_json, translate)
-    repo_url = get_repo_url(profile_json)
-    gemini_link = get_gemini_link(profile_json)
-    blog_address = get_blog_address(profile_json)
-    enigma_pub_key = get_enigma_pub_key(profile_json)
-    pgp_pub_key = get_pgp_pub_key(profile_json)
-    pgp_fingerprint = get_pgp_fingerprint(profile_json)
-    email_address = get_email_address(profile_json)
-    deltachat_invite = get_deltachat_invite(profile_json, translate)
-    pronouns = get_pronouns(profile_json)
-    pixelfed = get_pixelfed(profile_json)
-    discord = get_discord(profile_json)
-    art_site_url = get_art_site_url(profile_json)
-    music_site_url = get_music_site_url(profile_json)
-    youtube = get_youtube(profile_json)
-    peertube = get_peertube(profile_json)
-    xmpp_address = get_xmpp_address(profile_json)
-    matrix_address = get_matrix_address(profile_json)
-    ssb_address = get_ssb_address(profile_json)
-    tox_address = get_tox_address(profile_json)
-    lxmf_address = get_lxmf_address(profile_json)
-    briar_address = get_briar_address(profile_json)
-    cwtch_address = get_cwtch_address(profile_json)
-    verified_site_checkmark = '✔'
-    premium = is_premium_account(base_dir, nickname, domain)
+    donate_url: str = get_donation_url(profile_json)
+    website_url: str = get_website(profile_json, translate)
+    repo_url: str = get_repo_url(profile_json)
+    gemini_link: str = get_gemini_link(profile_json)
+    blog_address: str = get_blog_address(profile_json)
+    enigma_pub_key: str = get_enigma_pub_key(profile_json)
+    pgp_pub_key: str = get_pgp_pub_key(profile_json)
+    pgp_fingerprint: str = get_pgp_fingerprint(profile_json)
+    email_address: str = get_email_address(profile_json)
+    deltachat_invite: str = get_deltachat_invite(profile_json, translate)
+    pronouns: str = get_pronouns(profile_json)
+    pixelfed: str = get_pixelfed(profile_json)
+    discord: str = get_discord(profile_json)
+    art_site_url: str = get_art_site_url(profile_json)
+    music_site_url: str = get_music_site_url(profile_json)
+    youtube: str = get_youtube(profile_json)
+    peertube: str = get_peertube(profile_json)
+    xmpp_address: str = get_xmpp_address(profile_json)
+    matrix_address: str = get_matrix_address(profile_json)
+    ssb_address: str = get_ssb_address(profile_json)
+    tox_address: str = get_tox_address(profile_json)
+    lxmf_address: str = get_lxmf_address(profile_json)
+    briar_address: str = get_briar_address(profile_json)
+    cwtch_address: str = get_cwtch_address(profile_json)
+    verified_site_checkmark: str = '✔'
+    premium: bool = is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or pronouns or discord or \
        art_site_url or music_site_url or youtube or peertube or pixelfed or \
        xmpp_address or matrix_address or \
@@ -1335,7 +1336,7 @@ def html_profile(signing_priv_key_pem: str,
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
-            donate_str = translate['Donate']
+            donate_str: str = translate['Donate']
             if premium:
                 donate_str = translate['Subscribe']
             donate_section += \
@@ -1482,14 +1483,14 @@ def html_profile(signing_priv_key_pem: str,
         donate_section += '</div>\n'
 
     if authorized:
-        edit_profile_str = \
+        edit_profile_str: str = \
             '<a class="imageAnchor" href="' + users_path + \
             '/editprofile" tabindex="1">' + \
             '<img loading="lazy" decoding="async" src="/icons' + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
-        logout_str = \
+        logout_str: str = \
             '<a class="imageAnchor" href="/logout" tabindex="1">' + \
             '<img loading="lazy" decoding="async" src="/icons' + \
             '/logout.png" title="' + translate['Logout'] + \
@@ -1497,7 +1498,7 @@ def html_profile(signing_priv_key_pem: str,
             '" class="timelineicon"/></a>\n'
 
         # are there any follow requests?
-        follow_requests_filename = \
+        follow_requests_filename: str = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
         if is_a_file(follow_requests_filename):
             follow_requests_list: list[str] = \
@@ -1515,7 +1516,7 @@ def html_profile(signing_priv_key_pem: str,
                     break
         if selected == 'followers':
             if follow_approvals:
-                curr_follower_domains = \
+                curr_follower_domains: str = \
                     get_follower_domains(base_dir, nickname, domain)
                 follow_requests_list: list[str] = \
                     load_list(follow_requests_filename,
@@ -1525,13 +1526,13 @@ def html_profile(signing_priv_key_pem: str,
                     for follower_handle in follow_requests_list:
                         if not follower_handle:
                             continue
-                        follower_handle = remove_eol(follower_handle)
+                        follower_handle: str = remove_eol(follower_handle)
                         if '://' in follower_handle:
-                            follower_actor = follower_handle
+                            follower_actor: str = follower_handle
                         else:
-                            nick = follower_handle.split('@')[0]
-                            dom = follower_handle.split('@')[1]
-                            follower_actor = \
+                            nick: str = follower_handle.split('@')[0]
+                            dom: str = follower_handle.split('@')[1]
+                            follower_actor: str = \
                                 local_actor_url(http_prefix, nick, dom)
 
                         # is this a new domain?
@@ -1544,7 +1545,7 @@ def html_profile(signing_priv_key_pem: str,
 
                         # Show the handle of the potential follower
                         # being approved, linking to search on that handle
-                        base_path = '/users/' + nickname
+                        base_path: str = '/users/' + nickname
                         follow_approvals_section += \
                             '<div class="container">\n' + \
                             '  <form method="POST" action="' + \
@@ -1577,13 +1578,13 @@ def html_profile(signing_priv_key_pem: str,
                             translate['Deny'] + '</button></a>'
                         follow_approvals_section += '</div>'
 
-    profile_description_short = \
+    profile_description_short: str = \
         _get_profile_short_description(profile_description)
     # remove formatting from profile description used on title
     avatar_description: str = ''
     if profile_json.get('summary'):
-        avatar_description = profile_json['summary'].replace('<br>', '\n')
-        replacements = {
+        avatar_description: str = profile_json['summary'].replace('<br>', '\n')
+        replacements: dict = {
             '<p>': '',
             '</p>': ''
         }
@@ -1601,25 +1602,25 @@ def html_profile(signing_priv_key_pem: str,
             if '"' in moved_to:
                 moved_to = moved_to.split('"')[1]
         else:
-            moved_to: str = ''
+            moved_to = ''
 
-    also_known_as = None
+    also_known_as: str = None
     if profile_json.get('alsoKnownAs'):
         also_known_as = profile_json['alsoKnownAs']
 
-    joined_date = None
+    joined_date: str = None
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
             joined_date = profile_json['published']
 
-    available = get_availability(base_dir, nickname, domain, profile_json)
+    available: str = get_availability(base_dir, nickname, domain, profile_json)
 
-    occupation_name = None
+    occupation_name: str = None
     if profile_json.get('hasOccupation'):
         occupation_name = get_occupation_name(profile_json)
 
-    url_str = get_url_from_post(profile_json['icon']['url'])
-    avatar_url = remove_html(url_str)
+    url_str: str = get_url_from_post(profile_json['icon']['url'])
+    avatar_url: str = remove_html(url_str)
     # use alternate path for local avatars to avoid any caching issues
     if '://' + domain_full + '/system/accounts/avatars/' in avatar_url:
         avatar_url = \
@@ -1627,25 +1628,25 @@ def html_profile(signing_priv_key_pem: str,
                                '/system/accounts/avatars/',
                                '://' + domain_full + '/users/')
 
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     # get pinned post content
-    pinned_filename = account_dir + '/pinToProfile.txt'
-    pinned_content = None
+    pinned_filename: str = account_dir + '/pinToProfile.txt'
+    pinned_content: str = None
     if is_a_file(pinned_filename):
-        pinned_content = load_string(pinned_filename,
-                                     'EX: html_profile unable to read ' +
-                                     pinned_filename)
+        pinned_content = \
+            load_string(pinned_filename,
+                        'EX: html_profile unable to read ' + pinned_filename)
 
     # shared items attached to the actor
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-    attached_shared_items = \
+    attached_shared_items: str = \
         actor_attached_shares_as_html(profile_json, max_shares_on_profile)
 
     birth_date: str = ''
     if profile_json.get('vcard:bday'):
         birth_date = profile_json['vcard:bday']
 
-    profile_header_str = \
+    profile_header_str: str = \
         _get_profile_header(base_dir, http_prefix,
                             nickname,
                             domain, domain_full, translate,
@@ -1664,38 +1665,39 @@ def html_profile(signing_priv_key_pem: str,
                             birth_date, premium)
 
     # keyboard navigation
-    user_path_str = '/users/' + nickname
-    deft = default_timeline
+    user_path_str: str = '/users/' + nickname
+    deft: str = default_timeline
     is_group: bool = False
-    followers_str = translate['Followers']
+    followers_str: str = translate['Followers']
     if premium:
         followers_str = translate['Fans']
     if is_group_account(base_dir, nickname, domain):
         is_group = True
         followers_str = translate['Members']
-    menu_timeline = \
+    menu_timeline: str = \
         html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    menu_edit = \
+    menu_edit: str = \
         html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
-    menu_followers = \
+    menu_followers: str = \
         html_hide_from_screen_reader('👪') + ' ' + followers_str
+    menu_moved: str = ''
     if show_moved_accounts:
         menu_moved = \
             html_hide_from_screen_reader('⌂') + ' ' + translate['Moved']
-    menu_inactive = \
+    menu_inactive: str = \
         html_hide_from_screen_reader('💤') + ' ' + translate['Inactive']
-    menu_logout = \
+    menu_logout: str = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
     if not show_moved_accounts:
-        nav_links = {
+        nav_links: dict = {
             menu_timeline: user_path_str + '/' + deft,
             menu_edit: user_path_str + '/editprofile',
             menu_followers: user_path_str + '/followers#timeline',
             menu_logout: '/logout'
         }
     else:
-        nav_links = {
+        nav_links: dict = {
             menu_timeline: user_path_str + '/' + deft,
             menu_edit: user_path_str + '/editprofile',
             menu_followers: user_path_str + '/followers#timeline',
@@ -1704,29 +1706,29 @@ def html_profile(signing_priv_key_pem: str,
             menu_logout: '/logout'
         }
     if not is_group:
-        menu_following = \
+        menu_following: str = \
             html_hide_from_screen_reader('👥') + ' ' + translate['Following']
         nav_links[menu_following] = user_path_str + '/following#timeline'
-        menu_roles = \
+        menu_roles: str = \
             html_hide_from_screen_reader('🤚') + ' ' + translate['Roles']
         nav_links[menu_roles] = user_path_str + '/roles#timeline'
-        menu_skills = \
+        menu_skills: str = \
             html_hide_from_screen_reader('🛠') + ' ' + translate['Skills']
         nav_links[menu_skills] = user_path_str + '/skills#timeline'
     if is_artist(base_dir, nickname):
-        menu_theme_designer = \
+        menu_theme_designer: str = \
             html_hide_from_screen_reader('🎨') + ' ' + \
             translate['Theme Designer']
         nav_links[menu_theme_designer] = user_path_str + '/themedesigner'
-    nav_access_keys = {}
+    nav_access_keys: dict = {}
     for variable_name, key in access_keys.items():
         if not locals().get(variable_name):
             continue
         nav_access_keys[locals()[variable_name]] = key
 
-    profile_str = html_keyboard_navigation(text_mode_banner,
-                                           nav_links, nav_access_keys,
-                                           None, None, None, False)
+    profile_str: str = \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
+                                 None, None, None, False)
 
     profile_str += profile_header_str + donate_section
     profile_str += '<div class="container" id="buttonheader">\n'
@@ -1787,7 +1789,7 @@ def html_profile(signing_priv_key_pem: str,
     # search for following or followers
     if authorized:
         if selected in ('following', 'followers'):
-            follow_search_str = '<div class="container">\n'
+            follow_search_str: str = '<div class="container">\n'
             follow_search_str += \
                 '<form method="POST" action="' + users_path + \
                 '/searchhandle?page=1">\n'
@@ -1808,11 +1810,11 @@ def html_profile(signing_priv_key_pem: str,
 
     profile_str += follow_approvals_section
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    license_str = \
+    license_str: str = \
         '<a href="https://gitlab.com/bashrc2/epicyon" tabindex="2">' + \
         '<img loading="lazy" decoding="async" class="license" alt="' + \
         translate['Get the source code'] + '" title="' + \
@@ -1822,12 +1824,12 @@ def html_profile(signing_priv_key_pem: str,
         if hide_recent_posts.get(nickname):
             max_profile_posts: int = 0
         else:
-            max_profile_posts = \
+            max_profile_posts: int = \
                 get_max_profile_posts(base_dir, nickname, domain, 20)
         min_images_for_accounts: list[str] = []
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir,
-                                             nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_profile_posts,
                                 translate,
@@ -1934,8 +1936,7 @@ def html_profile(signing_priv_key_pem: str,
     # end of #timeline
     profile_str += '</div>\n<br>\n'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     profile_str = \
         html_header_with_person_markup(css_filename, instance_title,
                                        profile_json, city,
@@ -1976,7 +1977,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    separator_str = html_post_separator(base_dir, None)
+    separator_str: str = html_post_separator(base_dir, None)
     profile_str: str = ''
     max_items: int = max_profile_posts
     ctr: int = 0
@@ -1987,10 +1988,10 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
         minimize_all_images = True
     shown_items: list[str] = []
     while ctr < max_items and curr_page < 4:
-        outbox_feed_path_str = \
+        outbox_feed_path_str: str = \
             '/users/' + nickname + '/' + box_name + '?page=' + \
             str(curr_page)
-        outbox_feed = \
+        outbox_feed: dict = \
             person_box_json({}, base_dir, domain,
                             port,
                             outbox_feed_path_str,
@@ -2005,8 +2006,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             if item['type'] == 'Create':
                 if not item['object'].get('id'):
                     continue
-                item_id = remove_id_ending(item['object']['id'])
-                post_str = \
+                item_id: str = remove_id_ending(item['object']['id'])
+                post_str: str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
                                             max_recent_posts,
@@ -2191,7 +2192,7 @@ def _html_profile_shares(actor: str, translate: {},
 def _grayscale_enabled(base_dir: str) -> bool:
     """Is grayscale UI enabled?
     """
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     return is_a_file(dir_str + '/.grayscale')
 
 
@@ -2199,20 +2200,20 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
     """Returns the html for theme selection dropdown
     """
     # Themes section
-    themes = get_themes_list(base_dir)
+    themes: list[str] = get_themes_list(base_dir)
     themes_dropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
-    grayscale = _grayscale_enabled(base_dir)
+    grayscale: bool = _grayscale_enabled(base_dir)
     themes_dropdown += \
         edit_check_box(translate['Grayscale'], 'grayscale', grayscale)
-    dyslexic_font = get_config_param(base_dir, 'dyslexicFont')
+    dyslexic_font: bool = get_config_param(base_dir, 'dyslexicFont')
     themes_dropdown += \
         edit_check_box(translate['Dyslexic font'], 'dyslexicFont',
                        dyslexic_font)
     themes_dropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for theme_name in themes:
-        translated_theme_name = theme_name
+        translated_theme_name: str = theme_name
         if translate.get(theme_name):
             translated_theme_name = translate[theme_name]
         themes_dropdown += '    <option value="' + \
@@ -2226,8 +2227,8 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
         themes_dropdown += \
             edit_check_box(translate['Remove the custom font'],
                            'removeCustomFont', False)
-    theme_name = get_config_param(base_dir, 'theme')
-    themes_dropdown = \
+    theme_name: str = get_config_param(base_dir, 'theme')
+    themes_dropdown: str = \
         themes_dropdown.replace('<option value="' + theme_name + '">',
                                 '<option value="' + theme_name +
                                 '" selected>')
@@ -2237,7 +2238,7 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
 def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     """Graphic design section on Edit Profile screen
     """
-    graphics_str = begin_edit_section(translate['Graphic Design'])
+    graphics_str: str = begin_edit_section(translate['Graphic Design'])
 
     low_bandwidth: bool = get_config_param(base_dir, 'lowBandwidth')
     if not low_bandwidth:
@@ -2268,11 +2269,12 @@ def _html_edit_profile_twitter(base_dir: str, translate: {},
     """Edit twitter settings within profile
     """
     # Twitter section
-    twitter_str = begin_edit_section('x.com / ' + translate['Twitter'])
+    twitter_str: str = begin_edit_section('x.com / ' + translate['Twitter'])
     twitter_str += \
         edit_check_box(translate['Remove Twitter posts'],
                        'removeTwitter', remove_twitter)
-    twitter_replacement_domain = get_config_param(base_dir, "twitterdomain")
+    twitter_replacement_domain: str = \
+        get_config_param(base_dir, "twitterdomain")
     if not twitter_replacement_domain:
         twitter_replacement_domain: str = ''
     twitter_str += \
@@ -2290,23 +2292,21 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                                                             str, str, str):
     """Edit profile instance settings
     """
-    image_formats = get_image_formats()
+    image_formats: list[str] = get_image_formats()
 
     # Instance details section
-    instance_description = \
+    instance_description: str = \
         get_config_param(base_dir, 'instanceDescription')
-    custom_submit_text = \
+    custom_submit_text: str = \
         get_config_param(base_dir, 'customSubmitText')
-    instance_description_short = \
+    instance_description_short: str = \
         get_config_param(base_dir, 'instanceDescriptionShort')
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
-    content_license_url = \
-        get_config_param(base_dir, 'contentLicenseUrl')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
+    content_license_url: str = get_config_param(base_dir, 'contentLicenseUrl')
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
 
-    instance_str = begin_edit_section(translate['Instance Settings'])
+    instance_str: str = begin_edit_section(translate['Instance Settings'])
 
     instance_str += \
         edit_text_field(translate['Instance Title'],
@@ -2346,7 +2346,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         edit_check_box(translate['Registrations open'],
                        'regOpen', registrations_open)
     if registrations_open:
-        remaining_config_exists = \
+        remaining_config_exists: str = \
             get_config_param(base_dir, 'registrationsRemaining')
         registrations_remaining: int = 0
         if remaining_config_exists is not None:
@@ -2360,7 +2360,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         '  <label class="labels">\n' + \
         translate['Security'] + '</label><br>\n'
 
-    node_info_str = \
+    node_info_str: str = \
         translate['Show numbers of accounts within instance metadata']
     if get_config_param(base_dir, "showNodeInfoAccounts"):
         instance_str += \
@@ -2411,13 +2411,13 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     instance_str += end_edit_section()
 
     # Role assignments section
-    role_assign_str = \
+    role_assign_str: str = \
         begin_edit_section(translate['Role Assignment']) + \
         '  <b><label class="labels">'
 
     # site moderators
     moderators: str = ''
-    moderators_file = data_dir(base_dir) + '/moderators.txt'
+    moderators_file: str = data_dir(base_dir) + '/moderators.txt'
     if is_a_file(moderators_file):
         moderators = \
             load_string(moderators_file,
@@ -2425,13 +2425,13 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                         moderators_file)
         if moderators is None:
             moderators: str = ''
-    subtitle = translate['A list of moderator nicknames. One per line.']
+    subtitle: str = translate['A list of moderator nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Moderators'] + '</b>', subtitle,
                        'moderators', moderators, 200, '', False)
     # site editors
     editors: str = ''
-    editors_file = data_dir(base_dir) + '/editors.txt'
+    editors_file: str = data_dir(base_dir) + '/editors.txt'
     if is_a_file(editors_file):
         editors = \
             load_string(editors_file,
@@ -2446,7 +2446,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # counselors
     counselors: str = ''
-    counselors_file = data_dir(base_dir) + '/counselors.txt'
+    counselors_file: str = data_dir(base_dir) + '/counselors.txt'
     if is_a_file(counselors_file):
         counselors = \
             load_string(counselors_file,
@@ -2460,7 +2460,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # artists
     artists: str = ''
-    artists_file = data_dir(base_dir) + '/artists.txt'
+    artists_file: str = data_dir(base_dir) + '/artists.txt'
     if is_a_file(artists_file):
         artists = \
             load_string(artists_file,
@@ -2474,7 +2474,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # site devops
     devops: str = ''
-    devops_file = data_dir(base_dir) + '/devops.txt'
+    devops_file: str = data_dir(base_dir) + '/devops.txt'
     if is_a_file(devops_file):
         devops = \
             load_string(devops_file,
@@ -2499,7 +2499,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                        'ptInstances', peertube_instances_str, 200, '', False)
     peertube_str += \
         '      <br>\n'
-    yt_replace_domain = get_config_param(base_dir, "youtubedomain")
+    yt_replace_domain: str = get_config_param(base_dir, "youtubedomain")
     if not yt_replace_domain:
         yt_replace_domain: str = ''
     peertube_str += \
@@ -2507,12 +2507,13 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                         'ytdomain', yt_replace_domain)
     peertube_str += end_edit_section()
 
-    libretranslate_url = get_config_param(base_dir, 'libretranslateUrl')
-    libretranslate_api_key = get_config_param(base_dir, 'libretranslateApiKey')
-    libretranslate_str = \
+    libretranslate_url: str = get_config_param(base_dir, 'libretranslateUrl')
+    libretranslate_api_key: str = \
+        get_config_param(base_dir, 'libretranslateApiKey')
+    libretranslate_str: str = \
         _html_edit_profile_libre_translate(libretranslate_url,
                                            libretranslate_api_key)
-    memorial_str = \
+    memorial_str: str = \
         _html_edit_profile_memorial(base_dir, translate)
 
     return instance_str, role_assign_str, peertube_str, \
@@ -2522,7 +2523,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 def _html_edit_profile_danger_zone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    edit_profile_form = begin_edit_section(translate['Danger Zone'])
+    edit_profile_form: str = begin_edit_section(translate['Danger Zone'])
 
     edit_profile_form += \
         '      <b><label class="labels">' + \
@@ -2539,7 +2540,7 @@ def _html_edit_profile_danger_zone(translate: {}) -> str:
 def _html_system_monitor(nickname: str, translate: {}) -> str:
     """Links to performance graphs
     """
-    system_monitor_str = begin_edit_section(translate['System Monitor'])
+    system_monitor_str: str = begin_edit_section(translate['System Monitor'])
     system_monitor_str += '<p><a href="/users/' + nickname + \
         '/performance?graph=get">📊 GET</a></p>'
     system_monitor_str += '<p><a href="/users/' + nickname + \
@@ -2554,8 +2555,8 @@ def _html_edit_profile_skills(base_dir: str, nickname: str, domain: str,
                               translate: {}) -> str:
     """skills section of Edit Profile screen
     """
-    system_language = 'en'
-    skills = get_skills(base_dir, nickname, domain)
+    system_language: str = 'en'
+    skills: dict = get_skills(base_dir, nickname, domain)
     skills_str: str = ''
     skill_ctr: int = 1
     if skills:
@@ -2598,7 +2599,7 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     """git projects section of edit profile screen
     """
     git_projects_str: str = ''
-    git_projects_filename = \
+    git_projects_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if is_a_file(git_projects_filename):
         git_projects_str = \
@@ -2608,8 +2609,8 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
         if git_projects_str is None:
             git_projects_str: str = ''
 
-    edit_profile_form = begin_edit_section(translate['Git Projects'])
-    idx = 'List of project names that you wish to receive git patches for'
+    edit_profile_form: str = begin_edit_section(translate['Git Projects'])
+    idx: str = 'List of project names that you wish to receive git patches for'
     edit_profile_form += \
         edit_text_area(translate[idx], None, 'gitProjects', git_projects_str,
                        100, '', False)
@@ -2621,7 +2622,7 @@ def _html_edit_profile_shared_items(base_dir: str, translate: {}) -> str:
     """shared items section of edit profile screen
     """
     shared_items_str: str = ''
-    shared_items_federated_domains_str = \
+    shared_items_federated_domains_str: str = \
         get_config_param(base_dir, 'sharedItemsFederatedDomains')
     if shared_items_federated_domains_str:
         shared_items_federated_domains_list = \
@@ -2629,8 +2630,8 @@ def _html_edit_profile_shared_items(base_dir: str, translate: {}) -> str:
         for shared_federated_domain in shared_items_federated_domains_list:
             shared_items_str += shared_federated_domain.strip() + '\n'
 
-    edit_profile_form = begin_edit_section(translate['Shares'])
-    idx = 'List of domains which can access the shared items catalog'
+    edit_profile_form: str = begin_edit_section(translate['Shares'])
+    idx: str = 'List of domains which can access the shared items catalog'
     edit_profile_form += \
         edit_text_area(translate[idx], None, 'shareDomainList',
                        shared_items_str, 200, '', False)
@@ -2652,7 +2653,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     """Filtering and blocking section of edit profile screen
     """
     filter_str: str = ''
-    filter_filename = \
+    filter_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if is_a_file(filter_filename):
         filter_str = \
@@ -2663,7 +2664,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             filter_str: str = ''
 
     filter_bio_str: str = ''
-    filter_bio_filename = \
+    filter_bio_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     if is_a_file(filter_bio_filename):
         filter_bio_str = \
@@ -2674,7 +2675,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             filter_bio_str: str = ''
 
     switch_str: str = ''
-    switch_filename = \
+    switch_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if is_a_file(switch_filename):
         switch_str = \
@@ -2685,7 +2686,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             switch_str: str = ''
 
     auto_tags: str = ''
-    auto_tags_filename = \
+    auto_tags_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if is_a_file(auto_tags_filename):
         auto_tags = \
@@ -2693,10 +2694,10 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                         'EX: _html_edit_profile_filtering unable to read ' +
                         auto_tags_filename)
         if auto_tags is None:
-            auto_tags: str = ''
+            auto_tags = ''
 
     auto_cw: str = ''
-    auto_cw_filename = \
+    auto_cw_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if is_a_file(auto_cw_filename):
         auto_cw = \
@@ -2706,10 +2707,10 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         if auto_cw is None:
             auto_cw: str = ''
 
-    blocked_str = get_account_blocks(base_dir, nickname, domain, debug)
+    blocked_str: str = get_account_blocks(base_dir, nickname, domain, debug)
 
     dm_allowed_instances_str: str = ''
-    dm_allowed_instances_filename = \
+    dm_allowed_instances_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if is_a_file(dm_allowed_instances_filename):
         dm_allowed_instances_str = \
@@ -2720,7 +2721,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             dm_allowed_instances_str: str = ''
 
     allowed_instances_str: str = ''
-    allowed_instances_filename = \
+    allowed_instances_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if is_a_file(allowed_instances_filename):
         allowed_instances_str = \
@@ -2730,12 +2731,12 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         if allowed_instances_str is None:
             allowed_instances_str: str = ''
 
-    edit_profile_form = begin_edit_section(translate['Filtering and Blocking'])
+    edit_profile_form: str = \
+        begin_edit_section(translate['Filtering and Blocking'])
 
-    idx = 'Hours after posting during which replies are allowed'
+    idx: str = 'Hours after posting during which replies are allowed'
     edit_profile_form += \
-        '  <label class="labels">' + \
-        translate[idx] + \
+        '  <label class="labels">' + translate[idx] + \
         ':</label> <input type="number" name="replyhours" ' + \
         'min="0" max="999999999999" step="1" ' + \
         'value="' + str(reply_interval_hours) + '"><br><br>\n'
@@ -2746,7 +2747,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         '</label><br>\n'
 
     city: str = ''
-    city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
+    city_filename: str = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if is_a_file(city_filename):
         city1 = \
             load_string(city_filename,
@@ -2754,7 +2755,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                         city_filename)
         if city1:
             city = remove_eol(city1)
-    locations_filename = base_dir + '/custom_locations.txt'
+    locations_filename: str = base_dir + '/custom_locations.txt'
     if not is_a_file(locations_filename):
         locations_filename = base_dir + '/locations.txt'
     cities: list[str] = \
@@ -2814,7 +2815,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         '      <textarea id="message" name="autoCW" ' + \
         'style="height:500px" spellcheck="true">' + auto_cw + '</textarea>\n'
 
-    idx = 'Blocked accounts, one per line, in the form ' + \
+    idx: str = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     edit_profile_form += \
         edit_text_area(translate['Blocked accounts'], None, 'blocked',
@@ -2823,13 +2824,13 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     # import and export blocks
     edit_profile_form += _import_export_blocks(translate)
 
-    idx = 'Direct messages are always allowed from these instances.'
+    idx: str = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \
         edit_text_area(translate['Direct Message permitted instances'], None,
                        'dmAllowedInstances', dm_allowed_instances_str,
                        200, '', False)
 
-    idx = 'Federate only with a defined set of instances. ' + \
+    idx: str = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
     edit_profile_form += \
         '      <br><b><label class="labels">' + \
@@ -2876,7 +2877,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                     buy_icon_text + ' ' + buy_url.strip() + '\n'
             else:
                 buy_domains_list_str += buy_url.strip() + '\n'
-        buy_domains_str = \
+        buy_domains_str: str = \
             "Buy links are allowed from the following domains"
         edit_profile_form += \
             edit_text_area(translate[buy_domains_str], None,
@@ -2886,14 +2887,14 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         block_federated_endpoints_list_str: str = ''
         for block_api_url in block_federated_endpoints:
             block_federated_endpoints_list_str += block_api_url.strip() + '\n'
-        block_federated_str = "Blocking API endpoints"
+        block_federated_str: str = "Blocking API endpoints"
         edit_profile_form += \
             edit_text_area(translate[block_federated_str], None,
                            'blockFederated',
                            block_federated_endpoints_list_str,
                            200, '', False)
 
-        robots_txt_filename = data_dir(base_dir) + '/robots.txt'
+        robots_txt_filename: str = data_dir(base_dir) + '/robots.txt'
         robots_txt: str = ''
         if is_a_file(robots_txt_filename):
             new_robots_txt = \
@@ -2906,7 +2907,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            'robotsTxt', robots_txt,
                            200, '', False)
 
-        idx = 'Block military instances'
+        idx: str = 'Block military instances'
         if translate.get(idx):
             name = translate[idx]
         block_mil: bool = False
@@ -2915,7 +2916,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_check_box(idx, 'blockMilitary', block_mil)
 
-        idx = 'Block government instances'
+        idx: str = 'Block government instances'
         if translate.get(idx):
             name = translate[idx]
         block_gov: bool = False
@@ -2924,7 +2925,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_check_box(idx, 'blockGovernment', block_gov)
 
-        idx = 'Block BlueSky bridges'
+        idx: str = 'Block BlueSky bridges'
         if translate.get(idx):
             name = translate[idx]
         block_bsky: bool = False
@@ -2933,7 +2934,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         edit_profile_form += \
             edit_check_box(idx, 'blockBlueSky', block_bsky)
 
-        idx = 'Block Nostr bridges'
+        idx: str = 'Block Nostr bridges'
         if translate.get(idx):
             name = translate[idx]
         blocknostr: bool = False
@@ -2944,7 +2945,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
 
         cw_lists_str: str = ''
         for name, list_json in cw_lists.items():
-            variablename = get_cw_list_variable(name)
+            variablename: str = get_cw_list_variable(name)
             list_is_enabled: bool = False
             if lists_enabled:
                 if name in lists_enabled:
@@ -2959,7 +2960,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             cw_lists_str += \
                 edit_check_box(name, variablename, list_is_enabled)
         if cw_lists_str:
-            idx = 'Add content warnings for the following sites'
+            idx: str = 'Add content warnings for the following sites'
             edit_profile_form += \
                 '<label class="labels">' + translate[idx] + ':</label>\n' + \
                 '<br>' + cw_lists_str
@@ -2971,7 +2972,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
 def _html_edit_profile_change_password(translate: {}) -> str:
     """Change password section of edit profile screen
     """
-    edit_profile_form = \
+    edit_profile_form: str = \
         begin_edit_section(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
@@ -2988,7 +2989,7 @@ def _html_edit_profile_libre_translate(libretranslate_url: str,
                                        libretranslate_api_key: str) -> str:
     """Change automatic translation settings
     """
-    edit_profile_form = begin_edit_section('LibreTranslate')
+    edit_profile_form: str = begin_edit_section('LibreTranslate')
 
     edit_profile_form += \
         edit_text_field('URL', 'libretranslateUrl', libretranslate_url,
@@ -3004,11 +3005,11 @@ def _html_edit_profile_libre_translate(libretranslate_url: str,
 def _html_edit_profile_memorial(base_dir: str, translate: {}) -> str:
     """Change memorial accounts
     """
-    memorial_accounts_str = get_memorials(base_dir)
+    memorial_accounts_str: str = get_memorials(base_dir)
 
-    edit_profile_form = begin_edit_section(translate['Memorials'])
+    edit_profile_form: str = begin_edit_section(translate['Memorials'])
 
-    title_str = \
+    title_str: str = \
         translate['Nicknames of memorial accounts (one per line)']
     edit_profile_form += \
         edit_text_area(title_str, None, 'memorialAccounts',
@@ -3021,14 +3022,14 @@ def _html_edit_profile_memorial(base_dir: str, translate: {}) -> str:
 def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
     """Background images section of edit profile screen
     """
-    idx = 'The files attached below should be no larger than ' + \
+    idx: str = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
-    edit_profile_form = \
+    edit_profile_form: str = \
         begin_edit_section(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not news_instance:
-        image_formats = get_image_formats()
+        image_formats: list[str] = get_image_formats()
         edit_profile_form += \
             '      <label class="labels">' + \
             translate['Background image'] + '</label>\n' + \
@@ -3081,7 +3082,7 @@ def _html_edit_profile_contact_info(email_address: str,
                                     art_site_url: str) -> str:
     """Contact Information section of edit profile screen
     """
-    edit_profile_form = begin_edit_section(translate['Contact Details'])
+    edit_profile_form: str = begin_edit_section(translate['Contact Details'])
     edit_profile_form += edit_text_field(translate['Email'],
                                          'email', email_address)
     edit_profile_form += edit_text_field(translate['DeltaChat'],
@@ -3117,12 +3118,12 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
                              translate: {}) -> str:
     """Notifications settings
     """
-    ntfy_url = "ntfy.sh"
+    ntfy_url: str = "ntfy.sh"
     ntfy_topic: str = ''
 
-    ntfy_url_file = \
+    ntfy_url_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.ntfy_url'
-    ntfy_topic_file = \
+    ntfy_topic_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.ntfy_topic'
     if is_a_file(ntfy_url_file):
         ntfy_url_str = \
@@ -3139,7 +3140,7 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
         if ntfy_topic is None:
             ntfy_topic: str = ''
 
-    edit_profile_form = begin_edit_section(translate['Notifications'])
+    edit_profile_form: str = begin_edit_section(translate['Notifications'])
     edit_profile_form += edit_text_field(translate['ntfy URL'],
                                          'ntfyUrl', ntfy_url)
     edit_profile_form += edit_text_field(translate['ntfy topic'],
@@ -3152,7 +3153,7 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
                                      translate: {}, premium: bool) -> str:
     """Contact Information section of edit profile screen
     """
-    edit_profile_form = begin_edit_section(translate['Import and Export'])
+    edit_profile_form: str = begin_edit_section(translate['Import and Export'])
 
     edit_profile_form += \
         '<p><label class="labels">' + \
@@ -3171,7 +3172,7 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
         ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
         'download>' + \
         '<label class="labels">⇩ CSV</label></a></p><br>\n'
-    followers_str = translate['Followers']
+    followers_str: str = translate['Followers']
     if premium:
         followers_str = translate['Fans']
     edit_profile_form += \
@@ -3189,9 +3190,9 @@ def _html_edit_profile_encryption_keys(pgp_fingerprint: str,
                                        translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    edit_profile_form = begin_edit_section(translate['Encryption Keys'])
+    edit_profile_form: str = begin_edit_section(translate['Encryption Keys'])
 
-    enigma_url = 'https://github.com/enigma-reloaded/enigma-reloaded'
+    enigma_url: str = 'https://github.com/enigma-reloaded/enigma-reloaded'
     edit_profile_form += \
         edit_text_field('<a href="' + enigma_url + '">Enigma</a>',
                         'enigmapubkey', enigma_pub_key)
@@ -3213,24 +3214,26 @@ def _html_edit_profile_reply_controls(translate: {},
                                       no_reply_boosts: bool) -> str:
     """option checkboxes for reply controls
     """
-    edit_profile_form = begin_edit_section(translate['Reply Controls'])
+    edit_profile_form: str = begin_edit_section(translate['Reply Controls'])
     edit_profile_form += \
         edit_check_box(translate['Only people I follow can send me DMs'],
                        'followDMs', follow_dms)
 
-    show_replies_followers_str = translate['Only allow replies from followers']
+    show_replies_followers_str: str = \
+        translate['Only allow replies from followers']
     if premium:
         show_replies_followers_str = translate['Only allow replies from fans']
     edit_profile_form += \
         edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
                        show_replies_followers)
 
-    show_replies_mutuals_str = translate['Only allow replies from mutuals']
+    show_replies_mutuals_str: str = \
+        translate['Only allow replies from mutuals']
     edit_profile_form += \
         edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
                        show_replies_mutuals)
 
-    no_reply_boosts_str = translate["Don't show boosted replies"]
+    no_reply_boosts_str: str = translate["Don't show boosted replies"]
     edit_profile_form += \
         edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
     edit_profile_form += end_edit_section()
@@ -3258,10 +3261,10 @@ def _html_edit_profile_options(is_admin: bool,
                                watermark_enabled: bool) -> str:
     """option checkboxes section of edit profile screen
     """
-    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form: str = '    <div class="container">\n'
     edit_profile_form += \
         edit_check_box(translate['Premium account'], 'premiumAccount', premium)
-    approve_followers_str = translate['Approve follower requests']
+    approve_followers_str: str = translate['Approve follower requests']
     if premium:
         approve_followers_str = translate['Approve fans']
     edit_profile_form += \
@@ -3293,14 +3296,14 @@ def _html_edit_profile_options(is_admin: bool,
         edit_check_box(translate["Don't show the Reaction button"],
                        'hideReactionButton', hide_reaction_button)
 
-    bold_str = bold_reading_string(translate['Bold reading'])
+    bold_str: str = bold_reading_string(translate['Bold reading'])
     edit_profile_form += \
         edit_check_box(bold_str, 'boldReading', bold_reading)
 
     minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
-    minimize_all_images_str = translate['Minimize all images']
+    minimize_all_images_str: str = translate['Minimize all images']
     edit_profile_form += \
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
@@ -3308,35 +3311,35 @@ def _html_edit_profile_options(is_admin: bool,
     reverse: bool = False
     if nickname in reverse_sequence:
         reverse = True
-    reverse_str = translate['Reverse timelines']
+    reverse_str: str = translate['Reverse timelines']
     edit_profile_form += \
         edit_check_box(reverse_str, 'reverseTimelines', reverse)
 
-    show_quote_toots_str = translate['Show quote posts']
+    show_quote_toots_str: str = translate['Show quote posts']
     edit_profile_form += \
         edit_check_box(show_quote_toots_str, 'showQuotes', show_quote_toots)
 
-    show_vote_posts_str = translate['Show vote posts']
+    show_vote_posts_str: str = translate['Show vote posts']
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
 
-    hide_follows_str = translate['Do not show follows on your profile']
+    hide_follows_str: str = translate['Do not show follows on your profile']
     if premium:
         hide_follows_str = translate['Do not show fans on your profile']
     edit_profile_form += \
         edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
 
-    hide_recent_posts_str = \
+    hide_recent_posts_str: str = \
         translate["Don't show recent public posts on your profile"]
     edit_profile_form += \
         edit_check_box(hide_recent_posts_str, 'hideRecentPosts',
                        hide_recent_posts)
 
-    no_seen_posts_str = translate["Don't show already seen posts"]
+    no_seen_posts_str: str = translate["Don't show already seen posts"]
     edit_profile_form += \
         edit_check_box(no_seen_posts_str, 'noSeenPosts', no_seen_posts)
 
-    watermark_str = translate["Apply a watermark to uploaded images"]
+    watermark_str: str = translate["Apply a watermark to uploaded images"]
     edit_profile_form += \
         edit_check_box(watermark_str, 'watermarkEnabled', watermark_enabled)
 
@@ -3370,9 +3373,9 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
                             featured_hashtags: str) -> str:
     """main info on edit profile screen
     """
-    image_formats = get_image_formats()
+    image_formats: list[str] = get_image_formats()
 
-    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form: str = '    <div class="container">\n'
 
     edit_profile_form += \
         edit_text_field(translate['Nickname'], 'displayNickname',
@@ -3387,7 +3390,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
                        200, '', True)
 
     birth_date: str = ''
-    birth_date_field = 'vcard:bday'
+    birth_date_field: str = 'vcard:bday'
     if actor_json.get(birth_date_field):
         if '-' in actor_json[birth_date_field]:
             if len(actor_json[birth_date_field].split('-')) == 3:
@@ -3420,7 +3423,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
 
     also_known_as_str: str = ''
     if actor_json.get('alsoKnownAs'):
-        also_known_as = actor_json['alsoKnownAs']
+        also_known_as: str = actor_json['alsoKnownAs']
         ctr: int = 0
         for alt_actor in also_known_as:
             if ctr > 0:
@@ -3436,7 +3439,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
         edit_text_field(translate['Moved to new account address'], 'movedTo',
                         moved_to, 'https://...')
 
-    donate_str = translate['Donations link']
+    donate_str: str = translate['Donations link']
     if is_premium_account(base_dir, nickname, domain):
         donate_str = translate['Premium account subscription link']
     edit_profile_form += \
@@ -3453,30 +3456,30 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
     edit_profile_form += \
         edit_text_field('Blog', 'blogAddress', blog_address, 'https://...')
 
-    languages_list_str = _get_supported_languagesSorted(base_dir)
-    show_languages = get_actor_languages(actor_json)
+    languages_list_str: str = _get_supported_languagesSorted(base_dir)
+    show_languages: str = get_actor_languages(actor_json)
     edit_profile_form += \
         edit_text_field(translate['Languages'], 'showLanguages',
                         show_languages, languages_list_str)
 
-    timezone = get_account_timezone(base_dir, nickname, domain)
+    timezone: str = get_account_timezone(base_dir, nickname, domain)
     edit_profile_form += \
         edit_text_field(translate['Time Zone'], 'timeZone',
                         timezone, 'Europe/London')
 
-    keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
+    keep_dms: int = get_post_expiry_keep_dms(base_dir, nickname, domain)
     edit_profile_form += '<br>\n' + \
         edit_check_box(translate['Keep DMs during post expiry'],
                        'expiryKeepDMs', keep_dms)
 
-    post_expiry_period_days = \
+    post_expiry_period_days: int = \
         get_post_expiry_days(base_dir, nickname, domain)
     edit_profile_form += '<p>' + \
         edit_number_field(translate['Post expiry period in days'],
                           'postExpiryPeriod', post_expiry_period_days,
                           0, 9999999999999999999999, 0) + '</p>\n'
 
-    max_profile_posts = \
+    max_profile_posts: int = \
         get_max_profile_posts(base_dir, nickname, domain, max_recent_posts)
     edit_profile_form += '<br><p>' + \
         edit_number_field(translate['Preview posts on profile screen'],
@@ -3494,7 +3497,7 @@ def _html_edit_profile_top_banner(base_dir: str,
                                   translate: {}) -> str:
     """top banner on edit profile screen
     """
-    edit_profile_form = \
+    edit_profile_form: str = \
         '<a href="/users/' + nickname + '/' + default_timeline + '">' + \
         '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" src="' + \
@@ -3549,23 +3552,23 @@ def html_edit_profile(server, translate: {},
                       debug: bool) -> str:
     """Shows the edit profile screen
     """
-    replacements = {
+    replacements: dict = {
         '/inbox': '',
         '/outbox': '',
         '/shares': '',
         '/wanted': ''
     }
-    path = replace_strings(path, replacements)
-    nickname = get_nickname_from_actor(path)
+    path: str = replace_strings(path, replacements)
+    nickname: str = get_nickname_from_actor(path)
     if not nickname:
         return ''
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
 
     bold_reading: bool = False
     if server.bold_reading.get(nickname):
         bold_reading = True
 
-    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    actor_filename: str = acct_dir(base_dir, nickname, domain) + '.json'
     if not is_a_file(actor_filename):
         return ''
 
@@ -3573,7 +3576,7 @@ def html_edit_profile(server, translate: {},
     banner_file, _ = \
         get_profile_background_file(base_dir, nickname, domain, theme)
 
-    display_nickname = nickname
+    display_nickname: str = nickname
     is_bot = is_group = follow_dms = remove_twitter = ''
     notify_likes = notify_reactions = ''
     hide_like_button = hide_reaction_button = media_instance_str = ''
@@ -3588,7 +3591,7 @@ def html_edit_profile(server, translate: {},
     discord = music_site_url = art_site_url = ''
     manually_approves_followers = reject_spam_actors = ''
 
-    actor_json = load_json(actor_filename)
+    actor_json: dict = load_json(actor_filename)
     if actor_json:
         if actor_json.get('movedTo'):
             if isinstance(actor_json['movedTo'], str):
@@ -3637,7 +3640,7 @@ def html_edit_profile(server, translate: {},
             else:
                 manually_approves_followers: str = ''
         reject_spam_actors: str = ''
-        actor_spam_filter_filename = \
+        actor_spam_filter_filename: str = \
             acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
         if is_a_file(actor_spam_filter_filename):
             reject_spam_actors = 'checked'
@@ -3648,7 +3651,7 @@ def html_edit_profile(server, translate: {},
             elif actor_json['type'] == 'Group':
                 is_group = 'checked'
                 is_bot: str = ''
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     if is_a_file(account_dir + '/.followDMs'):
         follow_dms = 'checked'
     if is_a_file(account_dir + '/.removeTwitter'):
@@ -3662,25 +3665,25 @@ def html_edit_profile(server, translate: {},
     if is_a_file(account_dir + '/.hideReactionButton'):
         hide_reaction_button = 'checked'
 
-    media_instance = get_config_param(base_dir, "mediaInstance")
+    media_instance: bool = get_config_param(base_dir, "mediaInstance")
     if media_instance:
         if media_instance is True:
             media_instance_str = 'checked'
             blogs_instance_str = news_instance_str = ''
 
-    news_instance = get_config_param(base_dir, "newsInstance")
+    news_instance: bool = get_config_param(base_dir, "newsInstance")
     if news_instance:
         if news_instance is True:
             news_instance_str = 'checked'
             blogs_instance_str = media_instance_str = ''
 
-    blogs_instance = get_config_param(base_dir, "blogsInstance")
+    blogs_instance: bool = get_config_param(base_dir, "blogsInstance")
     if blogs_instance:
         if blogs_instance is True:
             blogs_instance_str = 'checked'
             media_instance_str = news_instance_str = ''
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -3693,7 +3696,7 @@ def html_edit_profile(server, translate: {},
     graphics_str: str = ''
     shares_federation_str: str = ''
 
-    admin_nickname = get_config_param(base_dir, 'admin')
+    admin_nickname: str = get_config_param(base_dir, 'admin')
 
     if is_artist(base_dir, nickname) or \
        path.startswith('/users/' + str(admin_nickname) + '/'):
@@ -3725,19 +3728,19 @@ def html_edit_profile(server, translate: {},
                                         preload_images)
 
     # keyboard navigation
-    user_path_str = '/users/' + nickname
-    user_timeline_str = '/users/' + nickname + '/' + default_timeline
-    menu_timeline = \
+    user_path_str: str = '/users/' + nickname
+    user_timeline_str: str = '/users/' + nickname + '/' + default_timeline
+    menu_timeline: str = \
         html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    menu_profile = \
+    menu_profile: str = \
         html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
-    nav_links = {
+    nav_links: dict = {
         menu_profile: user_path_str,
         menu_timeline: user_timeline_str
     }
-    nav_access_keys = {
+    nav_access_keys: dict = {
         menu_profile: 'p',
         menu_timeline: 't'
     }
@@ -3792,22 +3795,22 @@ def html_edit_profile(server, translate: {},
         hide_recent_posts = True
 
     # is this a premium account?
-    premium = is_premium_account(base_dir, nickname, domain)
+    premium: bool = is_premium_account(base_dir, nickname, domain)
 
     # are boosts of replies permitted in the inbox?
-    no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
+    no_reply_boosts_filename: str = account_dir + '/.noReplyBoosts'
     no_reply_boosts: bool = False
     if is_a_file(no_reply_boosts_filename):
         no_reply_boosts = True
 
     # are seen posts permitted in timelines?
-    no_seen_posts_filename = account_dir + '/.noSeenPosts'
+    no_seen_posts_filename: str = account_dir + '/.noSeenPosts'
     no_seen_posts: bool = False
     if is_a_file(no_seen_posts_filename):
         no_seen_posts = True
 
     # is watermarking enabled?
-    watermark_enabled_filename = account_dir + '/.watermarkEnabled'
+    watermark_enabled_filename: str = account_dir + '/.watermarkEnabled'
     watermark_enabled: bool = False
     if is_a_file(watermark_enabled_filename):
         watermark_enabled = True
@@ -3878,7 +3881,7 @@ def html_edit_profile(server, translate: {},
     edit_profile_form += system_monitor_str
 
     # Filtering and blocking section
-    reply_interval_hours = \
+    reply_interval_hours: int = \
         get_reply_interval_hours(base_dir, nickname, domain,
                                  default_reply_interval_hrs)
     edit_profile_form += \
@@ -3937,25 +3940,26 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                buttons: list[str] = []) -> str:
     """An individual follow entry on the profile screen
     """
-    follow_url_nickname = get_nickname_from_actor(follow_url)
+    follow_url_nickname: str = get_nickname_from_actor(follow_url)
     if not follow_url_nickname:
         return ''
     follow_url_domain, follow_url_port = get_domain_from_actor(follow_url)
     if not follow_url_domain:
         return ''
-    follow_url_domain_full = \
+    follow_url_domain_full: str = \
         get_full_domain(follow_url_domain, follow_url_port)
-    title_str = '@' + follow_url_nickname + '@' + follow_url_domain_full
-    avatar_url = \
+    title_str: str = '@' + follow_url_nickname + '@' + follow_url_domain_full
+    avatar_url: str = \
         get_person_avatar_url(base_dir, follow_url, person_cache)
     if not avatar_url:
         avatar_url = follow_url + '/avatar.png'
 
-    display_name = get_display_name(base_dir, follow_url, person_cache)
+    display_name: str = get_display_name(base_dir, follow_url, person_cache)
     is_group: bool = False
     if not display_name:
         # lookup the correct webfinger for the follow_url
-        follow_url_handle = follow_url_nickname + '@' + follow_url_domain_full
+        follow_url_handle: str = \
+            follow_url_nickname + '@' + follow_url_domain_full
         follow_url_wf = \
             webfinger_handle(session, follow_url_handle, http_prefix,
                              cached_webfingers,
@@ -3979,13 +3983,13 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
             avatar_url = avatar_url2
 
     if display_name:
-        display_name = \
+        display_name: str = \
             add_emoji_to_display_name(None, base_dir, http_prefix,
                                       actor_nickname, domain,
                                       display_name, False, translate)
-        actor_type = get_actor_type(base_dir, follow_url, person_cache)
-        bot_prefix = get_display_name_prefix(actor_type,
-                                             actor_nickname, translate)
+        actor_type: str = get_actor_type(base_dir, follow_url, person_cache)
+        bot_prefix: str = get_display_name_prefix(actor_type,
+                                                  actor_nickname, translate)
         if bot_prefix:
             display_name = bot_prefix + ' ' + display_name
 
