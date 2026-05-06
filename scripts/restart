@@ -1,4 +1,5 @@
 #!/bin/bash
+git stash
 git pull
 chown -R epicyon:epicyon *
 chmod 644 *.py
