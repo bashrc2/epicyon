@@ -62,7 +62,7 @@ def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
     """
     if not enable_timing_log:
         return
-    time_diff = int((time.time() - timeline_start_time) * 1000)
+    time_diff: int = int((time.time() - timeline_start_time) * 1000)
     if time_diff > 100:
         print('TIMELINE TIMING ' +
               box_name + ' ' + debug_id + ' = ' + str(time_diff))
@@ -72,15 +72,13 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
     """Shows help text for the given timeline
     """
     # get the filename for help for this timeline
-    help_filename = data_dir(base_dir) + '/help_' + box_name + '.md'
+    help_filename: str = data_dir(base_dir) + '/help_' + box_name + '.md'
     if not is_a_file(help_filename):
-        language = \
-            get_config_param(base_dir, 'language')
+        language: str = get_config_param(base_dir, 'language')
         if not language:
             language = 'en'
-        theme_name = \
-            get_config_param(base_dir, 'theme')
-        default_filename = None
+        theme_name: str = get_config_param(base_dir, 'theme')
+        default_filename: str = None
         if theme_name:
             default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
@@ -99,18 +97,17 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
 
     # show help text
     if is_a_file(help_filename):
-        instance_title = \
-            get_config_param(base_dir, 'instanceTitle')
+        instance_title: str = get_config_param(base_dir, 'instanceTitle')
         if not instance_title:
             instance_title = 'Epicyon'
-        help_text = \
+        help_text: str = \
             load_string(help_filename,
                         'EX: _get_help_for_timeline unable to read ' +
                         help_filename)
         if help_text:
             if dangerous_markup(help_text, False, []):
                 return ''
-            help_text = help_text.replace('INSTANCE', instance_title)
+            help_text: str = help_text.replace('INSTANCE', instance_title)
             return '<div class="container">\n' + \
                 markdown_to_html(help_text) + '\n' + \
                 '</div>\n'
@@ -285,22 +282,22 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
                             access_keys: {}, translate: {}) -> str:
     """Returns html for timeline keyboard navigation
     """
-    calendar_str = translate['Calendar']
+    calendar_str: str = translate['Calendar']
     if new_calendar_event:
         calendar_str = '<strong>' + calendar_str + '</strong>'
-    dm_str = translate['DM']
+    dm_str: str = translate['DM']
     if new_dm:
         dm_str = '<strong>' + dm_str + '</strong>'
-    replies_str = translate['Replies']
+    replies_str: str = translate['Replies']
     if new_reply:
         replies_str = '<strong>' + replies_str + '</strong>'
-    shares_str = translate['Shares']
+    shares_str: str = translate['Shares']
     if new_share:
         shares_str = '<strong>' + shares_str + '</strong>'
-    wanted_str = translate['Wanted']
+    wanted_str: str = translate['Wanted']
     if new_wanted:
         wanted_str = '<strong>' + wanted_str + '</strong>'
-    menu_profile = \
+    menu_profile: str = \
         html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
     menu_inbox = \
@@ -333,7 +330,7 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
         translate['Create a new post']
     menu_moderation = \
         html_hide_from_screen_reader('⚡️') + ' ' + translate['Mod']
-    nav_links = {
+    nav_links: dict = {
         menu_profile: '/users/' + nickname,
         menu_inbox: users_path + '/inbox#timelineposts',
         menu_search: users_path + '/search',
@@ -349,7 +346,7 @@ def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
         menu_newswire: users_path + '/newswiremobile',
         menu_links: users_path + '/linksmobile'
     }
-    nav_access_keys = {}
+    nav_access_keys: dict = {}
     for variable_name, key in access_keys.items():
         if not locals().get(variable_name):
             continue
@@ -375,7 +372,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     """Ending of the timeline, containing the right column
     """
     # end of timeline-posts
-    tl_str = '  </div>\n'
+    tl_str: str = '  </div>\n'
 
     # end of column-center
     tl_str += '  </td>\n'
@@ -421,11 +418,11 @@ def page_number_buttons(users_path: str, box_name: str,
     num_str: str = ''
     for page in range(min_page_number, max_page_number):
         if num_str:
-            separator_str = \
+            separator_str: str = \
                 '<label class="pageslistDash">────</label>'
             num_str += html_hide_from_screen_reader(separator_str)
         aria_page_str: str = ''
-        page_str = ' ' + str(page) + ' '
+        page_str: str = ' ' + str(page) + ' '
         curr_page_str: str = ''
         if page == page_number:
             page_str = '[<mark>' + str(page) + '</mark>]'
@@ -495,17 +492,17 @@ def html_timeline(default_timeline: str,
 
     timeline_start_time = time.time()
 
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
 
     # should the calendar icon be highlighted?
     new_calendar_event: bool = False
-    calendar_image = 'calendar.png'
-    calendar_path = '/calendar'
-    calendar_file = account_dir + '/.newCalendar'
+    calendar_image: str = 'calendar.png'
+    calendar_path: str = '/calendar'
+    calendar_file: str = account_dir + '/.newCalendar'
     if is_a_file(calendar_file):
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
-        calendar_path_str = \
+        calendar_path_str: str = \
             load_string(calendar_file,
                         'EX: html_timeline unable to read ' +
                         calendar_file)
@@ -517,7 +514,7 @@ def html_timeline(default_timeline: str,
 
     # should the DM button be highlighted?
     new_dm: bool = False
-    dm_file = account_dir + '/.newDM'
+    dm_file: str = account_dir + '/.newDM'
     if is_a_file(dm_file):
         new_dm = True
         if box_name == 'dm':
@@ -526,7 +523,7 @@ def html_timeline(default_timeline: str,
 
     # should the Replies button be highlighted?
     new_reply: bool = False
-    reply_file = account_dir + '/.newReply'
+    reply_file: str = account_dir + '/.newReply'
     if is_a_file(reply_file):
         new_reply = True
         if box_name == 'tlreplies':
@@ -535,7 +532,7 @@ def html_timeline(default_timeline: str,
 
     # should the Shares button be highlighted?
     new_share: bool = False
-    new_share_file = account_dir + '/.newShare'
+    new_share_file: str = account_dir + '/.newShare'
     if is_a_file(new_share_file):
         new_share = True
         if box_name == 'tlshares':
@@ -545,7 +542,7 @@ def html_timeline(default_timeline: str,
 
     # should the Wanted button be highlighted?
     new_wanted: bool = False
-    new_wanted_file = account_dir + '/.newWanted'
+    new_wanted_file: str = account_dir + '/.newWanted'
     if is_a_file(new_wanted_file):
         new_wanted = True
         if box_name == 'tlwanted':
@@ -555,7 +552,7 @@ def html_timeline(default_timeline: str,
 
     # should the Moderation/reports button be highlighted?
     new_report: bool = False
-    new_report_file = account_dir + '/.newReport'
+    new_report_file: str = account_dir + '/.newReport'
     if is_a_file(new_report_file):
         new_report = True
         if box_name == 'moderation':
@@ -565,7 +562,7 @@ def html_timeline(default_timeline: str,
 
     # show polls/votes?
     show_vote_posts: bool = True
-    show_vote_file = account_dir + '/.noVotes'
+    show_vote_file: str = account_dir + '/.noVotes'
     if is_a_file(show_vote_file):
         show_vote_posts = False
 
@@ -574,7 +571,7 @@ def html_timeline(default_timeline: str,
         separator_str = html_post_separator(base_dir, None)
 
     # the css filename
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -647,16 +644,16 @@ def html_timeline(default_timeline: str,
         bookmarks_button = 'buttonselected'
 
     # get the full domain, including any port number
-    full_domain = get_full_domain(domain, port)
+    full_domain: str = get_full_domain(domain, port)
 
-    users_path = '/users/' + nickname
-    actor = http_prefix + '://' + full_domain + users_path
+    users_path: str = '/users/' + nickname
+    actor: str = http_prefix + '://' + full_domain + users_path
 
-    show_individual_post_icons = True
+    show_individual_post_icons: bool = True
 
     # show an icon for new follow approvals
     follow_approvals: str = ''
-    follow_requests_filename = \
+    follow_requests_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if is_a_file(follow_requests_filename):
         follow_requests_list: list[str] = \
@@ -731,13 +728,12 @@ def html_timeline(default_timeline: str,
             '<span>' + translate['Bookmarks'] + '</span></button></a>'
 
     # filename of the banner shown at the top
-    banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
-    banner_path = users_path + '/' + banner_file
+    banner_file, _ = get_banner_file(base_dir, nickname, domain, theme)
+    banner_path: str = users_path + '/' + banner_file
 
     # these images are pre-loaded to prevent the web page from
     # jumping around when rendering
-    preload_images = [
+    preload_images: list[str] = [
         banner_path,
         '/icons/showhide.png',
         '/icons/repeat_hide.png',
@@ -762,9 +758,8 @@ def html_timeline(default_timeline: str,
         '/icons/categoriesrss.png'
     ]
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
-    tl_str = \
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
+    tl_str: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
@@ -781,7 +776,7 @@ def html_timeline(default_timeline: str,
         header_icons_str = '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    new_post_button_str = \
+    new_post_button_str: str = \
         _html_timeline_new_post(manually_approve_followers, box_name,
                                 users_path, translate,
                                 access_keys)
@@ -1018,7 +1013,7 @@ def html_timeline(default_timeline: str,
         if nickname in min_images_for_accounts:
             minimize_all_images = True
 
-        no_seen_posts_filename = account_dir + '/.noSeenPosts'
+        no_seen_posts_filename: str = account_dir + '/.noSeenPosts'
         no_seen_posts: bool = False
         if is_a_file(no_seen_posts_filename):
             no_seen_posts = True
@@ -1213,7 +1208,7 @@ def html_individual_share(domain: str, share_id: str,
                           shares_file_type: str) -> str:
     """Returns an individual shared item as html
     """
-    profile_str = '<div class="container">\n'
+    profile_str: str = '<div class="container">\n'
     profile_str += \
         '<p class="share-title">' + shared_item['displayName'] + '</p>\n'
     if shared_item.get('imageUrl'):
@@ -1237,7 +1232,7 @@ def html_individual_share(domain: str, share_id: str,
         profile_str += \
             '<b>' + translate['Location'] + ':</b> ' + \
             shared_item['location'] + '<br>'
-    contact_title_str = translate['Contact']
+    contact_title_str: str = translate['Contact']
     if shared_item.get('itemPrice') and shared_item.get('itemCurrency'):
         if is_float(shared_item['itemPrice']):
             if float(shared_item['itemPrice']) > 0:
@@ -1247,15 +1242,15 @@ def html_individual_share(domain: str, share_id: str,
                     shared_item['itemCurrency']
                 contact_title_str = translate['Buy']
     profile_str += '</p>\n'
-    sharedesc = shared_item['displayName']
+    sharedesc: str = shared_item['displayName']
     if '<' not in sharedesc and ';' not in sharedesc:
         if show_contact:
-            button_style_str = 'button'
+            button_style_str: str = 'button'
             if shared_item['category'] == 'accommodation':
                 contact_title_str = translate['Request to stay']
                 button_style_str = 'contactbutton'
 
-            contact_actor = get_actor_from_post(shared_item)
+            contact_actor: str = get_actor_from_post(shared_item)
             profile_str += \
                 '<p>' + \
                 '<a href="' + actor + \
@@ -1294,9 +1289,9 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
                              base_dir, domain, nickname,
                              max_shares_per_account,
                              shared_items_federated_domains, shares_file_type)
-    domain_full = get_full_domain(domain, port)
-    actor = local_actor_url(http_prefix, nickname, domain_full)
-    admin_nickname = get_config_param(base_dir, 'admin')
+    domain_full: str = get_full_domain(domain, port)
+    actor: str = local_actor_url(http_prefix, nickname, domain_full)
+    admin_nickname: str = get_config_param(base_dir, 'admin')
     admin_actor: str = ''
     if admin_nickname:
         admin_actor = \
@@ -1318,7 +1313,7 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
-    separator_str = html_post_separator(base_dir, None)
+    separator_str: str = html_post_separator(base_dir, None)
     ctr: int = 0
 
     is_admin_account: bool = False
@@ -1409,10 +1404,10 @@ def html_shares(default_timeline: str,
                 block_nostr: {}) -> str:
     """Show the shares timeline as html
     """
-    manually_approve_followers = \
+    manually_approve_followers: bool = \
         follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
-    show_announces = True
+    artist: bool = is_artist(base_dir, nickname)
+    show_announces: bool = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1490,10 +1485,10 @@ def html_wanted(default_timeline: str,
                 block_nostr: {}) -> str:
     """Show the wanted timeline as html
     """
-    manually_approve_followers = \
+    manually_approve_followers: bool = \
         follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
-    show_announces = True
+    artist: bool = is_artist(base_dir, nickname)
+    show_announces: bool = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1574,9 +1569,9 @@ def html_inbox(default_timeline: str,
                block_nostr: {}) -> str:
     """Show the inbox as html
     """
-    manually_approve_followers = \
+    manually_approve_followers: bool = \
         follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
+    artist: bool = is_artist(base_dir, nickname)
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1655,10 +1650,10 @@ def html_bookmarks(default_timeline: str,
                    block_nostr: {}) -> str:
     """Show the bookmarks as html
     """
-    manually_approve_followers = \
+    manually_approve_followers: bool = \
         follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
-    show_announces = True
+    artist: bool = is_artist(base_dir, nickname)
+    show_announces: bool = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -2192,9 +2187,9 @@ def html_outbox(default_timeline: str,
                 block_nostr: {}) -> str:
     """Show the Outbox as html
     """
-    manually_approve_followers = \
+    manually_approve_followers: bool = \
         follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
+    artist: bool = is_artist(base_dir, nickname)
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,

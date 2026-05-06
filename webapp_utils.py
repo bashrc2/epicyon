@@ -77,11 +77,11 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
     if following_nickname == nickname and following_domain == domain:
         # reminder post
         return False
-    minimize_filename = \
+    minimize_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
-    handle = following_nickname + '@' + following_domain
+    handle: str = following_nickname + '@' + following_domain
     if not is_a_file(minimize_filename):
-        following_filename = \
+        following_filename: str = \
             acct_dir(base_dir, nickname, domain) + '/following.txt'
         if not is_a_file(following_filename):
             return False
@@ -103,21 +103,22 @@ def get_broken_link_substitute() -> str:
 def html_following_list(base_dir: str, following_filename: str) -> str:
     """Returns a list of handles being followed
     """
-    msg = load_string(following_filename,
-                      'EX: html_following_list unable to read ' +
-                      following_filename)
+    msg: str = \
+        load_string(following_filename,
+                    'EX: html_following_list unable to read ' +
+                    following_filename)
     if msg:
-        following_list = msg.split('\n')
+        following_list: list[str] = msg.split('\n')
         following_list.sort()
         if following_list:
-            css_filename = base_dir + '/epicyon-profile.css'
+            css_filename: str = base_dir + '/epicyon-profile.css'
             if is_a_file(base_dir + '/epicyon.css'):
                 css_filename = base_dir + '/epicyon.css'
 
-            instance_title = \
+            instance_title: str = \
                 get_config_param(base_dir, 'instanceTitle')
             preload_images: list[str] = []
-            following_list_html = \
+            following_list_html: str = \
                 html_header_with_external_style(css_filename,
                                                 instance_title, None,
                                                 preload_images)
@@ -135,11 +136,12 @@ def csv_following_list(following_filename: str,
                        base_dir: str, nickname: str, domain: str) -> str:
     """Returns a csv of handles being followed
     """
-    msg = load_string(following_filename,
-                      'EX: csv_following_list unable to read ' +
-                      following_filename)
+    msg: str = \
+        load_string(following_filename,
+                    'EX: csv_following_list unable to read ' +
+                    following_filename)
     if msg:
-        following_list = msg.split('\n')
+        following_list: list[str] = msg.split('\n')
         following_list.sort()
         if following_list:
             following_list_csv: str = ''
@@ -147,23 +149,23 @@ def csv_following_list(following_filename: str,
                 if not following_address:
                     continue
 
-                following_nickname = \
+                following_nickname: str = \
                     get_nickname_from_actor(following_address)
                 following_domain, _ = \
                     get_domain_from_actor(following_address)
 
-                announce_is_allowed = \
+                announce_is_allowed: bool = \
                     allowed_announce(base_dir, nickname, domain,
                                      following_nickname,
                                      following_domain)
-                notify_on_new = 'false'
+                notify_on_new: str = 'false'
                 languages: str = ''
-                person_notes = \
+                person_notes: str = \
                     get_person_notes(base_dir, nickname, domain,
                                      following_address)
                 if person_notes:
                     # make notes suitable for csv file
-                    replacements = {
+                    replacements: dict = {
                         ',': ' ',
                         '"': "'",
                         '\n': '<br>',
@@ -189,14 +191,14 @@ def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blocked_hashtag_form: str = ''
-    css_filename = base_dir + '/epicyon-suspended.css'
+    css_filename: str = base_dir + '/epicyon-suspended.css'
     if is_a_file(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
 
-    instance_title = \
+    instance_title: str = \
         get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    blocked_hashtag_form = \
+    blocked_hashtag_form: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     blocked_hashtag_form += '<div><center>\n'
@@ -275,7 +277,7 @@ def get_show_map_button(post_id: str, translate: {},
                         map_content: str) -> str:
     """Returns the markup for a "show map" button
     """
-    show_map_str = 'Show Map'
+    show_map_str: str = 'Show Map'
     if translate.get('Show Map'):
         show_map_str = translate['Show Map']
     html_str = '       <details><summary class="cw" tabindex="10">' + \
@@ -289,7 +291,7 @@ def open_content_warning(text: str, translate: {}) -> str:
     """Opens content warning when replying to a post with a cw
     so that you can see what you are replying to
     """
-    text = replace_embedded_map_with_link(text, translate)
+    text: str = replace_embedded_map_with_link(text, translate)
     text = text.replace('<details>', '').replace('</details>', '')
     text = text.replace(translate['Show Map'], '', 1)
     text = text.replace(translate['SHOW MORE'], '', 1)
@@ -303,7 +305,7 @@ def _set_actor_property_url(actor_json: {},
     if not actor_json.get('attachment'):
         actor_json['attachment']: list[dict] = []
 
-    property_name_lower = property_name.lower()
+    property_name_lower: str = property_name.lower()
 
     # remove any existing value
     property_found = None
@@ -397,17 +399,17 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
     """
     if not avatar_url:
         return None
-    actor_str = actor.replace('/', '-')
-    avatar_image_path = base_dir + '/cache/avatars/' + actor_str
+    actor_str: str = actor.replace('/', '-')
+    avatar_image_path: str = base_dir + '/cache/avatars/' + actor_str
 
     # try different image types
     image_formats = image_mime_types_dict()
-    avatar_image_filename = None
+    avatar_image_filename: str = None
     session_headers = None
     for im_format, mime_type in image_formats.items():
         if avatar_url.endswith('.' + im_format) or \
            '.' + im_format + '?' in avatar_url:
-            session_headers = {
+            session_headers: dict = {
                 'Accept': 'image/' + mime_type
             }
             avatar_image_filename = avatar_image_path + '.' + im_format
@@ -454,7 +456,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
         except BaseException as ex:
             print('EX: Failed to download avatar image: ' +
                   str(avatar_url) + ' ' + str(ex))
-        prof = 'https://www.w3.org/ns/activitystreams'
+        prof: str = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
             session_headers = {
                 'Accept': 'application/activity+json; profile="' + prof + '"'
@@ -463,12 +465,14 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
             session_headers = {
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
-        person_json = \
+        person_json: dict = \
             get_json(signing_priv_key_pem, session, actor,
                      session_headers, None,
                      debug, mitm_servers, __version__, http_prefix, None)
         if get_json_valid(person_json):
             if not person_json.get('id'):
+                return None
+            if not isinstance(person_json['id'], str):
                 return None
             pub_key, _ = get_actor_public_key_from_id(person_json, None)
             if not pub_key:
@@ -495,7 +499,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
 def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
-    schedule_index_filename = \
+    schedule_index_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if not is_a_file(schedule_index_filename):
         return False
@@ -513,27 +517,29 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
     max_shares_per_account helps to avoid one person dominating the timeline
     by sharing a large number of things
     """
-    all_shares_json = {}
-    dir_str = data_dir(base_dir)
+    all_shares_json: dict = {}
+    dir_str: str = data_dir(base_dir)
     for _, dirs, files in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            account_dir = acct_handle_dir(base_dir, handle)
-            shares_filename = account_dir + '/' + shares_file_type + '.json'
+            account_dir: str = acct_handle_dir(base_dir, handle)
+            shares_filename: str = \
+                account_dir + '/' + shares_file_type + '.json'
             if not is_a_file(shares_filename):
                 continue
             shares_json = load_json(shares_filename)
             if not shares_json:
                 continue
-            account_nickname = handle.split('@')[0]
+            account_nickname: str = handle.split('@')[0]
             # Don't include shared items from blocked accounts
             if account_nickname != nickname:
                 if is_blocked(base_dir, nickname, domain,
                               account_nickname, domain, None, None):
                     continue
             # actor who owns this share
-            owner = actor.split('/users/')[0] + '/users/' + account_nickname
+            owner: str = \
+                actor.split('/users/')[0] + '/users/' + account_nickname
             ctr: int = 0
             for item_id, item in shares_json.items():
                 # assign owner to the item
@@ -546,9 +552,9 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
         break
     if shared_items_federated_domains:
         if shares_file_type == 'shares':
-            catalogs_dir = base_dir + '/cache/catalogs'
+            catalogs_dir: str = base_dir + '/cache/catalogs'
         else:
-            catalogs_dir = base_dir + '/cache/wantedItems'
+            catalogs_dir: str = base_dir + '/cache/wantedItems'
         if is_a_dir(catalogs_dir):
             for _, dirs, files in os.walk(catalogs_dir):
                 for fname in files:
@@ -556,11 +562,11 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                         continue
                     if not fname.endswith('.' + shares_file_type + '.json'):
                         continue
-                    federated_domain = fname.split('.')[0]
+                    federated_domain: str = fname.split('.')[0]
                     if federated_domain not in shared_items_federated_domains:
                         continue
-                    shares_filename = catalogs_dir + '/' + fname
-                    shares_json = load_json(shares_filename)
+                    shares_filename: str = catalogs_dir + '/' + fname
+                    shares_json: dict = load_json(shares_filename)
                     if not shares_json:
                         continue
                     ctr: int = 0
@@ -568,14 +574,15 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                         # assign owner to the item
                         if '--shareditems--' not in item_id:
                             continue
-                        share_actor = item_id.split('--shareditems--')[0]
-                        replacements = {
+                        share_actor: str = item_id.split('--shareditems--')[0]
+                        replacements: dict = {
                             '___': '://',
                             '--': '/'
                         }
-                        share_actor = \
+                        share_actor: str = \
                             replace_strings(share_actor, replacements)
-                        share_nickname = get_nickname_from_actor(share_actor)
+                        share_nickname: str = \
+                            get_nickname_from_actor(share_actor)
                         if not share_nickname:
                             continue
                         if is_blocked(base_dir, nickname, domain,
@@ -590,9 +597,10 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                             break
                 break
     # sort the shared items in descending order of publication date
-    shares_json = OrderedDict(sorted(all_shares_json.items(), reverse=True))
+    shares_json: dict = \
+        OrderedDict(sorted(all_shares_json.items(), reverse=True))
     last_page: bool = False
-    start_index = items_per_page * page_number
+    start_index: int = items_per_page * page_number
     max_index = len(shares_json.items())
     if max_index < items_per_page:
         last_page = True
@@ -629,11 +637,11 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                              shared_items_federated_domains, shares_file_type)
 
     if shares_file_type == 'shares':
-        share_type = 'offer'
-        collection_name = nickname + "'s Shared Items"
+        share_type: str = 'offer'
+        collection_name: str = nickname + "'s Shared Items"
     else:
-        share_type = 'request'
-        collection_name = nickname + "'s Wanted Items"
+        share_type: str = 'request'
+        collection_name: str = nickname + "'s Wanted Items"
 
     for share_id, shared_item in shares_json.items():
         shared_item['shareId'] = share_id
@@ -642,7 +650,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
         if offer_item:
             shares_collection.append(offer_item)
 
-    result_json = {
+    result_json: dict = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
@@ -665,6 +673,8 @@ def post_contains_public(post_json_object: {}) -> bool:
         return contains_public
 
     for to_address in post_json_object['object']['to']:
+        if not isinstance(to_address, str):
+            continue
         if to_address.endswith('#Public') or \
            to_address == 'as:Public' or \
            to_address == 'Public':
@@ -673,6 +683,8 @@ def post_contains_public(post_json_object: {}) -> bool:
         if not contains_public:
             if post_json_object['object'].get('cc'):
                 for to_address2 in post_json_object['object']['cc']:
+                    if not isinstance(to_address2, str):
+                        continue
                     if to_address2.endswith('#Public') or \
                        to_address2 == 'as:Public' or \
                        to_address2 == 'Public':
@@ -685,7 +697,7 @@ def get_banner_file(base_dir: str,
                     nickname: str, domain: str, theme: str) -> (str, str):
     """Gets the image for the timeline banner
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     banner_file, banner_filename = \
         get_image_file(base_dir, 'banner', account_dir, theme)
     return banner_file, banner_filename
@@ -696,7 +708,7 @@ def get_profile_background_file(base_dir: str,
                                 theme: str) -> (str, str):
     """Gets the image for the profile background
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     banner_file, banner_filename = \
         get_image_file(base_dir, 'image', account_dir, theme)
     return banner_file, banner_filename
@@ -707,7 +719,7 @@ def get_search_banner_file(base_dir: str,
                            theme: str) -> (str, str):
     """Gets the image for the search banner
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     banner_file, banner_filename = \
         get_image_file(base_dir, 'search_banner', account_dir, theme)
     return banner_file, banner_filename
@@ -717,7 +729,7 @@ def get_left_image_file(base_dir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
     """Gets the image for the left column
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     banner_file, banner_filename = \
         get_image_file(base_dir, 'left_col_image', account_dir, theme)
     return banner_file, banner_filename
@@ -727,7 +739,7 @@ def get_right_image_file(base_dir: str,
                          nickname: str, domain: str, theme: str) -> (str, str):
     """Gets the image for the right column
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     banner_file, banner_filename = \
         get_image_file(base_dir, 'right_col_image', account_dir, theme)
     return banner_file, banner_filename
@@ -737,8 +749,8 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
                                     metadata: str, preload_images: [],
                                     lang: str = 'en') -> str:
     if metadata is None:
-        metadata: str = ''
-    css_file = '/' + css_filename.split('/')[-1]
+        metadata = ''
+    css_file: str = '/' + css_filename.split('/')[-1]
     pwa_theme_color, pwa_theme_background_color = \
         get_pwa_theme_colors(css_filename)
     preload_images_str: str = ''
@@ -747,7 +759,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
             preload_images_str += \
                 '    <link rel="preload" as="image" href="' + \
                 image_path + '">\n'
-    html_str = \
+    html_str: str = \
         '<!DOCTYPE html>\n' + \
         '<!--\n' + \
         'Thankyou for using Epicyon. If you are reading this message then ' + \
@@ -786,7 +798,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     """
     if not actor_json:
         preload_images: list[str] = []
-        html_str = \
+        html_str: str = \
             html_header_with_external_style(css_filename,
                                             instance_title, None,
                                             preload_images, lang)
@@ -798,7 +810,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         add_comma: str = ''
         country_markup: str = ''
         if ',' in city:
-            country = city.split(',', 1)[1].strip().title()
+            country: str = city.split(',', 1)[1].strip().title()
             city = city.split(',', 1)[0]
             country_markup = \
                 '          "addressCountry": "' + country + '"\n'
@@ -813,18 +825,22 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     if actor_json.get('hasOccupation'):
         if isinstance(actor_json['hasOccupation'], list):
             skills_markup = '        "hasOccupation": [\n'
-            first_entry = True
+            first_entry: bool = True
             for skill_dict in actor_json['hasOccupation']:
+                if not skill_dict.get('@type'):
+                    continue
+                if not isinstance(skill_dict['@type'], str):
+                    continue
                 if skill_dict['@type'] == 'Role':
                     if not first_entry:
                         skills_markup += ',\n'
-                    skl = skill_dict['hasOccupation']
-                    role_name = skl['name']
+                    skl: str = skill_dict['hasOccupation']
+                    role_name: str = skl['name']
                     if not role_name:
                         role_name = 'member'
-                    category = \
+                    category: str = \
                         skl['occupationalCategory']['codeValue']
-                    category_url = \
+                    category_url: str = \
                         'https://www.onetonline.org/link/summary/' + category
                     skills_markup += \
                         '        {\n' + \
@@ -855,11 +871,11 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                 elif skill_dict['@type'] == 'Occupation':
                     if not first_entry:
                         skills_markup += ',\n'
-                    oc_name = skill_dict['name']
+                    oc_name: str = skill_dict['name']
                     if not oc_name:
                         oc_name = 'member'
-                    skills_list = skill_dict['skills']
-                    skills_list_str = '['
+                    skills_list: list[str] = skill_dict['skills']
+                    skills_list_str: str = '['
                     for skill_str in skills_list:
                         if skills_list_str != '[':
                             skills_list_str += ', '
@@ -883,13 +899,13 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     description: str = ''
     if actor_json.get('summary'):
         description = remove_html(actor_json['summary'])
-    name_str = remove_html(actor_json['name'])
-    domain_full = actor_json['id'].split('://')[1].split('/')[0]
-    handle = actor_json['preferredUsername'] + '@' + domain_full
+    name_str: str = remove_html(actor_json['name'])
+    domain_full: str = actor_json['id'].split('://')[1].split('/')[0]
+    handle: str = actor_json['preferredUsername'] + '@' + domain_full
 
-    url_str = get_url_from_post(actor_json['icon']['url'])
-    icon_url = remove_html(url_str)
-    person_markup = \
+    url_str: str = get_url_from_post(actor_json['icon']['url'])
+    icon_url: str = remove_html(url_str)
+    person_markup: str = \
         '      "about": {\n' + \
         '        "@type" : "Person",\n' + \
         '        "name": "' + name_str + '",\n' + \
@@ -899,7 +915,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         '        "url": "' + actor_json['id'] + '"\n' + \
         '      },\n'
 
-    profile_markup = \
+    profile_markup: str = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context":"https://schema.org",\n' + \
@@ -923,10 +939,10 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         '    }\n' + \
         '    </script>\n'
 
-    description = remove_html(description)
-    url_str = get_url_from_post(actor_json['url'])
-    actor2_url = remove_html(url_str)
-    og_metadata = \
+    description: str = remove_html(description)
+    url_str: str = get_url_from_post(actor_json['url'])
+    actor2_url: str = remove_html(url_str)
+    og_metadata: str = \
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \
         "\" name='description'>\n" + \
@@ -946,7 +962,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         "    <meta content=\"" + handle + \
         "\" property=\"profile:username\" />\n"
     if actor_json.get('attachment'):
-        og_tags = (
+        og_tags: list[str] = (
             'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
             'cwtch', 'languages'
         )
@@ -958,10 +974,10 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
             if not prop_value_name:
                 continue
             if attach_json.get('name'):
-                name = attach_json['name'].lower()
+                name: str = attach_json['name'].lower()
             else:
-                name = attach_json['schema:name'].lower()
-            value = attach_json[prop_value_name]
+                name: str = attach_json['schema:name'].lower()
+            value: str = attach_json[prop_value_name]
             for og_tag in og_tags:
                 if name != og_tag:
                     continue
@@ -970,7 +986,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                     "\" property=\"og:" + og_tag + "\" />\n"
 
     preload_images: list[str] = []
-    html_str = \
+    html_str: str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + profile_markup,
                                         preload_images, lang)
@@ -983,12 +999,12 @@ def html_header_with_website_markup(css_filename: str, instance_title: str,
     """html header which includes website markup
     https://schema.org/WebSite
     """
-    license_url = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
+    license_url: str = 'https://www.gnu.org/licenses/agpl-3.0.rdf'
 
     # social networking category
-    genre_url = 'http://vocab.getty.edu/aat/300312270'
+    genre_url: str = 'http://vocab.getty.edu/aat/300312270'
 
-    website_markup = \
+    website_markup: str = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
@@ -1014,7 +1030,7 @@ def html_header_with_website_markup(css_filename: str, instance_title: str,
         '    }\n' + \
         '    </script>\n'
 
-    og_metadata = \
+    og_metadata: str = \
         '    <meta content="Epicyon hosted on ' + domain + \
         '" property="og:site_name" />\n' + \
         '    <meta content="' + http_prefix + '://' + domain + \
@@ -1029,7 +1045,7 @@ def html_header_with_website_markup(css_filename: str, instance_title: str,
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
     preload_images: list[str] = []
-    html_str = \
+    html_str: str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + website_markup,
                                         preload_images, system_language)
@@ -1045,13 +1061,13 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    author_url = local_actor_url(http_prefix, nickname, domain)
-    about_url = http_prefix + '://' + domain + '/about.html'
+    author_url: str = local_actor_url(http_prefix, nickname, domain)
+    about_url: str = http_prefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
     # the software license
 
-    blog_markup = \
+    blog_markup: str = \
         '    <script id="initial-state" type="application/ld+json">\n' + \
         '    {\n' + \
         '      "@context" : "http://schema.org",\n' + \
@@ -1074,7 +1090,7 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
         '    }\n' + \
         '    </script>\n'
 
-    og_metadata = \
+    og_metadata: str = \
         '    <meta property="og:locale" content="' + \
         system_language + '" />\n' + \
         '    <meta property="og:type" content="article" />\n' + \
@@ -1088,7 +1104,7 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
         modified + '" />\n'
 
     preload_images: list[str] = []
-    html_str = \
+    html_str: str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + blog_markup,
                                         preload_images, system_language)
@@ -1096,7 +1112,7 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
 
 
 def html_footer() -> str:
-    html_str = '  </body>\n'
+    html_str: str = '  </body>\n'
     html_str += '</html>\n'
     return html_str
 
@@ -1108,7 +1124,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     return the html text
     This is much quicker than generating the html from the json object
     """
-    cached_post_filename = \
+    cached_post_filename: str = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 
     post_html: str = ''
@@ -1146,7 +1162,7 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
         '</p>': ''
     }
     display_name = replace_strings(display_name, replacements)
-    emoji_tags = {}
+    emoji_tags: dict = {}
 #    print('TAG: display_name before tags: ' + display_name)
     display_name = \
         add_html_tags(base_dir, http_prefix,
@@ -1176,7 +1192,7 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
         if '://' in display_name:
             break
         emoji_str = display_name.split(':')[1]
-        prev_display_name = display_name
+        prev_display_name: str = display_name
         display_name = display_name.replace(':' + emoji_str + ':', '').strip()
         if prev_display_name == display_name:
             break
@@ -1193,8 +1209,8 @@ def _is_image_mime_type(mime_type: str) -> bool:
         return True
     if not mime_type.startswith('image/'):
         return False
-    extensions = get_image_extensions()
-    ext = mime_type.split('/')[1]
+    extensions: list[str] = get_image_extensions()
+    ext: str = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
@@ -1205,8 +1221,8 @@ def _is_video_mime_type(mime_type: str) -> bool:
     """
     if not mime_type.startswith('video/'):
         return False
-    extensions = get_video_extensions()
-    ext = mime_type.split('/')[1]
+    extensions: list[str] = get_video_extensions()
+    ext: str = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
@@ -1219,8 +1235,8 @@ def _is_audio_mime_type(mime_type: str) -> bool:
         return True
     if not mime_type.startswith('audio/'):
         return False
-    extensions = get_audio_extensions()
-    ext = mime_type.split('/')[1]
+    extensions: list[str] = get_audio_extensions()
+    ext: str = mime_type.split('/')[1]
     if ext in extensions:
         return True
     return False
@@ -1231,13 +1247,13 @@ def _is_attached_image(attachment_url: str) -> bool:
     """
     if '.' not in attachment_url:
         return False
-    image_ext = get_image_extensions()
-    ext = attachment_url.split('.')[-1]
+    image_ext: list[str] = get_image_extensions()
+    ext: str = attachment_url.split('.')[-1]
     if ext in image_ext:
         return True
     if '/' in attachment_url:
         # this might still be an image, but without a file extension
-        last_part = attachment_url.split('/')[-1]
+        last_part: str = attachment_url.split('/')[-1]
         if '.' not in last_part:
             return True
     return False
@@ -1248,10 +1264,10 @@ def _is_attached_video(attachment_filename: str) -> bool:
     """
     if '.' not in attachment_filename:
         return False
-    video_ext = (
+    video_ext: list[str] = (
         'mp4', 'webm', 'ogv'
     )
-    ext = attachment_filename.split('.')[-1]
+    ext: str = attachment_filename.split('.')[-1]
     if ext in video_ext:
         return True
     return False
@@ -1260,8 +1276,8 @@ def _is_attached_video(attachment_filename: str) -> bool:
 def _is_nsfw(content: str) -> bool:
     """Does the given content indicate nsfw?
     """
-    content_lower = content.lower()
-    nsfw_tags = (
+    content_lower: str = content.lower()
+    nsfw_tags: list[str] = (
         'nsfw', 'porn', 'pr0n', 'explicit', 'lewd',
         'nude', 'boob', 'erotic', 'sex'
     )

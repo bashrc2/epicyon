@@ -173,32 +173,31 @@ def html_theme_designer(base_dir: str,
                         theme_name: str, access_keys: {}) -> str:
     """Edit theme settings
     """
-    theme_filename = base_dir + '/theme/' + theme_name + '/theme.json'
-    theme_json = {}
+    theme_filename: str = base_dir + '/theme/' + theme_name + '/theme.json'
+    theme_json: dict = {}
     if is_a_file(theme_filename):
         theme_json = load_json(theme_filename)
 
     # set custom theme parameters
-    custom_variables_file = data_dir(base_dir) + '/theme.json'
+    custom_variables_file: str = data_dir(base_dir) + '/theme.json'
     if is_a_file(custom_variables_file):
-        custom_theme_params = load_json(custom_variables_file)
+        custom_theme_params: str = load_json(custom_variables_file)
         if custom_theme_params:
             for variable_name, value in custom_theme_params.items():
                 theme_json[variable_name] = value
 
     theme_form: str = ''
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme_name)
-    banner_path = '/users/' + nickname + '/' + banner_file
+    banner_path: str = '/users/' + nickname + '/' + banner_file
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
-    preload_images = [banner_path]
-    theme_form = \
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
+    preload_images: list[str] = [banner_path]
+    theme_form: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     theme_form += \
@@ -216,8 +215,8 @@ def html_theme_designer(base_dir: str,
     theme_form += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
-    reset_key = access_keys['menuLogout']
-    submit_key = access_keys['submitButton']
+    reset_key: str = access_keys['menuLogout']
+    submit_key: str = access_keys['submitButton']
     theme_form += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
@@ -230,13 +229,13 @@ def html_theme_designer(base_dir: str,
 
     contrast_warning: str = ''
     if theme_json.get('main-bg-color'):
-        background = theme_json['main-bg-color']
+        background: str = theme_json['main-bg-color']
         if theme_json.get('main-fg-color'):
-            foreground = theme_json['main-fg-color']
-            contrast = color_contrast(background, foreground)
+            foreground: str = theme_json['main-fg-color']
+            contrast: float = color_contrast(background, foreground)
             if contrast:
                 if contrast < 4.5:
-                    contrast_warning = '⚠️ '
+                    contrast_warning: str = '⚠️ '
                     theme_form += \
                         '    <center><label class="labels">' + \
                         contrast_warning + '<b>' + \
@@ -250,15 +249,15 @@ def html_theme_designer(base_dir: str,
     table_str += '      </colgroup>\n'
     table_str += '      <tbody>\n'
 
-    font_str = '    <div class="container">\n' + table_str
-    color_str = '    <div class="container">\n' + table_str
-    dimension_str = '    <div class="container">\n' + table_str
-    switch_str = '    <div class="container">\n' + table_str
+    font_str: str = '    <div class="container">\n' + table_str
+    color_str: str = '    <div class="container">\n' + table_str
+    dimension_str: str = '    <div class="container">\n' + table_str
+    switch_str: str = '    <div class="container">\n' + table_str
     for variable_name, value in theme_json.items():
         if 'font-size' in variable_name:
-            variable_name_str = variable_name.replace('-', ' ')
+            variable_name_str: str = variable_name.replace('-', ' ')
             variable_name_str = variable_name_str.title()
-            variable_name_label = variable_name_str
+            variable_name_label: str = variable_name_str
             if contrast_warning:
                 if variable_name in ('main-bg-color', 'main-fg-color'):
                     variable_name_label = contrast_warning + variable_name_str
@@ -333,8 +332,8 @@ def html_theme_designer(base_dir: str,
     dimension_str += '    </table>\n    </div>\n'
     switch_str += '    </table>\n    </div>\n'
 
-    theme_formats = '.zip, .gz'
-    export_import_str = '    <div class="container">\n'
+    theme_formats: str = '.zip, .gz'
+    export_import_str: str = '    <div class="container">\n'
     export_import_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
@@ -362,7 +361,7 @@ def _relative_luminance(color: str) -> float:
     """
     color = color.lstrip('#')
     rgb = list(int(color[i:i+2], 16) for i in (0, 2, 4))
-    srgb = (
+    srgb: list[float] = (
         rgb[0] / 255.0,
         rgb[1] / 255.0,
         rgb[2] / 255.0
@@ -397,8 +396,8 @@ def color_contrast(background: str, foreground: str) -> float:
             foreground = color_to_hex[foreground]
         else:
             return None
-    background_luminance = _relative_luminance(background)
-    foreground_luminance = _relative_luminance(foreground)
+    background_luminance: float = _relative_luminance(background)
+    foreground_luminance: float = _relative_luminance(foreground)
     if background_luminance > foreground_luminance:
         return (0.05 + background_luminance) / (0.05 + foreground_luminance)
     return (0.05 + foreground_luminance) / (0.05 + background_luminance)
