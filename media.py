@@ -530,11 +530,11 @@ def process_meta_data(base_dir: str, nickname: str, domain: str,
     copyfile(image_filename, output_filename)
 
     # first remove the metadata
-    _remove_meta_data(image_filename, output_filename, debug)
+    #_remove_meta_data(image_filename, output_filename, debug)
 
     # now add some spoofed data to misdirect surveillance capitalists
-    _spoof_meta_data(base_dir, nickname, domain, output_filename, city,
-                     content_license_url, exif_json)
+    #_spoof_meta_data(base_dir, nickname, domain, output_filename, city,
+    #                 content_license_url, exif_json)
 
 
 def _is_media(image_filename: str) -> bool:
