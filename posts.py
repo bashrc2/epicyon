@@ -1251,7 +1251,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      buy_url: str, chat_url: str, translate: {},
                      searchable_by: [],
                      automatic_quote_approval: str,
-                     session) -> {}:
+                     session, debug: bool) -> {}:
     """Creates a new server-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1406,7 +1406,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                          new_post['object'], attach_image_filename,
                          media_type, image_description, video_transcript,
                          city, low_bandwidth,
-                         media_license_url, media_creator, system_language)
+                         media_license_url, media_creator, system_language,
+                         debug)
     _attach_post_license(new_post['object'], content_license_url)
     _attach_buy_link(new_post['object'], buy_url, translate)
     _attach_chat_link(new_post['object'], chat_url)
@@ -1429,7 +1430,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                      media_creator: str, buy_url: str, chat_url: str,
                      translate: {}, searchable_by: [],
                      automatic_quote_approval: str,
-                     session) -> {}:
+                     session, debug: bool) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1574,7 +1575,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                          media_type, image_description, video_transcript,
                          city, low_bandwidth,
                          media_license_url, media_creator,
-                         system_language)
+                         system_language, debug)
     _attach_post_license(new_post, content_license_url)
     _attach_buy_link(new_post, buy_url, translate)
     _attach_chat_link(new_post, chat_url)
@@ -1837,7 +1838,8 @@ def create_post_base(base_dir: str,
                      auto_cw_cache: {},
                      searchable_by: [],
                      session,
-                     automatic_quote_approval: str) -> {}:
+                     automatic_quote_approval: str,
+                     debug: bool) -> {}:
     """Creates a message
     """
     content = remove_invalid_chars(content)
@@ -2018,7 +2020,7 @@ def create_post_base(base_dir: str,
                              media_creator, buy_url, chat_url,
                              translate, searchable_by_list,
                              automatic_quote_approval,
-                             session)
+                             session, debug)
     else:
         new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
@@ -2036,7 +2038,7 @@ def create_post_base(base_dir: str,
                              media_creator, buy_url, chat_url,
                              translate, searchable_by_list,
                              automatic_quote_approval,
-                             session)
+                             session, debug)
 
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
@@ -2291,7 +2293,7 @@ def create_public_post(base_dir: str,
                        buy_url: str, chat_url: str,
                        auto_cw_cache: {},
                        searchable_by: [],
-                       session) -> {}:
+                       session, debug: bool) -> {}:
     """Public post
     """
     domain_full = get_full_domain(domain, port)
@@ -2330,7 +2332,7 @@ def create_public_post(base_dir: str,
                             media_license_url, media_creator,
                             languages_understood, translate, buy_url,
                             chat_url, auto_cw_cache, searchable_by,
-                            session, automatic_quote_approval)
+                            session, automatic_quote_approval, debug)
 
 
 def create_reading_post(base_dir: str,
@@ -2354,7 +2356,7 @@ def create_reading_post(base_dir: str,
                         languages_understood: [], translate: {},
                         buy_url: str, chat_url: str,
                         auto_cw_cache: {},
-                        searchable_by: [], session) -> {}:
+                        searchable_by: [], session, debug: bool) -> {}:
     """ reading status post
     """
     content = ''
@@ -2396,7 +2398,7 @@ def create_reading_post(base_dir: str,
                            media_license_url, media_creator,
                            languages_understood, translate,
                            buy_url, chat_url, auto_cw_cache,
-                           searchable_by, session)
+                           searchable_by, session, debug)
     if post_json_object:
         post_json_object['object']['tag'] = [{
             'href': book_url,
@@ -2456,7 +2458,7 @@ def create_blog_post(base_dir: str,
                      media_license_url: str, media_creator: str,
                      languages_understood: [], translate: {},
                      buy_url: str, chat_url: str,
-                     searchable_by: [], session) -> {}:
+                     searchable_by: [], session, debug: bool) -> {}:
     auto_cw_cache = {}
     blog_json = \
         create_public_post(base_dir,
@@ -2474,7 +2476,7 @@ def create_blog_post(base_dir: str,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by, session)
+                           auto_cw_cache, searchable_by, session, debug)
     url_str = get_url_from_post(blog_json['object']['url'])
     obj_url = remove_html(url_str)
     if '/@/' not in obj_url:
@@ -2494,7 +2496,8 @@ def create_news_post(base_dir: str,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
                      languages_understood: [], translate: {},
-                     buy_url: str, chat_url: str, session) -> {}:
+                     buy_url: str, chat_url: str, session,
+                     debug: bool) -> {}:
     auto_cw_cache = {}
     client_to_server: bool = False
     in_reply_to = None
@@ -2522,7 +2525,7 @@ def create_news_post(base_dir: str,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by, session)
+                           auto_cw_cache, searchable_by, session, debug)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -2540,7 +2543,8 @@ def create_question_post(base_dir: str,
                          content_license_url: str,
                          media_license_url: str, media_creator: str,
                          languages_understood: [], translate: {},
-                         auto_cw_cache: {}, session) -> {}:
+                         auto_cw_cache: {}, session,
+                         debug: bool) -> {}:
     """Question post with multiple choice options
     """
     domain_full = get_full_domain(domain, port)
@@ -2581,7 +2585,7 @@ def create_question_post(base_dir: str,
                          media_license_url, media_creator,
                          languages_understood, translate, buy_url,
                          chat_url, auto_cw_cache, searchable_by,
-                         session, automatic_quote_approval)
+                         session, automatic_quote_approval, debug)
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf']: list[dict] = []
     message_json['object']['votersCount'] = 0
@@ -2621,7 +2625,7 @@ def create_unlisted_post(base_dir: str,
                          media_license_url: str, media_creator: str,
                          languages_understood: [], translate: {},
                          buy_url: str, chat_url: str,
-                         auto_cw_cache: {}, session) -> {}:
+                         auto_cw_cache: {}, session, debug: bool) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domain_full = get_full_domain(domain, port)
@@ -2661,7 +2665,7 @@ def create_unlisted_post(base_dir: str,
                             languages_understood, translate,
                             buy_url, chat_url, auto_cw_cache,
                             searchable_by, session,
-                            automatic_quote_approval)
+                            automatic_quote_approval, debug)
 
 
 def create_followers_only_post(base_dir: str,
@@ -2685,7 +2689,8 @@ def create_followers_only_post(base_dir: str,
                                translate: {}, buy_url: str,
                                chat_url: str,
                                auto_cw_cache: {},
-                               searchable_by: [], session) -> {}:
+                               searchable_by: [], session,
+                               debug: bool) -> {}:
     """Followers only post
     """
     domain_full = get_full_domain(domain, port)
@@ -2720,7 +2725,7 @@ def create_followers_only_post(base_dir: str,
                             languages_understood, translate,
                             buy_url, chat_url, auto_cw_cache,
                             searchable_by, session,
-                            automatic_quote_approval)
+                            automatic_quote_approval, debug)
 
 
 def get_mentioned_people(base_dir: str, http_prefix: str,
@@ -2826,7 +2831,7 @@ def create_direct_message_post(base_dir: str,
                          media_license_url, media_creator,
                          languages_understood, translate, buy_url, chat_url,
                          auto_cw_cache, searchable_by, session,
-                         automatic_quote_approval)
+                         automatic_quote_approval, debug)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
     if not isinstance(message_json['to'], list):
@@ -2970,7 +2975,7 @@ def create_report_post(base_dir: str,
                              languages_understood, translate,
                              buy_url, chat_url, auto_cw_cache,
                              searchable_by, session,
-                             automatic_quote_approval)
+                             automatic_quote_approval, debug)
         if not post_json_object:
             continue
 
@@ -3268,7 +3273,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                          languages_understood,
                          translate, buy_url, chat_url,
                          auto_cw_cache, searchable_by, session,
-                         automatic_quote_approval)
+                         automatic_quote_approval, debug)
 
     # get the senders private key
     private_key_pem = get_person_key(nickname, domain, base_dir,

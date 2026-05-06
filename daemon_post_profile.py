@@ -2706,7 +2706,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 print('DEBUG: profile update extracting ' + m_type +
                       ' image, zip, csv or font from POST')
             media_bytes, post_bytes = \
-                extract_media_in_form_post(post_bytes, boundary, m_type)
+                extract_media_in_form_post(post_bytes, boundary, m_type, debug)
             if media_bytes:
                 if debug:
                     print('DEBUG: profile update ' + m_type +
@@ -2786,7 +2786,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
             exif_json: list[dict] = []
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
-                              content_license_url, exif_json)
+                              content_license_url, exif_json, debug)
             if is_a_file(post_image_filename):
                 print('profile update POST ' + m_type +
                       ' image, zip or font saved to ' +

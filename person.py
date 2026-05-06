@@ -130,7 +130,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
                       nickname: str, domain: str,
                       port: int, image_filename: str, image_type: str,
                       resolution: str, city: str,
-                      content_license_url: str) -> bool:
+                      content_license_url: str, debug: bool) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -187,7 +187,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
         exif_json: list[dict] = []
         process_meta_data(base_dir, nickname, domain,
                           profile_filename, profile_filename, city,
-                          content_license_url, exif_json)
+                          content_license_url, exif_json, debug)
         return True
     return False
 

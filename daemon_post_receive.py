@@ -201,7 +201,7 @@ def _receive_new_post_process_newpost(self, fields: {},
                            chat_url,
                            auto_cw_cache,
                            fields['searchableByDropdown'],
-                           curr_session)
+                           curr_session, debug)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -379,7 +379,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          languages_understood,
                          translate, buy_url, chat_url,
                          fields['searchableByDropdown'],
-                         curr_session)
+                         curr_session, debug)
     if message_json:
         if fields['schedulePost']:
             return NEW_POST_SUCCESS
@@ -493,7 +493,8 @@ def _receive_new_post_process_editblog(self, fields: {},
                                  video_transcript,
                                  city, low_bandwidth,
                                  license_url, creator,
-                                 fields['languagesDropdown'])
+                                 fields['languagesDropdown'],
+                                 debug)
 
             replace_you_tube(post_json_object,
                              yt_replace_domain,
@@ -630,7 +631,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              languages_understood,
                              translate, buy_url,
                              chat_url,
-                             auto_cw_cache, curr_session)
+                             auto_cw_cache, curr_session, debug)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -811,7 +812,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    buy_url, chat_url,
                                    auto_cw_cache,
                                    fields['searchableByDropdown'],
-                                   curr_session)
+                                   curr_session, debug)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir,
@@ -1393,7 +1394,7 @@ def _receive_new_post_process_newquestion(self, fields: {},
                              media_license_url, media_creator,
                              languages_understood,
                              translate,
-                             auto_cw_cache, curr_session)
+                             auto_cw_cache, curr_session, debug)
     if message_json:
         if debug:
             print('DEBUG: new Question')
@@ -1538,7 +1539,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                             chat_url,
                             auto_cw_cache,
                             fields['searchableByDropdown'],
-                            curr_session)
+                            curr_session, debug)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -1865,7 +1866,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     if debug:
         print('DEBUG: extracting media from POST')
     media_bytes, post_bytes = \
-        extract_media_in_form_post(post_bytes, boundary, 'attachpic')
+        extract_media_in_form_post(post_bytes, boundary, 'attachpic', debug)
     if debug:
         if media_bytes:
             print('DEBUG: media was found. ' +
@@ -1902,7 +1903,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             city = get_spoofed_city(city, base_dir, nickname, domain)
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
-                              content_license_url, exif_json)
+                              content_license_url, exif_json, debug)
             if is_a_file(post_image_filename):
                 print('POST media saved to ' + post_image_filename)
             else:

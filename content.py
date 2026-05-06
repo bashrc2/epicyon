@@ -1636,7 +1636,8 @@ def get_mentions_from_html(html_text: str, match_str: str) -> []:
     return mentions
 
 
-def extract_media_in_form_post(post_bytes, boundary, name: str):
+def extract_media_in_form_post(post_bytes, boundary, name: str,
+                               debug: bool):
     """Extracts the binary encoding for image/video/audio within a http
     form POST
     Returns the media bytes and the remaining bytes
@@ -1645,6 +1646,8 @@ def extract_media_in_form_post(post_bytes, boundary, name: str):
         name.encode('utf8', 'ignore') + b'";'
     image_start_location = post_bytes.find(image_start_boundary)
     if image_start_location == -1:
+        if debug:
+            print('DEBUG: image_start_location not found')
         return None, post_bytes
 
     # bytes after the start boundary appears
@@ -1654,6 +1657,8 @@ def extract_media_in_form_post(post_bytes, boundary, name: str):
     image_end_boundary = boundary.encode('utf8', 'ignore')
     image_end_location = media_bytes.find(image_end_boundary)
     if image_end_location == -1:
+        if debug:
+            print('DEBUG: image_end_location not found')
         # no ending boundary
         return media_bytes, post_bytes[:image_start_location]
 

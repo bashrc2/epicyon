@@ -401,7 +401,8 @@ def add_share(base_dir: str,
                 exif_json: list[dict] = []
                 process_meta_data(base_dir, nickname, domain,
                                   image_filename, item_idfile + '.' + ext,
-                                  city, content_license_url, exif_json)
+                                  city, content_license_url, exif_json,
+                                  debug)
                 if move_image:
                     ex_text = \
                         'EX: add_share unable to delete ' + \

@@ -306,7 +306,8 @@ def replace_twitter(post_json_object: {}, replacement_domain: str,
                              replacement_domain, system_language)
 
 
-def _remove_meta_data(image_filename: str, output_filename: str) -> None:
+def _remove_meta_data(image_filename: str, output_filename: str,
+                      debug: bool) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
@@ -315,13 +316,17 @@ def _remove_meta_data(image_filename: str, output_filename: str) -> None:
         print('ERROR: unable to remove metadata from ' + image_filename)
         return
     if is_a_file('/usr/bin/exiftool'):
-        print('Removing metadata from ' + output_filename + ' using exiftool')
         cmd = 'exiftool -all= ' + safe_system_string(output_filename)
+        if debug:
+            print('Removing metadata from ' + output_filename +
+                  ' using exiftool: ' + cmd)
         os.system(cmd)  # nosec
     elif is_a_file('/usr/bin/mogrify'):
-        print('Removing metadata from ' + output_filename + ' using mogrify')
         cmd = \
             '/usr/bin/mogrify -strip ' + safe_system_string(output_filename)
+        if debug:
+            print('Removing metadata from ' + output_filename +
+                  ' using mogrify: ' + cmd)
         os.system(cmd)  # nosec
 
 
@@ -518,12 +523,13 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
 def process_meta_data(base_dir: str, nickname: str, domain: str,
                       image_filename: str, output_filename: str,
                       city: str, content_license_url: str,
-                      exif_json: list[dict]) -> None:
+                      exif_json: list[dict],
+                      debug: bool) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
     # first remove the metadata
-    _remove_meta_data(image_filename, output_filename)
+    _remove_meta_data(image_filename, output_filename, debug)
 
     # now add some spoofed data to misdirect surveillance capitalists
     _spoof_meta_data(base_dir, nickname, domain, output_filename, city,
@@ -663,7 +669,8 @@ def attach_media(base_dir: str, http_prefix: str,
                  city: str, low_bandwidth: bool,
                  content_license_url: str,
                  creator: str,
-                 system_language: str) -> {}:
+                 system_language: str,
+                 debug: bool) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -748,7 +755,7 @@ def attach_media(base_dir: str, http_prefix: str,
             exif_json: list[dict] = []
             process_meta_data(base_dir, nickname, domain,
                               image_filename, media_filename, city,
-                              content_license_url, exif_json)
+                              content_license_url, exif_json, debug)
             if exif_json:
                 # FEP-ee3a
                 # https://codeberg.org/fediverse/fep/src/branch/main/

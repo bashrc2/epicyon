@@ -152,7 +152,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          languages_understood,
                          translate, buy_url, chat_url, auto_cw_cache,
                          searchable_by, session,
-                         automatic_quote_approval)
+                         automatic_quote_approval, debug)
 
     auth_header = create_basic_auth_header(from_nickname, password)
 
