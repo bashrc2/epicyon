@@ -24,14 +24,14 @@ def insert_question(base_dir: str, translate: {},
         return content
     if len(post_json_object['object']['oneOf']) == 0:
         return content
-    message_id = remove_id_ending(post_json_object['id'])
+    message_id: str = remove_id_ending(post_json_object['id'])
     if '#' in message_id:
         message_id = message_id.split('#', 1)[0]
     page_number_str: str = ''
     if page_number:
         page_number_str = '?page=' + str(page_number)
 
-    votes_filename = \
+    votes_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/questions.txt'
 
     show_question_results: bool = False
@@ -53,7 +53,9 @@ def insert_question(base_dir: str, translate: {},
                 continue
             if not choice.get('name'):
                 continue
-            quoted_name = urllib.parse.quote_plus(choice['name'])
+            if not isinstance(choice['name'], str):
+                continue
+            quoted_name: str = urllib.parse.quote_plus(choice['name'])
             content += \
                 '<input type="radio" name="answer" value="' + \
                 quoted_name + '" tabindex="10"> ' + \
@@ -85,6 +87,8 @@ def insert_question(base_dir: str, translate: {},
         for question_option in post_json_object['object']['oneOf']:
             if not question_option.get('name'):
                 continue
+            if not isinstance(question_option['name'], str):
+                continue
             if not question_option.get('replies'):
                 continue
             votes: int = 0
@@ -92,7 +96,7 @@ def insert_question(base_dir: str, translate: {},
                 votes = int(question_option['replies']['totalItems'])
             except BaseException:
                 print('EX: insert_question unable to convert to int 2')
-            votes_percent = str(int(votes * 100 / max_votes))
+            votes_percent: str = str(int(votes * 100 / max_votes))
 
             content += \
                 '<p>\n' + \
