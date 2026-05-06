@@ -311,7 +311,6 @@ def _remove_meta_data(image_filename: str, output_filename: str,
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
-    copyfile(image_filename, output_filename)
     if not is_a_file(output_filename):
         print('ERROR: unable to remove metadata from ' + image_filename)
         return
@@ -528,6 +527,8 @@ def process_meta_data(base_dir: str, nickname: str, domain: str,
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
+    copyfile(image_filename, output_filename)
+
     # first remove the metadata
     _remove_meta_data(image_filename, output_filename, debug)
 
