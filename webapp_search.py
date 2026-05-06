@@ -75,17 +75,17 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
         copyfile(base_dir + '/emoji/default_emoji.json',
                  base_dir + '/emoji/emoji.json')
 
-    search_str = search_str.lower().replace(':', '').strip('\n').strip('\r')
-    css_filename = base_dir + '/epicyon-profile.css'
+    search_str: str = \
+        search_str.lower().replace(':', '').strip('\n').strip('\r')
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    emoji_lookup_filename = base_dir + '/emoji/emoji.json'
-    custom_emoji_lookup_filename = base_dir + '/emojicustom/emoji.json'
+    emoji_lookup_filename: str = base_dir + '/emoji/emoji.json'
+    custom_emoji_lookup_filename: str = base_dir + '/emojicustom/emoji.json'
 
     # create header
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
     emoji_form = \
         html_header_with_external_style(css_filename, instance_title, None,
@@ -119,14 +119,14 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
         emoji_form += html_footer()
         return emoji_form
 
-    emoji_json = load_json(emoji_lookup_filename)
+    emoji_json: dict = load_json(emoji_lookup_filename)
     if emoji_json:
         if is_a_file(custom_emoji_lookup_filename):
-            custom_emoji_json = load_json(custom_emoji_lookup_filename)
+            custom_emoji_json: dict = load_json(custom_emoji_lookup_filename)
             if custom_emoji_json:
                 emoji_json = dict(emoji_json, **custom_emoji_json)
 
-        results = {}
+        results: dict = {}
         for emoji_name, filename in emoji_json.items():
             if search_str in emoji_name:
                 results[emoji_name] = filename + '.png'
@@ -140,8 +140,8 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
 
         heading_shown: bool = False
         emoji_form += '<center>'
-        msg_str1 = translate['Copy the text then paste it into your post']
-        msg_str2 = ':<img loading="lazy" decoding="async" ' + \
+        msg_str1: str = translate['Copy the text then paste it into your post']
+        msg_str2: str = ':<img loading="lazy" decoding="async" ' + \
             'class="searchEmoji" src="/emoji/'
         for emoji_name, filename in results.items():
             if not is_a_file(base_dir + '/emoji/' + filename):
@@ -183,17 +183,17 @@ def _html_search_result_share_page(actor: str, domain_full: str,
                                    previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
-    post_actor = get_alt_path(actor, domain_full, calling_domain)
+    post_actor: str = get_alt_path(actor, domain_full, calling_domain)
     # previous page link, needs to be a POST
     if previous:
         page_number -= 1
-        title_str = translate['Page up']
-        image_url = 'pageup.png'
+        title_str: str = translate['Page up']
+        image_url: str = 'pageup.png'
     else:
         page_number += 1
-        title_str = translate['Page down']
-        image_url = 'pagedown.png'
-    shared_items_form = \
+        title_str: str = translate['Page down']
+        image_url: str = 'pagedown.png'
+    shared_items_form: str = \
         '<form method="POST" action="' + post_actor + '/searchhandle?page=' + \
         str(page_number) + '">\n'
     shared_items_form += \
@@ -279,23 +279,22 @@ def html_search_shared_items(translate: {},
     curr_page: int = 1
     ctr: int = 0
     shared_items_form: str = ''
-    search_str_lower = urllib.parse.unquote(search_str)
+    search_str_lower: str = urllib.parse.unquote(search_str)
     search_str_lower = search_str_lower.lower().strip('\n').strip('\r')
-    search_str_lower_list = search_str_lower.split('+')
-    css_filename = base_dir + '/epicyon-profile.css'
+    search_str_lower_list: list[str] = search_str_lower.split('+')
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
     shared_items_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     if shares_file_type == 'shares':
-        title_str = translate['Shared Items Search']
+        title_str: str = translate['Shared Items Search']
     else:
-        title_str = translate['Wanted Items Search']
+        title_str: str = translate['Wanted Items Search']
 
     # show top banner
     if nickname and domain and theme_name:
@@ -318,18 +317,18 @@ def html_search_shared_items(translate: {},
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + title_str + '</a></h1></center>'
     results_exist: bool = False
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     for _, dirs, files in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            contact_nickname = handle.split('@')[0]
-            shares_filename = acct_handle_dir(base_dir, handle) + \
+            contact_nickname: str = handle.split('@')[0]
+            shares_filename: str = acct_handle_dir(base_dir, handle) + \
                 '/' + shares_file_type + '.json'
             if not is_a_file(shares_filename):
                 continue
 
-            shares_json = load_json(shares_filename)
+            shares_json: dict = load_json(shares_filename)
             if not shares_json:
                 continue
 
@@ -353,9 +352,9 @@ def html_search_shared_items(translate: {},
 
     # search federated shared items
     if shares_file_type == 'shares':
-        catalogs_dir = base_dir + '/cache/catalogs'
+        catalogs_dir: str = base_dir + '/cache/catalogs'
     else:
-        catalogs_dir = base_dir + '/cache/wantedItems'
+        catalogs_dir: str = base_dir + '/cache/wantedItems'
     if curr_page <= page_number and is_a_dir(catalogs_dir):
         for _, dirs, files in os.walk(catalogs_dir):
             for fname in files:
@@ -363,11 +362,11 @@ def html_search_shared_items(translate: {},
                     continue
                 if not fname.endswith('.' + shares_file_type + '.json'):
                     continue
-                federated_domain = fname.split('.')[0]
+                federated_domain: str = fname.split('.')[0]
                 if federated_domain not in shared_items_federated_domains:
                     continue
-                shares_filename = catalogs_dir + '/' + fname
-                shares_json = load_json(shares_filename)
+                shares_filename: str = catalogs_dir + '/' + fname
+                shares_json: dict = load_json(shares_filename)
                 if not shares_json:
                     continue
 
@@ -406,18 +405,17 @@ def html_search_emoji_text_entry(translate: {},
         copyfile(base_dir + '/emoji/default_emoji.json',
                  base_dir + '/emoji/emoji.json')
 
-    actor = path.replace('/search', '')
+    actor: str = path.replace('/search', '')
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    css_filename = base_dir + '/epicyon-follow.css'
+    css_filename: str = base_dir + '/epicyon-follow.css'
     if is_a_file(base_dir + '/follow.css'):
         css_filename = base_dir + '/follow.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    emoji_str = \
+    emoji_str: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     emoji_str += '<div class="follow">\n'
@@ -452,49 +450,50 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
                 text_mode_banner: str, access_keys: {}) -> str:
     """Search called from the timeline icon
     """
-    actor = path.replace('/search', '')
-    search_nickname = get_nickname_from_actor(actor)
+    actor: str = path.replace('/search', '')
+    search_nickname: str = get_nickname_from_actor(actor)
     if not search_nickname:
         return ''
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    css_filename = base_dir + '/epicyon-search.css'
+    css_filename: str = base_dir + '/epicyon-search.css'
     if is_a_file(base_dir + '/search.css'):
         css_filename = base_dir + '/search.css'
 
     # set a search banner
-    search_banner_filename = \
+    search_banner_filename: str = \
         acct_dir(base_dir, search_nickname, domain) + \
         '/search_banner.png'
     if not is_a_file(search_banner_filename):
         if is_a_file(base_dir + '/theme/' + theme + '/search_banner.png'):
             copyfile(base_dir + '/theme/' + theme + '/search_banner.png',
                      search_banner_filename)
-    users_path = '/users/' + search_nickname
+    users_path: str = '/users/' + search_nickname
 
     # show a banner above the search box
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
     search_banner_path = users_path + '/' + search_banner_file
 
-    instance_title = get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
 
     # these images are pre-loaded to prevent the web page from
     # jumping around when rendering
-    preload_images = [search_banner_path]
+    preload_images: list[str] = [search_banner_path]
 
-    follow_str = \
+    follow_str: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
-    text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {},
-                                                    None, None, None, False)
+    text_mode_banner_str: str = \
+        html_keyboard_navigation(text_mode_banner, {}, {}, None, None,
+                                 None, False)
     if text_mode_banner_str is None:
         text_mode_banner_str: str = ''
 
     if is_a_file(search_banner_filename):
-        timeline_key = access_keys['menuTimeline']
+        timeline_key: str = access_keys['menuTimeline']
         follow_str += \
             '<header>\n' + text_mode_banner_str + \
             '<a href="' + users_path + '/' + default_timeline + '" title="' + \
@@ -517,13 +516,13 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     follow_str += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     follow_str += '    <input type="text" name="searchtext" autofocus><br>\n'
-    submit_key = access_keys['submitButton']
+    submit_key: str = access_keys['submitButton']
     follow_str += '    <button type="submit" class="button" ' + \
         'name="submitSearch" accesskey="' + submit_key + '">' + \
         translate['Search'] + '</button>\n'
     follow_str += '  </form>\n'
 
-    cached_hashtag_swarm_filename = \
+    cached_hashtag_swarm_filename: str = \
         acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
     swarm_str: str = ''
     if is_a_file(cached_hashtag_swarm_filename):
@@ -564,37 +563,37 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     results: list[str] = []
     # search instance accounts
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     for subdir, _, files in os.walk(dir_str + '/'):
         for fname in files:
             if not fname.endswith('.json'):
                 continue
             if not is_account_dir(fname):
                 continue
-            actor_filename = os.path.join(subdir, fname)
-            actor_json = load_json(actor_filename)
+            actor_filename: str = os.path.join(subdir, fname)
+            actor_json: dict = load_json(actor_filename)
             if not actor_json:
                 continue
             if actor_json.get('id') and \
                no_of_actor_skills(actor_json) > 0 and \
                actor_json.get('name') and \
                actor_json.get('icon'):
-                actor = actor_json['id']
-                actor_skills_list = actor_json['hasOccupation']['skills']
-                skills = get_skills_from_list(actor_skills_list)
+                actor: str = actor_json['id']
+                actor_skills_list: dict = actor_json['hasOccupation']['skills']
+                skills: dict = get_skills_from_list(actor_skills_list)
                 for skill_name, skill_level in skills.items():
-                    skill_name = skill_name.lower()
+                    skill_name: str = skill_name.lower()
                     if not (skill_name in skillsearch or
                             skillsearch in skill_name):
                         continue
-                    skill_level_str = str(skill_level)
+                    skill_level_str: str = str(skill_level)
                     if skill_level < 100:
                         skill_level_str = '0' + skill_level_str
                     if skill_level < 10:
                         skill_level_str = '0' + skill_level_str
-                    url_str = get_person_icon(actor_json)
-                    icon_url = remove_html(url_str)
-                    index_str = \
+                    url_str: str = get_person_icon(actor_json)
+                    icon_url: str = remove_html(url_str)
+                    index_str: str = \
                         skill_level_str + ';' + actor + ';' + \
                         actor_json['name'] + \
                         ';' + icon_url
@@ -609,33 +608,33 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                     continue
                 if not is_account_dir(fname):
                     continue
-                actor_filename = os.path.join(subdir, fname)
-                cached_actor_json = load_json(actor_filename)
+                actor_filename: str = os.path.join(subdir, fname)
+                cached_actor_json: str = load_json(actor_filename)
                 if not cached_actor_json:
                     continue
                 if cached_actor_json.get('actor'):
-                    actor_json = cached_actor_json['actor']
+                    actor_json: dict = cached_actor_json['actor']
                     if actor_json.get('id') and \
                        no_of_actor_skills(actor_json) > 0 and \
                        actor_json.get('name') and \
                        actor_json.get('icon'):
-                        actor = actor_json['id']
-                        actor_skills_list = \
+                        actor: str = actor_json['id']
+                        actor_skills_list: dict = \
                             actor_json['hasOccupation']['skills']
-                        skills = get_skills_from_list(actor_skills_list)
+                        skills: dict = get_skills_from_list(actor_skills_list)
                         for skill_name, skill_level in skills.items():
-                            skill_name = skill_name.lower()
+                            skill_name: str = skill_name.lower()
                             if not (skill_name in skillsearch or
                                     skillsearch in skill_name):
                                 continue
-                            skill_level_str = str(skill_level)
+                            skill_level_str: str = str(skill_level)
                             if skill_level < 100:
                                 skill_level_str = '0' + skill_level_str
                             if skill_level < 10:
                                 skill_level_str = '0' + skill_level_str
-                            url_str = get_person_icon(actor_json)
-                            icon_url = remove_html(url_str)
-                            index_str = \
+                            url_str: str = get_person_icon(actor_json)
+                            icon_url: str = remove_html(url_str)
+                            index_str: str = \
                                 skill_level_str + ';' + actor + ';' + \
                                 actor_json['name'] + \
                                 ';' + icon_url
@@ -645,12 +644,11 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     results.sort(reverse=True)
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
     skill_search_form = \
         html_header_with_external_style(css_filename, instance_title, None,
@@ -687,12 +685,12 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
         skill_search_form += '<center>'
         ctr: int = 0
         for skill_match in results:
-            skill_match_fields = skill_match.split(';')
+            skill_match_fields: list[str] = skill_match.split(';')
             if len(skill_match_fields) != 4:
                 continue
-            actor = skill_match_fields[1]
-            actor_name = skill_match_fields[2]
-            avatar_url = skill_match_fields[3]
+            actor: str = skill_match_fields[1]
+            actor_name: str = skill_match_fields[2]
+            avatar_url: str = skill_match_fields[3]
             skill_search_form += \
                 '<div class="search-result""><a href="' + \
                 actor + '/skills">'
@@ -749,7 +747,7 @@ def html_history_search(translate: {}, base_dir: str,
 
     historysearch = historysearch.lower().strip('\n').strip('\r')
 
-    box_filenames = \
+    box_filenames: str = \
         search_box_posts(base_dir, nickname, domain,
                          historysearch, posts_per_page, box_name)
     if box_name == 'outbox':
@@ -757,21 +755,20 @@ def html_history_search(translate: {}, base_dir: str,
             search_box_posts(base_dir, nickname, domain,
                              historysearch, posts_per_page, 'inbox')
 
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    history_search_form = \
+    history_search_form: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
     # add the page title
-    domain_full = get_full_domain(domain, port)
-    actor = local_actor_url(http_prefix, nickname, domain_full)
-    history_search_title = '🔍 ' + translate['Your Posts']
+    domain_full: str = get_full_domain(domain, port)
+    actor: str = local_actor_url(http_prefix, nickname, domain_full)
+    history_search_title: str = '🔍 ' + translate['Your Posts']
     if box_name == 'bookmarks':
         history_search_title = '🔍 ' + translate['Bookmarks']
 
@@ -802,7 +799,7 @@ def html_history_search(translate: {}, base_dir: str,
         history_search_form += html_footer()
         return history_search_form
 
-    separator_str = html_post_separator(base_dir, None)
+    separator_str: str = html_post_separator(base_dir, None)
 
     # ensure that the page number is in bounds
     if not page_number:
@@ -811,29 +808,30 @@ def html_history_search(translate: {}, base_dir: str,
         page_number = 1
 
     # get the start end end within the index file
-    start_index = int((page_number - 1) * posts_per_page)
-    end_index = start_index + posts_per_page
-    no_of_box_filenames = len(box_filenames)
+    start_index: int = int((page_number - 1) * posts_per_page)
+    end_index: int = start_index + posts_per_page
+    no_of_box_filenames: int = len(box_filenames)
     if end_index >= no_of_box_filenames and no_of_box_filenames > 0:
         end_index = no_of_box_filenames - 1
 
-    index = start_index
+    index: int = start_index
     minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     while index <= end_index:
-        post_filename = box_filenames[index]
+        post_filename: str = box_filenames[index]
         if not post_filename:
             index += 1
             continue
-        post_json_object = load_json(post_filename)
+        post_json_object: dict = load_json(post_filename)
         if not post_json_object:
             index += 1
             continue
-        show_individual_post_icons = True
+        show_individual_post_icons: bool = True
         allow_deletion: bool = False
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     True, recent_posts_cache,
@@ -910,7 +908,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    hashtag_index_file: str = base_dir + '/tags/' + hashtag + '.txt'
     if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
@@ -919,11 +917,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         print('WARN: hashtag file not found ' + hashtag_index_file)
         return None
 
-    separator_str = html_post_separator(base_dir, None)
+    separator_str: str = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
     if nickname:
-        account_dir = acct_dir(base_dir, nickname, domain)
+        account_dir: str = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             nickname = None
 
@@ -936,7 +934,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         return None
 
     # read the css
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -947,16 +945,15 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         page_number = 1
 
     # get the start end end within the index file
-    start_index = int((page_number - 1) * posts_per_page)
-    end_index = start_index + posts_per_page
-    no_of_lines = len(lines)
+    start_index: int = int((page_number - 1) * posts_per_page)
+    end_index: int = start_index + posts_per_page
+    no_of_lines: int = len(lines)
     if end_index >= no_of_lines and no_of_lines > 0:
         end_index = no_of_lines - 1
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    hashtag_search_form = \
+    hashtag_search_form: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
@@ -994,15 +991,16 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         'icons/logorss.png" /></a></h1>\n'
 
     # maps for geolocations with this hashtag
-    maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format,
-                                 nickname, domain, session, ua_str)
+    maps_str: str = \
+        html_hashtag_maps(base_dir, hashtag, translate, map_format,
+                          nickname, domain, session, ua_str)
     if maps_str:
         maps_str = '<center>' + maps_str + '</center>\n'
     hashtag_search_form += maps_str
 
     # edit the category for this hashtag
     if is_editor(base_dir, nickname):
-        category = get_hashtag_category(base_dir, hashtag)
+        category: str = get_hashtag_category(base_dir, hashtag)
         hashtag_search_form += '<div class="hashtagCategoryContainer">\n'
         hashtag_search_form += '  <form enctype="multipart/form-data" ' + \
             'method="POST" accept-charset="UTF-8" action="' + \
@@ -1033,10 +1031,10 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
-    index = start_index
-    text_mode_separator = '<div class="transparent"><hr></div>'
+    index: int = start_index
+    text_mode_separator: str = '<div class="transparent"><hr></div>'
     while index <= end_index:
-        post_id = lines[index].strip('\n').strip('\r')
+        post_id: str = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
             nickname = get_nickname_from_actor(post_id)
             if not nickname:
@@ -1049,11 +1047,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                 continue
             nickname = post_fields[1]
             post_id = post_fields[2]
-        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        post_filename: str = locate_post(base_dir, nickname, domain, post_id)
         if not post_filename:
             index += 1
             continue
-        post_json_object = load_json(post_filename)
+        post_json_object: dict = load_json(post_filename)
         if not post_json_object:
             index += 1
             continue
@@ -1064,19 +1062,20 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         if nickname:
             show_individual_post_icons = True
         allow_deletion: bool = False
-        show_repeats = show_individual_post_icons
-        show_icons = show_individual_post_icons
+        show_repeats: bool = show_individual_post_icons
+        show_icons: bool = show_individual_post_icons
         manually_approves_followers: bool = False
         show_public_only: bool = False
         store_to_sache: bool = False
         allow_downloads: bool = True
-        avatar_url = None
+        avatar_url: str = None
         show_avatar_options: bool = True
         minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads, recent_posts_cache,
@@ -1166,14 +1165,14 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     """
     hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
 
-    profile_str = 'https://www.w3.org/ns/activitystreams'
-    as_header = {
+    profile_str: str = 'https://www.w3.org/ns/activitystreams'
+    as_header: dict = {
         'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
-    hashtag_url_with_page = hashtag_url
+    hashtag_url_with_page: str = hashtag_url
     if '?page=' not in hashtag_url_with_page:
         hashtag_url_with_page += '?page=' + str(page_number)
-    hashtag_json = \
+    hashtag_json: dict = \
         get_json(signing_priv_key_pem,
                  session, hashtag_url_with_page, as_header, None, debug,
                  mitm_servers, __version__, http_prefix, domain)
@@ -1188,16 +1187,16 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     if not lines:
         return ''
 
-    separator_str = html_post_separator(base_dir, None)
+    separator_str: str = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
     if nickname:
-        account_dir = acct_dir(base_dir, nickname, domain)
+        account_dir: str = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             return None
 
     # read the css
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
@@ -1207,10 +1206,9 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     elif page_number < 1:
         page_number = 1
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    hashtag_search_form = \
+    hashtag_search_form: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
@@ -1219,7 +1217,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         '<h1>#' + hashtag
 
     # RSS link for hashtag feed
-    hashtag_rss = hashtag_url
+    hashtag_rss: str = hashtag_url
     if '.html' in hashtag_rss:
         hashtag_rss = hashtag_rss.replace('.html', '')
     hashtag_search_form += ' <a href="' + hashtag_rss + '.rss">'
@@ -1229,7 +1227,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         'alt="RSS 2.0" title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a></h1>\n'
 
-    tag_link = '/users/' + nickname + '?remotetag=' + \
+    tag_link: str = '/users/' + nickname + '?remotetag=' + \
         hashtag_url.replace('/', '--')
     if page_number > 1 and hashtag_json.get('prev'):
         # previous page link
@@ -1243,11 +1241,11 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
-    text_mode_separator = '<div class="transparent"><hr></div>'
+    text_mode_separator: str = '<div class="transparent"><hr></div>'
     post_ctr: int = 0
     for post_id in lines:
         print('Hashtag post_id ' + post_id)
-        post_json_object = \
+        post_json_object: dict = \
             get_json(signing_priv_key_pem,
                      session, post_id, as_header, None, debug,
                      mitm_servers, __version__, http_prefix, domain)
@@ -1261,10 +1259,10 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             if post_json_object.get('id') and \
                'to' in post_json_object and \
                'cc' in post_json_object:
-                new_url = \
+                new_url: str = \
                     remove_id_ending(post_json_object['id'])
-                actor = get_actor_from_post_id(new_url)
-                new_post_json_object = {
+                actor: str = get_actor_from_post_id(new_url)
+                new_post_json_object: dict = {
                     "type": "Create",
                     "id": new_url + '/activity',
                     "to": post_json_object['to'],
@@ -1292,13 +1290,14 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         show_public_only: bool = False
         store_to_sache: bool = False
         allow_downloads: bool = True
-        avatar_url = None
+        avatar_url: str = None
         show_avatar_options: bool = True
         minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads, recent_posts_cache,
@@ -1367,7 +1366,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    hashtag_index_file: str = base_dir + '/tags/' + hashtag + '.txt'
     if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
@@ -1378,7 +1377,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
 
     # check that the directory for the nickname exists
     if nickname:
-        account_dir = acct_dir(base_dir, nickname, domain)
+        account_dir: str = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             nickname = None
 
@@ -1390,35 +1389,35 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
     if not lines:
         return None
 
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
 
     max_feed_length: int = 10
-    hashtag_feed = rss2tag_header(hashtag, http_prefix, domain_full)
+    hashtag_feed: str = rss2tag_header(hashtag, http_prefix, domain_full)
     for index, item in enumerate(lines):
-        post_id = item.strip('\n').strip('\r')
+        post_id: str = item.strip('\n').strip('\r')
         if '  ' not in post_id:
-            nickname = get_nickname_from_actor(post_id)
+            nickname: str = get_nickname_from_actor(post_id)
             if not nickname:
                 index += 1
                 if index >= max_feed_length:
                     break
                 continue
         else:
-            post_fields = post_id.split('  ')
+            post_fields: list[str] = post_id.split('  ')
             if len(post_fields) != 3:
                 index += 1
                 if index >= max_feed_length:
                     break
                 continue
-            nickname = post_fields[1]
-            post_id = post_fields[2]
-        post_filename = locate_post(base_dir, nickname, domain, post_id)
+            nickname: str = post_fields[1]
+            post_id: str = post_fields[2]
+        post_filename: str = locate_post(base_dir, nickname, domain, post_id)
         if not post_filename:
             index += 1
             if index >= max_feed_length:
                 break
             continue
-        post_json_object = load_json(post_filename)
+        post_json_object: dict = load_json(post_filename)
         if post_json_object:
             if not is_public_post(post_json_object):
                 index += 1
@@ -1429,13 +1428,14 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
             if 'content' in post_json_object['object'] and \
                post_json_object['object'].get('attributedTo') and \
                post_json_object['object'].get('published'):
-                published = post_json_object['object']['published']
-                pub_date = date_from_string_format(published,
-                                                   ["%Y-%m-%dT%H:%M:%S%z"])
-                rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
+                published: str = post_json_object['object']['published']
+                pub_date: str = \
+                    date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
+                rss_date_str: str = \
+                    pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtag_feed += '     <item>'
-                attrib_field = post_json_object['object']['attributedTo']
-                attrib = get_attributed_to(attrib_field)
+                attrib_field: str = post_json_object['object']['attributedTo']
+                attrib: str = get_attributed_to(attrib_field)
                 if attrib:
                     hashtag_feed += \
                         '         <author>' + attrib + '</author>'
@@ -1444,7 +1444,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
                         '         <title>' + \
                         escape_text(post_json_object['object']['summary']) + \
                         '</title>'
-                description = \
+                description: str = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(description)
@@ -1453,13 +1453,14 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
                     '         <description>' + description + '</description>'
                 hashtag_feed += \
                     '         <pubDate>' + rss_date_str + '</pubDate>'
-                post_attachments = get_post_attachments(post_json_object)
+                post_attachments: list[dict] = \
+                    get_post_attachments(post_json_object)
                 if post_attachments:
                     for attach in post_attachments:
                         if not attach.get('url'):
                             continue
-                        url_str = get_url_from_post(attach['url'])
-                        attach_url = remove_html(url_str)
+                        url_str: str = get_url_from_post(attach['url'])
+                        attach_url: str = remove_html(url_str)
                         hashtag_feed += \
                             '         <link>' + attach_url + '</link>'
                 hashtag_feed += '     </item>'
@@ -1479,7 +1480,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtag_index_file = base_dir + '/tags/' + hashtag + '.txt'
+    hashtag_index_file: str = base_dir + '/tags/' + hashtag + '.txt'
     if not is_a_file(hashtag_index_file):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
@@ -1490,7 +1491,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
 
     # check that the directory for the nickname exists
     if nickname:
-        account_dir = acct_dir(base_dir, nickname, domain)
+        account_dir: str = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             nickname = None
 
@@ -1502,11 +1503,11 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
     if not lines:
         return None
 
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
 
-    url = http_prefix + '://' + domain_full + '/tags/' + \
+    url: str = http_prefix + '://' + domain_full + '/tags/' + \
         hashtag + '?page=' + str(page_number)
-    hashtag_json = {
+    hashtag_json: dict = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
@@ -1525,21 +1526,21 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
             hashtag + '?page=' + str(page_number - 1)
     page_items: int = 0
     for index, _ in enumerate(lines):
-        post_id = lines[index].strip('\n').strip('\r')
+        post_id: str = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
-            nickname = get_nickname_from_actor(post_id)
+            nickname: str = get_nickname_from_actor(post_id)
             if not nickname:
                 continue
         else:
-            post_fields = post_id.split('  ')
+            post_fields: list[str] = post_id.split('  ')
             if len(post_fields) != 3:
                 continue
-            nickname = post_fields[1]
-            post_id = post_fields[2]
-        post_filename = locate_post(base_dir, nickname, domain, post_id)
+            nickname: str = post_fields[1]
+            post_id: str = post_fields[2]
+        post_filename: str = locate_post(base_dir, nickname, domain, post_id)
         if not post_filename:
             continue
-        post_json_object = load_json(post_filename)
+        post_json_object: dict = load_json(post_filename)
         if not post_json_object:
             continue
         if not has_object_dict(post_json_object):
@@ -1552,7 +1553,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         page_items += 1
         if page_items < posts_per_page * (page_number - 1):
             continue
-        id_str = remove_id_ending(post_json_object['object']['id'])
+        id_str: str = remove_id_ending(post_json_object['object']['id'])
         hashtag_json['orderedItems'].append(id_str)
         hashtag_json['totalItems'] += 1
         if hashtag_json['totalItems'] >= posts_per_page:

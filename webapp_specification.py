@@ -23,9 +23,9 @@ def html_specification(base_dir: str, http_prefix: str,
                        system_language: str) -> str:
     """Show the specification screen
     """
-    specification_filename = base_dir + '/specification/activitypub.md'
-    admin_nickname = get_config_param(base_dir, 'admin')
-    dir_str = data_dir(base_dir)
+    specification_filename: str = base_dir + '/specification/activitypub.md'
+    admin_nickname: str = get_config_param(base_dir, 'admin')
+    dir_str: str = data_dir(base_dir)
     if is_a_file(dir_str + '/activitypub.md'):
         specification_filename = dir_str + '/activitypub.md'
 
@@ -34,22 +34,21 @@ def html_specification(base_dir: str, http_prefix: str,
             copyfile(dir_str + '/login-background-custom.jpg',
                      dir_str + '/login-background.jpg')
 
-    specification_text = 'ActivityPub Protocol Specification.'
+    specification_text: str = 'ActivityPub Protocol Specification.'
     if is_a_file(specification_filename):
-        md_text = load_string(specification_filename,
-                              'EX: html_specification unable to read ' +
-                              specification_filename)
+        md_text: str = load_string(specification_filename,
+                                   'EX: html_specification unable to read ' +
+                                   specification_filename)
         if md_text:
             md_text = markdown_example_numbers(md_text)
             specification_text = markdown_to_html(md_text)
 
     specification_form: str = ''
-    css_filename = base_dir + '/epicyon-profile.css'
+    css_filename: str = base_dir + '/epicyon-profile.css'
     if is_a_file(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     specification_form = \
         html_header_with_website_markup(css_filename, instance_title,
                                         http_prefix, domain_full,
@@ -62,7 +61,7 @@ def html_specification(base_dir: str, http_prefix: str,
             '<p class="administeredby">' + \
             'http://' + onion_domain + '</p>\n</center></div>\n'
     if admin_nickname:
-        admin_actor = '/users/' + admin_nickname
+        admin_actor: str = '/users/' + admin_nickname
         specification_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
