@@ -135,7 +135,7 @@ def save_binary(text: str, filename: str, exception_text: str) -> bool:
     """Saves a binary to file
     """
     try:
-        with open(filename, 'wb+') as fp:
+        with open(filename, 'wb') as fp:
             fp.write(text)
             return True
     except OSError as exc:
