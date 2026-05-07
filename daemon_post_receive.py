@@ -7,9 +7,11 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
+import os
 import time
 import copy
 import errno
+from shutil import copyfile
 from socket import error as SocketError
 from shares import add_share
 from languages import get_understood_languages
@@ -1894,22 +1896,53 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if low_bandwidth:
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
+            backup_filename = filename + '.backup'
+            copyfile(filename, backup_filename)
+            file_size_original: int = os.path.getsize(filename)
             apply_watermark_to_image(base_dir, nickname, domain,
                                      filename, watermark_width_percent,
                                      watermark_position,
                                      watermark_opacity)
-            post_image_filename = filename.replace('.temp', '')
+            file_size_watermark: int = os.path.getsize(filename)
+            if debug:
+                print('DEBUG: image size before watermark ' +
+                      str(file_size_original) + ' and after ' +
+                      str(file_size_watermark))
+            if file_size_watermark < file_size_original / 2:
+                print('WARN: watermark failed, restoring backup')
+                erase_file(filename,
+                           'EX: failed to erase watermarked file ' +
+                           filename)
+                move_file(backup_filename, filename)
+            post_image_filename: str = filename.replace('.temp', '')
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
                               content_license_url, exif_json, debug)
             if is_a_file(post_image_filename):
-                print('POST media saved to ' + post_image_filename)
+                file_size_meta_data: int = \
+                    os.path.getsize(post_image_filename)
+                if debug:
+                    print('DEBUG: image size before metadata removal ' +
+                          str(file_size_original) + ' and after ' +
+                          str(file_size_meta_data))
+                if file_size_meta_data < file_size_watermark / 2:
+                    print('WARN: image metadata removal failed, ' +
+                          'restoring backup')
+                    erase_file(filename, 'EX: ' +
+                               'failed to erase metadata processed image ' +
+                               post_image_filename)
+                    move_file(backup_filename, post_image_filename)
+                print('POST media saved to ' + post_image_filename +
+                      ' ' + str(file_size_meta_data) + ' bytes')
             else:
                 exif_json = []
                 print('ERROR: POST media could not be saved to ' +
                       post_image_filename)
+            erase_file(backup_filename,
+                       'EX: failed to delete backup image ' +
+                       backup_filename)
         else:
             if is_a_file(filename):
                 new_filename = filename.replace('.temp', '')

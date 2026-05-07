@@ -16,6 +16,7 @@ from utils import binary_is_image
 from formats import get_image_extension_from_mime_type
 from data import save_binary
 from data import is_a_dir
+from data import is_a_file
 
 
 def receive_image_attachment(self, length: int, path: str, base_dir: str,
@@ -73,8 +74,8 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
                 'EX: receive_image_attachment unable to write ' +
                 media_filename)
     if debug:
-        if os.path.isfile(media_filename):
-            file_size = os.path.getsize(media_filename)
+        if is_a_file(media_filename):
+            file_size: int = os.path.getsize(media_filename)
             print('DEBUG: image saved to ' + media_filename + ' ' +
                   str(file_size) + ' bytes')
         else:
