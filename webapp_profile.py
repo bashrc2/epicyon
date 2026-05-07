@@ -2309,7 +2309,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                                 media_instance_str: str,
                                 blogs_instance_str: str,
                                 news_instance_str: str) -> (str, str,
-                                                            str, str, str):
+                                                            str, str,
+                                                            str):
     """Edit profile instance settings
     """
     image_formats: list[str] = get_image_formats()
@@ -3743,7 +3744,7 @@ def html_edit_profile(server, translate: {},
             # shared items section
             shares_federation_str = \
                 _html_edit_profile_shared_items(base_dir, translate)
-            (instance_str, role_assign_str, peertube_str, loops_str,
+            (instance_str, role_assign_str, peertube_str,
              libretranslate_str, memorial_str) = \
                 _html_edit_profile_instance(base_dir, translate,
                                             peertube_instances,
