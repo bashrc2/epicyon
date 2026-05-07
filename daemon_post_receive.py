@@ -1909,6 +1909,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                       str(file_size_original) + ' and after ' +
                       str(file_size_watermark))
             if file_size_watermark < file_size_original / 2:
+                # if the file size is too small then this indicates
+                # that watermarking failed
                 print('WARN: watermark failed, restoring backup')
                 erase_file(filename,
                            'EX: failed to erase watermarked file ' +
@@ -1930,6 +1932,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                           str(file_size_original) + ' and after ' +
                           str(file_size_meta_data))
                 if file_size_meta_data < file_size_original / 2:
+                    # if the file size is too small then this indicates
+                    # that metadata removal failed
                     print('WARN: image metadata removal failed, ' +
                           'restoring backup')
                     erase_file(filename, 'EX: ' +
