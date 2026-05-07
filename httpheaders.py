@@ -231,7 +231,7 @@ def set_headers_etag(self, media_filename: str, file_format: str,
                            'unable to read ' + media_filename + '.etag')
     if not etag:
         etag = md5(data).hexdigest()  # nosec
-        save_string(etag, media_filename,
+        save_string(etag, media_filename + '.etag',
                     'EX: _set_headers_etag ' +
                     'unable to write ' + media_filename + '.etag')
     # if etag:
