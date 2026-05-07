@@ -502,6 +502,9 @@ def post_message_to_outbox(session, translate: {},
                     create_media_dirs(base_dir, mpath)
                     media_filename = base_dir + '/' + media_path
                     # move the uploaded image to its new path
+                    if debug:
+                        print('DEBUG: rename image upload ' +
+                              upload_media_filename + ' -> ' + media_filename)
                     move_file(upload_media_filename, media_filename,
                               'EX: post_message_to_outbox unable to rename ' +
                               upload_media_filename + ' -> ' + media_filename)
