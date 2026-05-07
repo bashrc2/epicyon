@@ -76,10 +76,10 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
     if debug:
         if is_a_file(media_filename):
             file_size: int = os.path.getsize(media_filename)
-            print('DEBUG: image saved to ' + media_filename + ' ' +
+            print('DEBUG: uploaded image saved to ' + media_filename + ' ' +
                   str(file_size) + ' bytes')
         else:
-            print('WARN: image not saved ' + media_filename)
+            print('WARN: uploaded image not saved ' + media_filename)
     self.send_response(201)
     self.end_headers()
     self.server.postreq_busy = False

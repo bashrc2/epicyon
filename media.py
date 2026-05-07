@@ -754,9 +754,23 @@ def attach_media(base_dir: str, http_prefix: str,
             if low_bandwidth:
                 convert_image_to_low_bandwidth(image_filename)
             exif_json: list[dict] = []
+            file_size_original: int = os.path.getsize(image_filename)
+            # TODO add watermark?
             process_meta_data(base_dir, nickname, domain,
                               image_filename, media_filename, city,
                               content_license_url, exif_json, debug)
+            file_size_meta_data: int = os.path.getsize(media_filename)
+            if debug:
+                print('DEBUG: attach_media ' +
+                      'image size before metadata removal ' +
+                      str(file_size_original) + ' and after ' +
+                      str(file_size_meta_data))
+            if file_size_meta_data < file_size_original / 2:
+                # if the file size is too small then this indicates
+                # that metadata removal failed
+                print('WARN: attach_media image metadata removal failed ' +
+                      media_filename)
+                copyfile(image_filename, media_filename)
             if exif_json:
                 # FEP-ee3a
                 # https://codeberg.org/fediverse/fep/src/branch/main/
