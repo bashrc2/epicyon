@@ -1944,9 +1944,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 exif_json = []
                 print('ERROR: POST media could not be saved to ' +
                       post_image_filename)
-            erase_file(backup_filename,
-                       'EX: failed to delete backup image ' +
-                       backup_filename)
+            # remove the original image backup
+            if is_a_file(backup_filename):
+                erase_file(backup_filename,
+                           'EX: failed to delete backup image ' +
+                           backup_filename)
         else:
             if is_a_file(filename):
                 new_filename = filename.replace('.temp', '')
