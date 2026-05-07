@@ -1933,7 +1933,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     erase_file(filename, 'EX: ' +
                                'failed to erase metadata processed image ' +
                                post_image_filename)
-                    move_file(backup_filename, post_image_filename)
+                    move_file(backup_filename, post_image_filename,
+                              'EX: failed to rename image ' +
+                              backup_filename + ' -> ' + post_image_filename)
                 print('POST media saved to ' + post_image_filename +
                       ' ' + str(file_size_meta_data) + ' bytes')
             else:
