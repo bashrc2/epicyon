@@ -252,7 +252,8 @@ def daemon_http_get(self) -> None:
     """
     if self.server.starting_daemon:
         return
-    if check_bad_path(self.path):
+    if check_bad_path(self.path,
+                      self.server.allow_local_network_access):
         print('WARN: bad path GET ' + self.path)
         http_400(self)
         return

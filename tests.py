@@ -88,6 +88,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import convert_published_to_local_timezone
 from timeFunctions import date_string_to_seconds
 from timeFunctions import date_seconds_to_string
+from utils import contains_ipv4_address
 from utils import remove_eol
 from utils import text_in_file
 from utils import convert_to_snake_case
@@ -9825,6 +9826,24 @@ def _test_domain_check() -> None:
     assert resembles_domain('[abc:def:abc]')
 
 
+def _test_ip_address_detect() -> None:
+    print('test_ip_address_detect')
+    text = 'This is a test'
+    assert contains_ipv4_address(text) is False
+
+    text = 'some text http://somerandomdomain.com some other text'
+    assert contains_ipv4_address(text) is False
+
+    text = 'blah blah http://1.2.3.4'
+    assert contains_ipv4_address(text) is True
+
+    text = 'blah blah http://1.2.3.4 and some other text'
+    assert contains_ipv4_address(text) is True
+
+    text = 'blah blah http://1.2.3.4/about and some other text'
+    assert contains_ipv4_address(text) is True
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9843,6 +9862,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_ip_address_detect()
     _test_domain_check()
     _test_post_collection()
     _test_micron_blog(base_dir)

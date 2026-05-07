@@ -257,7 +257,8 @@ class PubServer(BaseHTTPRequestHandler):
     def do_PROPFIND(self):
         if self.server.starting_daemon:
             return
-        if check_bad_path(self.path):
+        if check_bad_path(self.path,
+                          self.server.allow_local_network_access):
             print('WARN: bad path PROPFIND ' + self.path)
             http_400(self)
             return
@@ -267,7 +268,8 @@ class PubServer(BaseHTTPRequestHandler):
     def do_PUT(self):
         if self.server.starting_daemon:
             return
-        if check_bad_path(self.path):
+        if check_bad_path(self.path,
+                          self.server.allow_local_network_access):
             print('WARN: bad path PUT ' + self.path)
             http_400(self)
             return
@@ -277,7 +279,8 @@ class PubServer(BaseHTTPRequestHandler):
     def do_REPORT(self):
         if self.server.starting_daemon:
             return
-        if check_bad_path(self.path):
+        if check_bad_path(self.path,
+                          self.server.allow_local_network_access):
             print('WARN: bad path REPORT ' + self.path)
             http_400(self)
             return
@@ -287,7 +290,8 @@ class PubServer(BaseHTTPRequestHandler):
     def do_DELETE(self):
         if self.server.starting_daemon:
             return
-        if check_bad_path(self.path):
+        if check_bad_path(self.path,
+                          self.server.allow_local_network_access):
             print('WARN: bad path DELETE ' + self.path)
             http_400(self)
             return

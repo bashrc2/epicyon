@@ -4046,7 +4046,25 @@ def get_instance_url(calling_domain: str,
     return instance_url
 
 
-def check_bad_path(path: str):
+def contains_ipv4_address(path: str) -> bool:
+    """Returns true if the given string contains an IP address
+    """
+    if '://' not in path:
+        return False
+    domain = path.split('://')[1]
+    if '/' in domain:
+        domain = domain.split('/')[0]
+    if ' ' in domain:
+        domain = domain.split(' ')[0]
+    if '.' not in domain:
+        return False
+    domain_without_dots = domain.replace('.', '')
+    if domain_without_dots.isdigit():
+        return True
+    return False
+
+
+def check_bad_path(path: str, allow_local_network_access: bool):
     """for http GET or POST check that the path looks valid
     """
     path_lower: str = path.lower()
@@ -4078,6 +4096,11 @@ def check_bad_path(path: str):
 
     if string_contains(path_lower, bad_strings):
         return True
+
+    if not allow_local_network_access:
+        if contains_ipv4_address(path_lower):
+            return True
+
     return False
 
 
