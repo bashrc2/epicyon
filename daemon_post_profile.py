@@ -2080,8 +2080,7 @@ def _profile_post_peertube(actor_json: {}, fields: {},
     current_peertube = get_peertube(actor_json)
     if fields.get('peertubeChannel'):
         if fields['peertubeChannel'] != current_peertube:
-            set_peertube(actor_json,
-                         fields['peertubeChannel'])
+            set_peertube(actor_json, fields['peertubeChannel'])
             actor_changed = True
     else:
         if current_peertube:
