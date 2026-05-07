@@ -769,5 +769,6 @@
 	"Organisation": "조직",
 	"Group": "그룹",
 	"minutes": "분",
-	"Availability": "유효성"
+	"Availability": "유효성",
+    "Loops Instances": "루프 인스턴스"
 }

@@ -769,5 +769,6 @@
 	"Organisation": "Organizacja",
 	"Group": "Grupa",
 	"minutes": "protokół",
-	"Availability": "Dostępność"
+	"Availability": "Dostępność",
+    "Loops Instances": "Instancje pętli"
 }

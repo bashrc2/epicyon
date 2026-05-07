@@ -100,6 +100,8 @@ from pixelfed import get_pixelfed
 from pixelfed import set_pixelfed
 from peertube import get_peertube
 from peertube import set_peertube
+from loops import get_loops
+from loops import set_loops
 from xmpp import get_xmpp_address
 from xmpp import set_xmpp_address
 from matrix import get_matrix_address
@@ -290,6 +292,33 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
                        'EX: _profile_edit unable to delete ' +
                        peertube_instances_file)
         peertube_instances.clear()
+
+
+def _profile_post_loops_instances(base_dir: str, fields: {}, self,
+                                  loops_instances: []) -> None:
+    """ HTTP POST save Loops instances list
+    """
+    loops_instances_file = data_dir(base_dir) + '/loops.txt'
+    if fields.get('ptInstances'):
+        loops_instances.clear()
+        save_string(fields['loopsInstances'], loops_instances_file,
+                    'EX: unable to write loops ' +
+                    loops_instances_file)
+        pt_instances_list = fields['ptInstances'].split('\n')
+        if pt_instances_list:
+            for url in pt_instances_list:
+                url = url.strip()
+                if not url:
+                    continue
+                if url in loops_instances:
+                    continue
+                loops_instances.append(url)
+    else:
+        if is_a_file(loops_instances_file):
+            erase_file(loops_instances_file,
+                       'EX: _profile_edit unable to delete ' +
+                       loops_instances_file)
+        loops_instances.clear()
 
 
 def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
@@ -2061,6 +2090,22 @@ def _profile_post_peertube(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_loops(actor_json: {}, fields: {},
+                        actor_changed: bool) -> bool:
+    """ HTTP POST change Loops channel address
+    """
+    current_loops = get_loops(actor_json)
+    if fields.get('loopsChannel'):
+        if fields['loopsChannel'] != current_loops:
+            set_loops(actor_json, fields['loopsChannel'])
+            actor_changed = True
+    else:
+        if current_loops:
+            set_loops(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_pronouns(actor_json: {}, fields: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST change pronouns
@@ -2614,6 +2659,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                  translate: {}, theme_name: str,
                  dyslexic_font: bool,
                  peertube_instances: [],
+                 loops_instances: [],
                  mitm_servers: []) -> None:
     """Updates your user profile after editing via the Edit button
     on the profile screen
@@ -2974,6 +3020,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                            actor_changed)
 
                 actor_changed = \
+                    _profile_post_loops(actor_json, fields,
+                                        actor_changed)
+
+                actor_changed = \
                     _profile_post_pronouns(actor_json, fields,
                                            actor_changed)
 
@@ -3292,6 +3342,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_robots_txt(base_dir, fields, self)
                     _profile_post_peertube_instances(base_dir, fields, self,
                                                      peertube_instances)
+                    _profile_post_loops_instances(base_dir, fields, self,
+                                                  loops_instances)
 
                 _profile_post_git_projects(base_dir, nickname, domain,
                                            fields)

@@ -769,5 +769,6 @@
 	"Organisation": "Organisation",
 	"Group": "Groupe",
 	"minutes": "minutes",
-	"Availability": "Disponibilité"
+	"Availability": "Disponibilité",
+    "Loops Instances": "Instances de boucles"
 }

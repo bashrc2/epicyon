@@ -769,5 +769,6 @@
 	"Organisation": "منظمة",
 	"Group": "مجموعة",
 	"minutes": "دقائق",
-	"Availability": "التوافر"
+	"Availability": "التوافر",
+    "Loops Instances": "حلقات التكرار"
 }

@@ -428,6 +428,7 @@ def daemon_http_post(self) -> None:
                      self.server.theme_name,
                      self.server.dyslexic_font,
                      self.server.peertube_instances,
+                     self.server.loops_instances,
                      self.server.mitm_servers)
         self.server.postreq_busy = False
         return
@@ -581,6 +582,7 @@ def daemon_http_post(self) -> None:
                              self.server.twitter_replacement_domain,
                              self.server.show_published_date_only,
                              self.server.peertube_instances,
+                             self.server.loops_instances,
                              self.server.allow_local_network_access,
                              self.server.theme_name,
                              self.server.system_language,
@@ -846,6 +848,7 @@ def daemon_http_post(self) -> None:
                             self.server.signing_priv_key_pem,
                             self.server.twitter_replacement_domain,
                             self.server.peertube_instances,
+                            self.server.loops_instances,
                             self.server.yt_replace_domain,
                             self.server.cached_webfingers,
                             self.server.recent_posts_cache,
@@ -1025,6 +1028,7 @@ def daemon_http_post(self) -> None:
                              self.server.show_published_date_only,
                              self.server.min_images_for_accounts,
                              self.server.peertube_instances,
+                             self.server.loops_instances,
                              self.server.max_mentions,
                              self.server.max_emoji,
                              self.server.max_recent_posts,

@@ -769,5 +769,6 @@
 	"Organisation": "Organisatie",
 	"Group": "Groep",
 	"minutes": "notulen",
-	"Availability": "Beschikbaarheid"
+	"Availability": "Beschikbaarheid",
+    "Loops Instances": "Lusinstanties"
 }

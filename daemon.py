@@ -40,6 +40,7 @@ from blocking import set_broch_mode
 from webapp_utils import load_buy_sites
 from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_media import load_peertube_instances
+from webapp_media import load_loops_instances
 from shares import run_federated_shares_daemon
 from shares import run_federated_shares_watchdog
 from shares import create_shared_item_federation_token
@@ -475,6 +476,7 @@ class EpicyonServer(ThreadingHTTPServer):
     shared_item_federation_tokens = None
     shared_item_federation_tokens = None
     peertube_instances: list[str] = []
+    loops_instances: list[str] = []
     max_mentions: int = 10
     max_emoji: int = 10
     max_hashtags: int = 10
@@ -1344,6 +1346,10 @@ def run_daemon(accounts_data_dir: str,
     httpd.peertube_instances: list[str] = []
     load_peertube_instances(base_dir, httpd.peertube_instances)
 
+    # load loops instances from file into a list
+    httpd.loops_instances: list[str] = []
+    load_loops_instances(base_dir, httpd.loops_instances)
+
     create_initial_last_seen(base_dir, http_prefix)
 
     httpd.max_mentions = max_mentions
@@ -1375,6 +1381,7 @@ def run_daemon(accounts_data_dir: str,
                                 httpd.max_followers,
                                 httpd.allow_local_network_access,
                                 httpd.peertube_instances,
+                                httpd.loops_instances,
                                 verify_all_signatures,
                                 httpd.theme_name,
                                 httpd.system_language,

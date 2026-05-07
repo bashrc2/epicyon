@@ -58,6 +58,7 @@ from music import get_music_site_url
 from youtube import get_youtube
 from pixelfed import get_pixelfed
 from peertube import get_peertube
+from loops import get_loops
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -148,6 +149,7 @@ def post_to_outbox(self, message_json: {}, version: str,
                                   self.server.low_bandwidth,
                                   self.server.signing_priv_key_pem,
                                   self.server.peertube_instances,
+                                  self.server.loops_instances,
                                   self.server.theme_name,
                                   self.server.max_like_count,
                                   self.server.max_recent_posts,
@@ -699,6 +701,7 @@ def show_person_options(self, calling_domain: str, path: str,
         music_site_url = None
         youtube = None
         peertube = None
+        loops = None
         xmpp_address = None
         matrix_address = None
         blog_address = None
@@ -746,6 +749,7 @@ def show_person_options(self, calling_domain: str, path: str,
             music_site_url = get_music_site_url(actor_json)
             youtube = get_youtube(actor_json)
             peertube = get_peertube(actor_json)
+            loops = get_loops(actor_json)
             xmpp_address = get_xmpp_address(actor_json)
             matrix_address = get_matrix_address(actor_json)
             ssb_address = get_ssb_address(actor_json)
@@ -828,7 +832,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 self.server.blocked_cache,
                                 repo_url,
                                 self.server.sites_unavailable,
-                                youtube, peertube, pixelfed,
+                                youtube, peertube, loops, pixelfed,
                                 discord, music_site_url,
                                 art_site_url,
                                 self.server.mitm_servers,

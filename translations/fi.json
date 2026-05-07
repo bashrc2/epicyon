@@ -769,5 +769,6 @@
 	"Organisation": "Organisaatio",
 	"Group": "Ryhmä",
 	"minutes": "minuuttia",
-	"Availability": "Saatavuus"
+	"Availability": "Saatavuus",
+    "Loops Instances": "Silmukat-instanssit"
 }

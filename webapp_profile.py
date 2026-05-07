@@ -81,6 +81,7 @@ from art import get_art_site_url
 from music import get_music_site_url
 from youtube import get_youtube
 from peertube import get_peertube
+from loops import get_loops
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -252,6 +253,7 @@ def html_profile_after_search(authorized: bool,
                               show_published_date_only: bool,
                               default_timeline: str,
                               peertube_instances: [],
+                              loops_instances: [],
                               allow_local_network_access: bool,
                               theme_name: str,
                               access_keys: {},
@@ -384,6 +386,7 @@ def html_profile_after_search(authorized: bool,
     music_site_url: str = get_music_site_url(profile_json)
     youtube: str = get_youtube(profile_json)
     peertube: str = get_peertube(profile_json)
+    loops: str = get_loops(profile_json)
     pixelfed: str = get_pixelfed(profile_json)
     donate_url: str = get_donation_url(profile_json)
     blog_url: str = get_blog_address(profile_json)
@@ -534,7 +537,7 @@ def html_profile_after_search(authorized: bool,
                                          authorized,
                                          person_url, no_of_books,
                                          birth_date,
-                                         youtube, peertube, pixelfed,
+                                         youtube, peertube, loops, pixelfed,
                                          discord, music_site_url,
                                          art_site_url,
                                          donate_url)
@@ -683,6 +686,7 @@ def html_profile_after_search(authorized: bool,
                                         twitter_replacement_domain,
                                         show_published_date_only,
                                         peertube_instances,
+                                        loops_instances,
                                         allow_local_network_access,
                                         theme_name, system_language,
                                         max_like_count,
@@ -953,6 +957,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      birth_date: str,
                                      youtube: str,
                                      peertube: str,
+                                     loops: str,
                                      pixelfed: str,
                                      discord: str,
                                      music_site_url: str,
@@ -1089,6 +1094,9 @@ def _get_profile_header_after_search(base_dir: str,
     if peertube:
         html_str += '  <p>PeerTube: <a href="' + peertube + '">' + \
             peertube + '</a></p>\n'
+    if loops:
+        html_str += '  <p>Loops: <a href="' + loops + '">' + \
+            loops + '</a></p>\n'
     if pixelfed:
         html_str += '  <p>Pixelfed: <a href="' + pixelfed + '">' + \
             pixelfed + '</a></p>\n'
@@ -1157,6 +1165,7 @@ def html_profile(signing_priv_key_pem: str,
                  show_published_date_only: bool,
                  newswire: {}, theme: str, dormant_months: int,
                  peertube_instances: [],
+                 loops_instances: [],
                  allow_local_network_access: bool,
                  text_mode_banner: str,
                  debug: bool, access_keys: {}, city: str,
@@ -1205,7 +1214,9 @@ def html_profile(signing_priv_key_pem: str,
                                  yt_replace_domain,
                                  twitter_replacement_domain,
                                  show_published_date_only,
-                                 newswire, theme, extra_json,
+                                 newswire, theme,
+                                 peertube_instances,
+                                 loops_instances,
                                  allow_local_network_access, access_keys,
                                  system_language, max_like_count,
                                  shared_items_federated_domains, cw_lists,
@@ -1318,6 +1329,7 @@ def html_profile(signing_priv_key_pem: str,
     music_site_url: str = get_music_site_url(profile_json)
     youtube: str = get_youtube(profile_json)
     peertube: str = get_peertube(profile_json)
+    loops: str = get_loops(profile_json)
     xmpp_address: str = get_xmpp_address(profile_json)
     matrix_address: str = get_matrix_address(profile_json)
     ssb_address: str = get_ssb_address(profile_json)
@@ -1328,8 +1340,8 @@ def html_profile(signing_priv_key_pem: str,
     verified_site_checkmark: str = '✔'
     premium: bool = is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or pronouns or discord or \
-       art_site_url or music_site_url or youtube or peertube or pixelfed or \
-       xmpp_address or matrix_address or \
+       art_site_url or music_site_url or youtube or peertube or \
+       loops or pixelfed or xmpp_address or matrix_address or \
        ssb_address or tox_address or lxmf_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or pgp_fingerprint or \
        email_address or deltachat_invite:
@@ -1429,6 +1441,10 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>PeerTube: <a href="' + \
                 peertube + '" tabindex="1">' + peertube + '</a></p>\n'
+        if loops:
+            donate_section += \
+                '<p>Loops: <a href="' + \
+                loops + '" tabindex="1">' + loops + '</a></p>\n'
         if matrix_address:
             donate_section += \
                 '<p>' + translate['Matrix'] + ': ' + matrix_address + '</p>\n'
@@ -1841,6 +1857,7 @@ def html_profile(signing_priv_key_pem: str,
                                 twitter_replacement_domain,
                                 show_published_date_only,
                                 peertube_instances,
+                                loops_instances,
                                 allow_local_network_access,
                                 theme, system_language,
                                 max_like_count,
@@ -1956,6 +1973,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         twitter_replacement_domain: str,
                         show_published_date_only: bool,
                         peertube_instances: [],
+                        loops_instances: [],
                         allow_local_network_access: bool,
                         theme_name: str, system_language: str,
                         max_like_count: int,
@@ -2023,6 +2041,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             twitter_replacement_domain,
                                             show_published_date_only,
                                             peertube_instances,
+                                            loops_instances,
                                             allow_local_network_access,
                                             theme_name, system_language,
                                             max_like_count,
@@ -2286,6 +2305,7 @@ def _html_edit_profile_twitter(base_dir: str, translate: {},
 
 def _html_edit_profile_instance(base_dir: str, translate: {},
                                 peertube_instances: [],
+                                loops_instances: [],
                                 media_instance_str: str,
                                 blogs_instance_str: str,
                                 news_instance_str: str) -> (str, str,
@@ -2497,8 +2517,14 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     peertube_str += \
         edit_text_area(translate['Peertube Instances'], None,
                        'ptInstances', peertube_instances_str, 200, '', False)
+    peertube_str += '      <br>\n'
+    loops_instances_str: str = ''
+    for url in loops_instances:
+        loops_instances_str += url + '\n'
     peertube_str += \
-        '      <br>\n'
+        edit_text_area(translate['Loops Instances'], None,
+                       'loopsInstances', loops_instances_str, 200, '', False)
+    peertube_str += '      <br>\n'
     yt_replace_domain: str = get_config_param(base_dir, "youtubedomain")
     if not yt_replace_domain:
         yt_replace_domain: str = ''
@@ -3076,6 +3102,7 @@ def _html_edit_profile_contact_info(email_address: str,
                                     translate: {},
                                     youtube: str,
                                     peertube: str,
+                                    loops: str,
                                     pixelfed: str,
                                     discord: str,
                                     music_site_url: str,
@@ -3102,6 +3129,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                          youtube)
     edit_profile_form += edit_text_field('PeerTube', 'peertubeChannel',
                                          peertube)
+    edit_profile_form += edit_text_field('Loops', 'loopsChannel',
+                                         loops)
     edit_profile_form += edit_text_field('Pixelfed', 'pixelfedChannel',
                                          pixelfed)
     edit_profile_form += edit_text_field('Discord', 'discordChannel',
@@ -3533,6 +3562,7 @@ def html_edit_profile(server, translate: {},
                       domain: str, port: int,
                       default_timeline: str, theme: str,
                       peertube_instances: [],
+                      loops_instances: [],
                       text_mode_banner: str,
                       user_agents_blocked: [],
                       crawlers_allowed: [],
@@ -3584,7 +3614,7 @@ def html_edit_profile(server, translate: {},
     bio_str = donate_url = website_url = gemini_link = ''
     email_address = deltachat_invite = featured_hashtags = ''
     pgp_pub_key = enigma_pub_key = ''
-    pgp_fingerprint = pronouns = peertube = youtube = pixelfed = ''
+    pgp_fingerprint = pronouns = peertube = loops = youtube = pixelfed = ''
     ssb_address = blog_address = matrix_address = ''
     tox_address = lxmf_address = ''
     cwtch_address = briar_address = xmpp_address = ''
@@ -3610,6 +3640,7 @@ def html_edit_profile(server, translate: {},
         music_site_url = get_music_site_url(actor_json)
         youtube = get_youtube(actor_json)
         peertube = get_peertube(actor_json)
+        loops = get_loops(actor_json)
         xmpp_address = get_xmpp_address(actor_json)
         matrix_address = get_matrix_address(actor_json)
         ssb_address = get_ssb_address(actor_json)
@@ -3690,6 +3721,7 @@ def html_edit_profile(server, translate: {},
     instance_str: str = ''
     role_assign_str: str = ''
     peertube_str: str = ''
+    loops_str: str = ''
     libretranslate_str: str = ''
     memorial_str: str = ''
     system_monitor_str: str = ''
@@ -3711,10 +3743,11 @@ def html_edit_profile(server, translate: {},
             # shared items section
             shares_federation_str = \
                 _html_edit_profile_shared_items(base_dir, translate)
-            (instance_str, role_assign_str, peertube_str,
+            (instance_str, role_assign_str, peertube_str, loops_str,
              libretranslate_str, memorial_str) = \
                 _html_edit_profile_instance(base_dir, translate,
                                             peertube_instances,
+                                            loops_instances,
                                             media_instance_str,
                                             blogs_instance_str,
                                             news_instance_str)
@@ -3846,7 +3879,8 @@ def html_edit_profile(server, translate: {},
                                         lxmf_address,
                                         briar_address,
                                         cwtch_address, translate,
-                                        youtube, peertube, pixelfed,
+                                        youtube, peertube, loops,
+                                        pixelfed,
                                         discord, music_site_url,
                                         art_site_url)
 
@@ -3902,7 +3936,8 @@ def html_edit_profile(server, translate: {},
     edit_profile_form += \
         _html_edit_profile_skills(base_dir, nickname, domain, translate)
 
-    edit_profile_form += role_assign_str + peertube_str + graphics_str
+    edit_profile_form += \
+        role_assign_str + peertube_str + loops_str + graphics_str
     edit_profile_form += shares_federation_str + twitter_str + instance_str
 
     # danger zone section

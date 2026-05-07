@@ -769,5 +769,6 @@
 	"Organisation": "Organizasyon",
 	"Group": "Grup",
 	"minutes": "dakika",
-	"Availability": "Müsaitlik"
+	"Availability": "Müsaitlik",
+    "Loops Instances": "Döngü Örnekleri"
 }

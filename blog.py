@@ -318,6 +318,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                             post_json_object: {},
                             handle: str, restrict_to_domain: bool,
                             peertube_instances: [],
+                            loops_instances: [],
                             system_language: str,
                             person_cache: {},
                             blog_separator: str) -> str:
@@ -410,7 +411,9 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:
         content_str = add_embedded_elements(translate, json_content,
-                                            peertube_instances, domain_full)
+                                            peertube_instances,
+                                            loops_instances,
+                                            domain_full)
         if post_json_object['object'].get('tag'):
             post_json_object_tags = post_json_object['object']['tag']
             content_str = replace_emoji_from_tags(session, base_dir,
@@ -596,6 +599,7 @@ def html_blog_post(session, authorized: bool,
                    nickname: str, domain: str, domain_full: str,
                    post_json_object: {},
                    peertube_instances: [],
+                   loops_instances: [],
                    system_language: str, person_cache: {},
                    debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
@@ -630,7 +634,9 @@ def html_blog_post(session, authorized: bool,
                                         nickname, domain,
                                         domain_full, post_json_object,
                                         None, False,
-                                        peertube_instances, system_language,
+                                        peertube_instances,
+                                        loops_instances,
+                                        system_language,
                                         person_cache, '<hr>')
 
     # show rss links
@@ -659,7 +665,9 @@ def html_blog_page(authorized: bool, session,
                    base_dir: str, http_prefix: str, translate: {},
                    nickname: str, domain: str, port: int,
                    no_of_items: int, page_number: int,
-                   peertube_instances: [], system_language: str,
+                   peertube_instances: [],
+                   loops_instances: [],
+                   system_language: str,
                    person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
@@ -724,8 +732,8 @@ def html_blog_page(authorized: bool, session,
                                     base_dir, http_prefix, translate,
                                     nickname, domain, domain_full, item,
                                     None, True, peertube_instances,
-                                    system_language, person_cache,
-                                    '<hr>')
+                                    loops_instances, system_language,
+                                    person_cache, '<hr>')
 
     if len(timeline_json['orderedItems']) >= no_of_items:
         blog_str += navigate_str
@@ -868,7 +876,9 @@ def html_blog_view(authorized: bool,
                    session, base_dir: str, http_prefix: str,
                    translate: {}, domain: str, port: int,
                    no_of_items: int,
-                   peertube_instances: [], system_language: str,
+                   peertube_instances: [],
+                   loops_instances: [],
+                   system_language: str,
                    person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
@@ -891,6 +901,7 @@ def html_blog_view(authorized: bool,
                                   base_dir, http_prefix, translate,
                                   nickname, domain, port,
                                   no_of_items, 1, peertube_instances,
+                                  loops_instances,
                                   system_language, person_cache, debug)
 
     domain_full = get_full_domain(domain, port)

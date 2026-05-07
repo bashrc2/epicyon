@@ -32,6 +32,7 @@ from art import get_art_site_url
 from music import get_music_site_url
 from youtube import get_youtube
 from peertube import get_peertube
+from loops import get_loops
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from briar import get_briar_address
@@ -944,6 +945,9 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     peertube = get_peertube(actor)
     if peertube:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=PeerTube:' + peertube + '\n'
+    loops = get_loops(actor)
+    if loops:
+        vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Loops:' + loops + '\n'
     website = get_website(actor, translate)
     if website:
         vcard_str += 'URL:' + website + '\n'
@@ -1061,6 +1065,11 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>peertube</text></type></parameters>' + \
             '<uri>' + peertube + '</uri></url>\n'
+    loops = get_loops(actor)
+    if loops:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>loops</text></type></parameters>' + \
+            '<uri>' + loops + '</uri></url>\n'
     deltachat_invite = get_deltachat_invite(actor, translate)
     if deltachat_invite:
         vcard_str += '    <impp>' + \

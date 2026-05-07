@@ -769,5 +769,6 @@
 	"Organisation": "Организация",
 	"Group": "Группа",
 	"minutes": "минут",
-	"Availability": "Доступность"
+	"Availability": "Доступность",
+    "Loops Instances": "Экземпляры циклов"
 }

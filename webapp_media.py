@@ -35,8 +35,30 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
         peertube_instances.append(url)
 
 
+def load_loops_instances(base_dir: str, loops_instances: []) -> None:
+    """Loads loops instances from file into the given list
+    """
+    loops_list = None
+    loops_instances_filename = data_dir(base_dir) + '/loops.txt'
+    if is_a_file(loops_instances_filename):
+        loops_str = \
+            load_string(loops_instances_filename,
+                        'EX: load_loops_instances unable to read ' +
+                        loops_instances_filename + ' [ex]')
+        if loops_str:
+            loops_str = loops_str.replace('\r', '')
+            loops_list = loops_str.split('\n')
+    if not loops_list:
+        return
+    for url in loops_list:
+        if url in loops_instances:
+            continue
+        loops_instances.append(url)
+
+
 def _add_embedded_video_from_sites(content: str,
                                    peertube_instances: [],
+                                   loops_instances: [],
                                    width: int, height: int,
                                    domain: str) -> str:
     """Adds embedded videos
@@ -285,6 +307,73 @@ def _add_embedded_video_from_sites(content: str,
                 "sandbox=\"allow-scripts allow-same-origin\">" + \
                 "</iframe>\n</span>\n</center>\n"
             return content
+
+        if loops_instances:
+            # only create an embedded video for a limited set of
+            # Loops sites.
+            loops_sites = loops_instances
+        else:
+            # A default minimal set of loops instances
+            loops_sites = (
+            )
+        for site in loops_sites:
+            site = site.strip()
+            if not site:
+                continue
+            if len(site) < 5:
+                continue
+            if '.' not in site:
+                continue
+            site_str = site
+            if site.startswith('http://'):
+                site = site.replace('http://', '')
+            elif site.startswith('https://'):
+                site = site.replace('https://', '')
+            if site.endswith('.onion') or site.endswith('.i2p'):
+                site_str = 'http://' + site
+            else:
+                site_str = 'https://' + site
+            site_str = '"' + site_str
+            if site_str not in content:
+                continue
+            url = content.split(site_str)[1]
+            if '"' not in url:
+                continue
+            url = url.split('"')[0]
+            if not url:
+                continue
+            # TODO check this on Loops instances
+            possible_endings = (
+                '/trending', '/home', '/overview',
+                '/recently-added', '/local', '/about')
+            if string_ends_with(url, possible_endings):
+                # ignore various loops endpoints
+                continue
+            if '/c/' in url or '/m/' in url:
+                # don't try to embed loops channel page
+                continue
+            if '?sort=' in url:
+                # don't try to embed a sorted list
+                continue
+            if '/w/' in url:
+                if '/videos/' not in url:
+                    url = url.replace('/w/', '/videos/embed/')
+                else:
+                    url = url.replace('/w/', '/embed/')
+            url = url.replace('/watch/', '/embed/')
+
+            content += \
+                "<center>\n<span itemprop=\"video\">\n" + \
+                "<iframe loading=\"lazy\" decoding=\"async\" " + \
+                "sandbox=\"allow-same-origin " + \
+                "allow-scripts\" src=\"https://" + \
+                site + url + "\" width=\"" + str(width) + \
+                "\" height=\"" + str(height) + \
+                "\" frameborder=\"0\" allow=\"" + \
+                "fullscreen\" allowfullscreen tabindex=\"10\" " + \
+                "sandbox=\"allow-scripts allow-same-origin\">" + \
+                "</iframe>\n</span>\n</center>\n"
+            return content
     return content
 
 
@@ -388,11 +477,14 @@ def _add_embedded_video(translate: {}, content: str) -> str:
 
 
 def add_embedded_elements(translate: {}, content: str,
-                          peertube_instances: [], domain: str) -> str:
+                          peertube_instances: [],
+                          loops_instances: [],
+                          domain: str) -> str:
     """Adds embedded elements for various media types
     """
     content = _add_embedded_video_from_sites(content,
                                              peertube_instances,
+                                             loops_instances,
                                              400, 300, domain)
     content = _add_embedded_audio(translate, content)
     return _add_embedded_video(translate, content)
