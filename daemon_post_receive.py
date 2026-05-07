@@ -1913,7 +1913,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 erase_file(filename,
                            'EX: failed to erase watermarked file ' +
                            filename)
-                move_file(backup_filename, filename)
+                move_file(backup_filename, filename,
+                          'EX: failed to restore backup image ' +
+                          backup_filename + ' -> ' + filename)
             post_image_filename: str = filename.replace('.temp', '')
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
