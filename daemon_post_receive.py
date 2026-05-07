@@ -1929,7 +1929,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     print('DEBUG: image size before metadata removal ' +
                           str(file_size_original) + ' and after ' +
                           str(file_size_meta_data))
-                if file_size_meta_data < file_size_watermark / 2:
+                if file_size_meta_data < file_size_original / 2:
                     print('WARN: image metadata removal failed, ' +
                           'restoring backup')
                     erase_file(filename, 'EX: ' +
