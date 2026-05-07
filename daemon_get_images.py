@@ -442,6 +442,8 @@ def show_media(self, path: str, base_dir: str,
                 http_404(self, 32)
                 return
 
+            if debug:
+                print('DEBUG: showing media ' + media_filename)
             media_binary = load_binary(media_filename,
                                        'EX: unable to read media binary ' +
                                        media_filename)
