@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
+import os
 import errno
 from socket import error as SocketError
 from httpcodes import http_404
@@ -72,7 +73,12 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
                 'EX: receive_image_attachment unable to write ' +
                 media_filename)
     if debug:
-        print('DEBUG: image saved to ' + media_filename)
+        if os.path.isfile(media_filename):
+            file_size = os.path.getsize(media_filename)
+            print('DEBUG: image saved to ' + media_filename + ' ' +
+                  str(file_size) + ' bytes')
+        else:
+            print('WARN: image not saved ' + media_filename)
     self.send_response(201)
     self.end_headers()
     self.server.postreq_busy = False
