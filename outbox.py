@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
+import os
 from shutil import copyfile
 from auth import create_password
 from posts import is_image_media
@@ -505,9 +506,16 @@ def post_message_to_outbox(session, translate: {},
                     if debug:
                         print('DEBUG: rename image upload ' +
                               upload_media_filename + ' -> ' + media_filename)
+                        file_size: int = os.path.getsize(upload_media_filename)
+                        print('DEBUG: rename image upload file size 1 ' +
+                              str(file_size) + ' bytes')
                     move_file(upload_media_filename, media_filename,
                               'EX: post_message_to_outbox unable to rename ' +
                               upload_media_filename + ' -> ' + media_filename)
+                    if debug:
+                        file_size: int = os.path.getsize(media_filename)
+                        print('DEBUG: rename image upload file size 2 ' +
+                              str(file_size) + ' bytes')
                     # convert dictionary to list if needed
                     if isinstance(message_json['object']['attachment'], dict):
                         message_json['object']['attachment'] = \
