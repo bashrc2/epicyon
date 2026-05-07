@@ -1401,6 +1401,9 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         if locn_url:
             new_post['object']['location']['url'] = locn_url
     if attach_image_filename:
+        if debug:
+            print('DEBUG: creating s2s post with attached media ' +
+                  attach_image_filename)
         new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
                          new_post['object'], attach_image_filename,
@@ -1408,6 +1411,9 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                          city, low_bandwidth,
                          media_license_url, media_creator, system_language,
                          debug)
+    else:
+        if debug:
+            print('DEBUG: creating s2s post with no attached media')
     _attach_post_license(new_post['object'], content_license_url)
     _attach_buy_link(new_post['object'], buy_url, translate)
     _attach_chat_link(new_post['object'], chat_url)
@@ -1569,6 +1575,9 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
             new_post['object']['location']['url'] = locn_url
 
     if attach_image_filename:
+        if debug:
+            print('DEBUG: creating c2s post with attached media ' +
+                  attach_image_filename)
         new_post = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
                          new_post, attach_image_filename,
@@ -1576,6 +1585,9 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                          city, low_bandwidth,
                          media_license_url, media_creator,
                          system_language, debug)
+    else:
+        if debug:
+            print('DEBUG: creating c2s post with no attached media')
     _attach_post_license(new_post, content_license_url)
     _attach_buy_link(new_post, buy_url, translate)
     _attach_chat_link(new_post, chat_url)
