@@ -225,15 +225,16 @@ def set_headers_etag(self, media_filename: str, file_format: str,
     _set_headers_base(self, file_format, datalen, cookie, calling_domain,
                       permissive)
     etag = None
-    if is_a_file(media_filename + '.etag'):
-        etag = load_string(media_filename + '.etag',
+    etag_filename = media_filename + '.etag'
+    if is_a_file(etag_filename):
+        etag = load_string(etag_filename,
                            'EX: _set_headers_etag ' +
-                           'unable to read ' + media_filename + '.etag')
+                           'unable to read ' + etag_filename)
     if not etag:
         etag = md5(data).hexdigest()  # nosec
-        save_string(etag, media_filename + '.etag',
+        save_string(etag, etag_filename,
                     'EX: _set_headers_etag ' +
-                    'unable to write ' + media_filename + '.etag')
+                    'unable to write ' + etag_filename)
     # if etag:
     #     self.send_header('ETag', '"' + etag + '"')
     if last_modified:
