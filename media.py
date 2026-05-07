@@ -780,6 +780,10 @@ def attach_media(base_dir: str, http_prefix: str,
             copyfile(image_filename, media_filename)
         _log_uploaded_media(base_dir, nickname, domain, media_filename)
         _update_etag(media_filename)
+        if debug:
+            file_size: int = os.path.getsize(media_filename)
+            print('DEBUG: final uploaded image size ' +
+                  str(file_size) + ' bytes')
 
     return post_json
 
