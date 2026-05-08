@@ -6433,6 +6433,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if nickname in block_military:
             if block_military[nickname] is True and \
                contains_military_domain(announced_json_str):
+                print('BLOCK: ' + nickname +
+                      ' blocked military domain download announce')
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
@@ -6440,6 +6442,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if nickname in block_government:
             if block_government[nickname] is True and \
                contains_government_domain(announced_json_str):
+                print('BLOCK: ' + nickname +
+                      ' blocked government domain download announce')
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
@@ -6447,6 +6451,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if nickname in block_bluesky:
             if block_bluesky[nickname] is True and \
                contains_bluesky_domain(announced_json_str):
+                print('BLOCK: ' + nickname +
+                      ' blocked bluesky domain download announce')
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
@@ -6454,6 +6460,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if nickname in block_nostr:
             if block_nostr[nickname] is True and \
                contains_nostr_domain(announced_json_str):
+                print('BLOCK: ' + nickname +
+                      ' blocked nostr domain download announce')
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)

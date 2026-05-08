@@ -564,7 +564,11 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                                  self.server.block_federated,
                                  self.server.system_language,
                                  mitm,
-                                 self.server.maxMessageLength)
+                                 self.server.maxMessageLength,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr)
     if queue_filename:
         # add json to the queue
         if queue_filename not in self.server.inbox_queue:

@@ -87,6 +87,10 @@ from blocking import is_blocked
 from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from blocking import broch_modeLapses
+from blocking import contains_military_domain
+from blocking import contains_government_domain
+from blocking import contains_bluesky_domain
+from blocking import contains_nostr_domain
 from filters import is_filtered
 from httpsig import message_content_digest
 from posts import outbox_message_create_wrap
@@ -451,7 +455,11 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              block_federated: [],
                              system_language: str,
                              mitm: bool,
-                             max_message_bytes: int) -> str:
+                             max_message_bytes: int,
+                             block_military: {},
+                             block_government: {},
+                             block_bluesky: {},
+                             block_nostr: {}) -> str:
     """Saves the given json to the inbox queue for the person
     key_id specifies the actor sending the post
     """
@@ -459,6 +467,34 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         print('REJECT: inbox message too long ' +
               str(len(message_bytes)) + ' bytes')
         return None
+
+    # Check that the post does not contain a blocked domain
+    test_text = str(original_post_json_object)
+    if nickname in block_military:
+        if block_military[nickname] is True and \
+           contains_military_domain(test_text):
+            print('BLOCK: ' + nickname +
+                  ' blocked military domain inbox')
+            return None
+    if nickname in block_government:
+        if block_government[nickname] is True and \
+           contains_government_domain(test_text):
+            print('BLOCK: ' + nickname +
+                  ' blocked government domain inbox')
+            return None
+    if nickname in block_bluesky:
+        if block_bluesky[nickname] is True and \
+           contains_bluesky_domain(test_text):
+            print('BLOCK: ' + nickname +
+                  ' blocked bluesky domain inbox')
+            return None
+    if nickname in block_nostr:
+        if block_nostr[nickname] is True and \
+           contains_nostr_domain(test_text):
+            print('BLOCK: ' + nickname +
+                  ' blocked nostr domain inbox')
+            return None
+
     original_domain = domain
     domain = remove_domain_port(domain)
 
