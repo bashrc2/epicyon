@@ -6262,6 +6262,97 @@ def _reject_announce(announce_filename: str,
                    announce_filename + '.reject')
 
 
+def _downloaded_announce_valid(announced_json: {},
+                               post_json_object: {},
+                               nickname: str,
+                               domain: str,
+                               announce_filename: str,
+                               base_dir: str,
+                               post_id: str,
+                               recent_posts_cache: {},
+                               debug: bool,
+                               block_military: {},
+                               block_government: {},
+                               block_bluesky: {},
+                               block_nostr: {}) -> bool:
+    """Returns true if the given announce is valid
+    """
+    if not isinstance(announced_json, dict):
+        print('WARN: announced post json is not a dict - ' +
+              post_json_object['object'] + ' ' +
+              str(announced_json))
+        _reject_announce(announce_filename,
+                         base_dir, nickname, domain, post_id,
+                         recent_posts_cache, debug)
+        return False
+    if announced_json.get('error'):
+        print('WARN: ' +
+              'Attempt to download announce returned an error ' +
+              post_json_object['object'] + ' ' +
+              str(announced_json))
+        return False
+
+    announced_id: str = ''
+    if announced_json.get('id'):
+        announced_id = remove_id_ending(announced_json['id'])
+
+    if not announced_id:
+        print('WARN: announced post does not have an id ' +
+              str(announced_json))
+        _reject_announce(announce_filename,
+                         base_dir, nickname, domain, post_id,
+                         recent_posts_cache, debug)
+        return False
+
+    announced_json_str: str = str(announced_json)
+    if not announced_json.get('type'):
+        print('WARN: announced post does not have a type ' +
+              announced_json_str)
+        _reject_announce(announce_filename,
+                         base_dir, nickname, domain, post_id,
+                         recent_posts_cache, debug)
+        return False
+
+    # check for blocked content
+    if nickname in block_military:
+        if block_military[nickname] is True and \
+           contains_military_domain(announced_json_str):
+            print('BLOCK: ' + nickname +
+                  ' blocked military domain download announce')
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache, debug)
+            return False
+    if nickname in block_government:
+        if block_government[nickname] is True and \
+           contains_government_domain(announced_json_str):
+            print('BLOCK: ' + nickname +
+                  ' blocked government domain download announce')
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache, debug)
+            return False
+    if nickname in block_bluesky:
+        if block_bluesky[nickname] is True and \
+           contains_bluesky_domain(announced_json_str):
+            print('BLOCK: ' + nickname +
+                  ' blocked bluesky domain download announce')
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache, debug)
+            return False
+    if nickname in block_nostr:
+        if block_nostr[nickname] is True and \
+           contains_nostr_domain(announced_json_str):
+            print('BLOCK: ' + nickname +
+                  ' blocked nostr domain download announce')
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache, debug)
+            return False
+    return True
+
+
 def download_announce(session, base_dir: str, http_prefix: str,
                       nickname: str, domain: str,
                       post_json_object: {}, project_version: str,
@@ -6311,9 +6402,24 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if debug:
             print('Reading cached Announce content for ' +
                   post_json_object['object'])
-        post_json_object = load_json(announce_filename)
-        if post_json_object:
-            return post_json_object
+        announced_json = load_json(announce_filename)
+        if not announced_json:
+            return None
+
+        if not _downloaded_announce_valid(announced_json,
+                                          post_json_object,
+                                          nickname, domain,
+                                          announce_filename,
+                                          base_dir, post_id,
+                                          recent_posts_cache,
+                                          debug,
+                                          block_military,
+                                          block_government,
+                                          block_bluesky,
+                                          block_nostr):
+            return None
+
+        return announced_json
     else:
         profile_str: str = 'https://www.w3.org/ns/activitystreams'
         accept_str: str = \
@@ -6389,83 +6495,18 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if not get_json_valid(announced_json):
             return None
 
-        if not isinstance(announced_json, dict):
-            print('WARN: announced post json is not a dict - ' +
-                  post_json_object['object'] + ' ' +
-                  str(announced_json))
-            _reject_announce(announce_filename,
-                             base_dir, nickname, domain, post_id,
-                             recent_posts_cache, debug)
+        if not _downloaded_announce_valid(announced_json,
+                                          post_json_object,
+                                          nickname, domain,
+                                          announce_filename,
+                                          base_dir, post_id,
+                                          recent_posts_cache,
+                                          debug,
+                                          block_military,
+                                          block_government,
+                                          block_bluesky,
+                                          block_nostr):
             return None
-        if announced_json.get('error'):
-            print('WARN: ' +
-                  'Attempt to download announce returned an error ' +
-                  post_json_object['object'] + ' ' +
-                  str(announced_json))
-            return None
-
-        announced_id: str = ''
-        if announced_json.get('id'):
-            announced_id = remove_id_ending(announced_json['id'])
-
-        if not announced_id:
-            print('WARN: announced post does not have an id ' +
-                  str(announced_json))
-            _reject_announce(announce_filename,
-                             base_dir, nickname, domain, post_id,
-                             recent_posts_cache, debug)
-            return None
-
-        announced_actor: str = announced_id
-        if announced_json.get('attributedTo'):
-            announced_actor = get_attributed_to(announced_json['attributedTo'])
-
-        announced_json_str: str = str(announced_json)
-        if not announced_json.get('type'):
-            print('WARN: announced post does not have a type ' +
-                  announced_json_str)
-            _reject_announce(announce_filename,
-                             base_dir, nickname, domain, post_id,
-                             recent_posts_cache, debug)
-            return None
-
-        # check for blocked content
-        if nickname in block_military:
-            if block_military[nickname] is True and \
-               contains_military_domain(announced_json_str):
-                print('BLOCK: ' + nickname +
-                      ' blocked military domain download announce')
-                _reject_announce(announce_filename,
-                                 base_dir, nickname, domain, post_id,
-                                 recent_posts_cache, debug)
-                return None
-        if nickname in block_government:
-            if block_government[nickname] is True and \
-               contains_government_domain(announced_json_str):
-                print('BLOCK: ' + nickname +
-                      ' blocked government domain download announce')
-                _reject_announce(announce_filename,
-                                 base_dir, nickname, domain, post_id,
-                                 recent_posts_cache, debug)
-                return None
-        if nickname in block_bluesky:
-            if block_bluesky[nickname] is True and \
-               contains_bluesky_domain(announced_json_str):
-                print('BLOCK: ' + nickname +
-                      ' blocked bluesky domain download announce')
-                _reject_announce(announce_filename,
-                                 base_dir, nickname, domain, post_id,
-                                 recent_posts_cache, debug)
-                return None
-        if nickname in block_nostr:
-            if block_nostr[nickname] is True and \
-               contains_nostr_domain(announced_json_str):
-                print('BLOCK: ' + nickname +
-                      ' blocked nostr domain download announce')
-                _reject_announce(announce_filename,
-                                 base_dir, nickname, domain, post_id,
-                                 recent_posts_cache, debug)
-                return None
 
         if announced_json['type'] == 'Video':
             converted_json: dict = \
@@ -6485,6 +6526,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                         languages_understood)
             if converted_json:
                 announced_json = converted_json
+
+        announced_id: str = ''
+        if announced_json.get('id'):
+            announced_id = remove_id_ending(announced_json['id'])
+
         if not contains_statuses(announced_id):
             print('WARN: announced post id does not contain /statuses/ ' +
                   'or /objects/ or /p/ ' + str(announced_json))
@@ -6492,6 +6538,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache, debug)
             return None
+
+        announced_actor: str = announced_id
+        if announced_json.get('attributedTo'):
+            announced_actor = get_attributed_to(announced_json['attributedTo'])
+
         if not has_users_path(announced_actor):
             print('WARN: announced post id does not contain /users/ ' +
                   str(announced_json))
