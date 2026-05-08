@@ -493,6 +493,11 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">PeerTube' + \
             ': <a href="' + remove_html(peertube) + '">' + \
             peertube + '</a></p>\n'
+    if loops:
+        options_str += \
+            '  <p class="imText">Loops' + \
+            ': <a href="' + remove_html(loops) + '">' + \
+            loops + '</a></p>\n'
     if tox_address:
         options_str += \
             '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
