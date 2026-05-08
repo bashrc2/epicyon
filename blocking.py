@@ -1976,7 +1976,7 @@ def get_gov_domains_list() -> []:
 def get_bsky_domains_list() -> []:
     """returns a list of bluesky bridges
     """
-    return ['brid.gy', 'bsky.feed']
+    return ('brid.gy', 'bsky.feed', 'bsky.app', 'bsky.social')
 
 
 def get_nostr_domains_list() -> []:
