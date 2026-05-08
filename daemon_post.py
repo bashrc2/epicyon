@@ -1285,28 +1285,28 @@ def daemon_http_post(self) -> None:
             if self.server.block_military[nickname] is True and \
                contains_military_domain(decoded_message_bytes):
                 http_400(self)
-                print('BLOCK: blocked military domain')
+                print('BLOCK: ' + nickname + ' blocked military domain')
                 self.server.postreq_busy = False
                 return
         if nickname in self.server.block_government:
             if self.server.block_government[nickname] is True and \
                contains_government_domain(decoded_message_bytes):
                 http_400(self)
-                print('BLOCK: blocked government domain')
+                print('BLOCK: ' + nickname + ' blocked government domain')
                 self.server.postreq_busy = False
                 return
         if nickname in self.server.block_bluesky:
             if self.server.block_bluesky[nickname] is True and \
                contains_bluesky_domain(decoded_message_bytes):
                 http_400(self)
-                print('BLOCK: blocked bluesky domain')
+                print('BLOCK: ' + nickname + ' blocked bluesky domain')
                 self.server.postreq_busy = False
                 return
         if nickname in self.server.block_nostr:
             if self.server.block_nostr[nickname] is True and \
                contains_nostr_domain(decoded_message_bytes):
                 http_400(self)
-                print('BLOCK: blocked nostr domain')
+                print('BLOCK: ' + nickname + ' blocked nostr domain')
                 self.server.postreq_busy = False
                 return
 
