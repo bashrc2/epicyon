@@ -40,6 +40,7 @@ from media import process_meta_data
 from flags import is_image_file
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import get_preferred_username
 from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import get_person_icon
@@ -201,7 +202,7 @@ def _account_exists(base_dir: str, nickname: str, domain: str) -> bool:
         is_a_dir(base_dir + '/deactivated/' + nickname + '@' + domain)
 
 
-def randomize_actor_images(person_json: {}) -> None:
+def randomize_actor_images(person_json: {}, system_language: str) -> None:
     """Randomizes the filenames for avatar image and background
     This causes other instances to update their cached avatar image
     """
@@ -213,7 +214,7 @@ def randomize_actor_images(person_json: {}) -> None:
     # secure names
     rand_str = str(randint(10000000000000, 99999999999999))  # nosec
     base_url = person_id.split('/users/')[0]
-    nickname = person_json['preferredUsername']
+    nickname = get_preferred_username(person_json, system_language)
     person_json['icon']['url'] = \
         base_url + '/system/accounts/avatars/' + nickname + \
         '/avatar' + rand_str + '.' + existing_extension
@@ -246,7 +247,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
     if actor_json.get('attributionDomains'):
         if isinstance(actor_json['attributionDomains'], list):
             attribution_domains = actor_json['attributionDomains']
-    return {
+    actor_update: dict = {
         '@context': [
             "https://www.w3.org/ns/activitystreams",
             "https://w3id.org/security/v1",
@@ -362,6 +363,10 @@ def get_actor_update_json(actor_json: {}) -> {}:
             "publicKey": actor_json['publicKey']
         }
     }
+    if 'preferredUsernameMap' in actor_json:
+        actor_update['preferredUsernameMap'] = \
+            actor_json['preferredUsernameMap']
+    return actor_update
 
 
 def get_actor_move_json(actor_json: {}) -> {}:
@@ -2175,6 +2180,14 @@ def valid_sending_actor(session, base_dir: str,
                   sending_actor + ' ' + bio_str)
             return False
         bio_str += ' ' + remove_html(actor_json['preferredUsername'])
+        # include the username map
+        if 'preferredUsernameMap' in actor_json:
+            username_map = actor_json['preferredUsernameMap']
+            if isinstance(username_map, dict):
+                for _, preferred_username in username_map.items():
+                    if not isinstance(preferred_username, str):
+                        continue
+                    bio_str += ' ' + remove_html(preferred_username)
 
         if actor_json.get('attachment'):
             if isinstance(actor_json['attachment'], list):

@@ -15,6 +15,7 @@ from session import get_json_valid
 from flags import is_float
 from flags import is_moderator
 from formats import media_file_mime_type
+from utils import get_preferred_username
 from utils import replace_embedded_map_with_link
 from utils import chatbot_nicknames
 from utils import replace_strings
@@ -901,7 +902,8 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         description = remove_html(actor_json['summary'])
     name_str: str = remove_html(actor_json['name'])
     domain_full: str = actor_json['id'].split('://')[1].split('/')[0]
-    handle: str = actor_json['preferredUsername'] + '@' + domain_full
+    handle: str = \
+        get_preferred_username(actor_json, lang) + '@' + domain_full
 
     url_str: str = get_url_from_post(actor_json['icon']['url'])
     icon_url: str = remove_html(url_str)

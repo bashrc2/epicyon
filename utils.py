@@ -4343,3 +4343,16 @@ def is_private_browser(ua_str: str) -> bool:
                        ('librewolf', 'privacy', 'private')):
         return True
     return False
+
+
+def get_preferred_username(actor: {}, system_language: str) -> str:
+    """Returns the preferred username from the given actor
+    """
+    if 'preferredUsernameMap' in actor:
+        if isinstance(actor['preferredUsernameMap'], dict):
+            if actor['preferredUsernameMap'].get(system_language):
+                username: str = \
+                    actor['preferredUsernameMap'][system_language]
+                if isinstance(username, str):
+                    return username
+    return actor['preferredUsername']

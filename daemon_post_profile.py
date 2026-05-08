@@ -180,7 +180,8 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
                              curr_session, proxy_type: str,
                              send_move_activity: bool,
                              self, cached_webfingers: {},
-                             person_cache: {}, project_version: str) -> None:
+                             person_cache: {}, project_version: str,
+                             system_language: str) -> None:
     """ HTTP POST save actor json file within accounts
     """
     add_name_emojis_to_tags(base_dir, http_prefix,
@@ -198,7 +199,7 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
         actor_json['featured'] = actor_json['id'] + '/collections/featured'
     if not actor_json.get('featuredTags'):
         actor_json['featuredTags'] = actor_json['id'] + '/collections/tags'
-    randomize_actor_images(actor_json)
+    randomize_actor_images(actor_json, system_language)
     add_actor_update_timestamp(actor_json)
     # save the actor
     save_json(actor_json, actor_filename)
@@ -3361,7 +3362,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                              curr_session, proxy_type,
                                              send_move_activity,
                                              self, cached_webfingers,
-                                             person_cache, project_version)
+                                             person_cache, project_version,
+                                             system_language)
 
                 if _profile_post_deactivate_account(base_dir, nickname, domain,
                                                     calling_domain,

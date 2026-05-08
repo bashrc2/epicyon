@@ -14,6 +14,7 @@ from person import get_actor_json
 from flags import is_pgp_encrypted
 from flags import contains_pgp_public_key
 from occupation import get_occupation_skills
+from utils import get_preferred_username
 from utils import get_url_from_post
 from utils import safe_system_string
 from utils import get_full_domain
@@ -889,15 +890,17 @@ def pgp_public_key_upload(base_dir: str, session,
     return actor_update
 
 
-def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
+def actor_to_vcard(actor: {}, domain: str, translate: {},
+                   system_language: str) -> str:
     """Returns a vcard for a given actor
     """
     actor_url_str = get_url_from_post(actor['url'])
+    preferred_username = get_preferred_username(actor, system_language)
     vcard_str = 'BEGIN:VCARD\n'
     vcard_str += 'VERSION:4.0\n'
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
-    vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
+    vcard_str += 'NICKNAME:' + preferred_username + '\n'
     vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
     url_str = get_url_from_post(actor['icon']['url'])
     if url_str:
@@ -909,8 +912,7 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     email_address = get_email_address(actor)
     if email_address:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
-    vcard_str += 'IMPP:fediverse:' + \
-        actor['preferredUsername'] + '@' + domain + '\n'
+    vcard_str += 'IMPP:fediverse:' + preferred_username + '@' + domain + '\n'
     if actor.get('vcard:bday'):
         birthday_str = actor['vcard:bday']
         if '-' in birthday_str:
@@ -1004,16 +1006,18 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     return vcard_str
 
 
-def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
+def actor_to_vcard_xml(actor: {}, domain: str, translate: {},
+                       system_language: str) -> str:
     """Returns a xml formatted vcard for a given actor
     """
+    preferred_username = get_preferred_username(actor, system_language)
     vcard_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
     vcard_str += '<vcards xmlns="urn:ietf:params:xml:ns:vcard-4.0">\n'
     vcard_str += '  <vcard>\n'
     vcard_str += '    <fn><text>' + \
         remove_html(actor['name']) + '</text></fn>\n'
     vcard_str += '    <nickname><text>' + \
-        actor['preferredUsername'] + '</text></nickname>\n'
+        preferred_username + '</text></nickname>\n'
     vcard_str += '    <note><text>' + \
         remove_html(actor['summary']) + '</text></note>\n'
     email_address = get_email_address(actor)
@@ -1021,7 +1025,7 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
         vcard_str += '    <email><text>' + email_address + '</text></email>\n'
     vcard_str += '    <impp>' + \
         '<parameters><type><text>fediverse</text></type></parameters>' + \
-        '<text>' + actor['preferredUsername'] + '@' + domain + \
+        '<text>' + preferred_username + '@' + domain + \
         '</text></impp>\n'
     if actor.get('vcard:bday'):
         birthday_str = actor['vcard:bday']

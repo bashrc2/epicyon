@@ -11,6 +11,7 @@ from flags import is_system_account
 from utils import get_mutuals_of_person
 from utils import get_domain_from_actor
 from utils import get_config_param
+from utils import get_preferred_username
 from timeFunctions import get_account_timezone
 from person import person_box_json
 from webapp_utils import html_header_with_external_style
@@ -161,7 +162,7 @@ def html_front_screen(signing_priv_key_pem: str,
     """Show the news instance front screen
     """
     bold_reading: bool = False
-    nickname = profile_json['preferredUsername']
+    nickname: str = get_preferred_username(profile_json, system_language)
     if not nickname:
         return ""
     if not is_system_account(nickname):
@@ -169,7 +170,7 @@ def html_front_screen(signing_priv_key_pem: str,
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
-    domain_full = domain
+    domain_full: str = domain
     if port:
         domain_full = domain + ':' + str(port)
 

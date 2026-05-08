@@ -22,7 +22,8 @@ from data import is_a_file
 
 
 def show_vcard(self, base_dir: str, path: str, calling_domain: str,
-               referer_domain: str, domain: str, translate: {}) -> bool:
+               referer_domain: str, domain: str, translate: {},
+               system_language: str) -> bool:
     """Returns a vcard for the given account
     """
     if not has_accept(self, calling_domain):
@@ -68,10 +69,12 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         self.server.vcard_is_active = False
         return True
     if 'application/vcard+xml' in accept_str:
-        vcard_str = actor_to_vcard_xml(actor_json, domain, translate)
+        vcard_str = \
+            actor_to_vcard_xml(actor_json, domain, translate, system_language)
         header_type = 'application/vcard+xml; charset=utf-8'
     else:
-        vcard_str = actor_to_vcard(actor_json, domain, translate)
+        vcard_str = \
+            actor_to_vcard(actor_json, domain, translate, system_language)
         header_type = 'text/vcard; charset=utf-8'
     if vcard_str:
         msg = vcard_str.encode('utf-8')

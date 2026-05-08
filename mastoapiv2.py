@@ -19,6 +19,7 @@ from utils import lines_in_file
 from utils import data_dir
 from utils import account_is_indexable
 from utils import is_yggdrasil_address
+from utils import get_preferred_username
 from formats import get_image_mime_type
 from formats import get_image_extensions
 from formats import get_audio_extensions
@@ -82,9 +83,8 @@ def _meta_data_instance_v2(show_accounts: bool,
     elif admin_actor['type'] != 'Person':
         is_bot = True
 
-    url = \
-        http_prefix + '://' + domain_full + '/@' + \
-        admin_actor['preferredUsername']
+    preferred_username = get_preferred_username(admin_actor, system_language)
+    url = http_prefix + '://' + domain_full + '/@' + preferred_username
 
     if show_accounts:
         active_accounts: int = no_of_accounts(base_dir)

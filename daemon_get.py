@@ -453,7 +453,8 @@ def daemon_http_get(self) -> None:
 
     if show_vcard(self, self.server.base_dir,
                   self.path, calling_domain, referer_domain,
-                  self.server.domain, self.server.translate):
+                  self.server.domain, self.server.translate,
+                  self.server.system_language):
         return
 
     # getting the public key for an account

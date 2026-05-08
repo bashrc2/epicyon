@@ -22,6 +22,7 @@ from textmode import text_mode_removals
 from unicodetext import uninvert_text
 from unicodetext import standardize_text
 from occupation import get_occupation_name
+from utils import get_preferred_username
 from utils import is_private_browser
 from utils import replace_embedded_map_with_link
 from utils import is_yggdrasil_address
@@ -1198,7 +1199,7 @@ def html_profile(signing_priv_key_pem: str,
         if is_a_file(moved_accounts_filename):
             show_moved_accounts = True
 
-    nickname: str = profile_json['preferredUsername']
+    nickname: str = get_preferred_username(profile_json, system_language)
     if not nickname:
         return ""
     if is_system_account(nickname):
