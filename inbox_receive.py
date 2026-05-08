@@ -1877,27 +1877,28 @@ def receive_announce(recent_posts_cache: {},
 
     # Check that the domain of the announced post is not blocked
     handle_nickname = handle.split('@')[0]
+    test_text = str(message_json)
     if handle_nickname in block_military:
         if block_military[handle_nickname] is True and \
-           contains_military_domain(announce_url):
+           contains_military_domain(test_text):
             print('BLOCK: ' + handle_nickname +
                   ' blocked military domain announce')
             return False
     if handle_nickname in block_government:
         if block_government[handle_nickname] is True and \
-           contains_government_domain(announce_url):
+           contains_government_domain(test_text):
             print('BLOCK: ' + handle_nickname +
                   ' blocked government domain announce')
             return False
     if handle_nickname in block_bluesky:
         if block_bluesky[handle_nickname] is True and \
-           contains_bluesky_domain(announce_url):
+           contains_bluesky_domain(test_text):
             print('BLOCK: ' + handle_nickname +
                   ' blocked bluesky domain announce')
             return False
     if handle_nickname in block_nostr:
         if block_nostr[handle_nickname] is True and \
-           contains_nostr_domain(announce_url):
+           contains_nostr_domain(test_text):
             print('BLOCK: ' + handle_nickname +
                   ' blocked nostr domain announce')
             return False
