@@ -6738,7 +6738,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                           str(announced_json['object']['id']))
                     return None
 
-        post_json_object = announced_json
+        post_json_object: dict = announced_json
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
         replace_twitter(post_json_object, twitter_replacement_domain,
                         system_language)

@@ -2537,9 +2537,10 @@ def _is_reserved_name(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
     reserved_names: list[str] = (
-        'users', 'accounts', 'profile', 'statuses',
-        'search', 'channel',
-        'http', 'https', 'ipfs', 'ipns'
+        'users', 'accounts', 'profile', 'statuses', 'packs', 'backend',
+        'search', 'channel', 'config', 'settings', 'credentials', 'apis',
+        'http', 'https', 'ipfs', 'ipns', 'laravel', 'js', 'root', 'webmail',
+        'mail', 'statistics'
     )
     if nickname in reserved_names:
         return True
@@ -4072,7 +4073,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     bad_strings: list[str] = [
         '..', '/.', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-', '/statistics',
         '/config/', 'settings.', 'credentials', '/packs/', '/backend/',
-        '/apis/', '/laravel/', '/js/', '/root/'
+        '/apis/', '/laravel/', '/js/', '/root/', '/webmail/', '/mail/'
     ]
 
     # allow /.well-known/...
