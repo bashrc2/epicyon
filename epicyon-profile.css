@@ -2376,7 +2376,7 @@ address {
         font-family: 'Arial, Helvetica, sans-serif';
     }
     body, html {
-        font-size: var(--font-size3);
+        font-size: var(--font-size-mobile);
         font-family: 'Arial, Helvetica, sans-serif';
     }
     div.gallerytext {
