@@ -283,5 +283,6 @@
     "post-separator-margin-bottom": "0",
     "instance-software-fg-color": "#333",
     "instance-software-bg-color": "#ddd",
-    "transition-type": "auto"
+    "transition-type": "auto",
+	"link-underline": "underline"
 }

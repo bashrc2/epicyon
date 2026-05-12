@@ -269,5 +269,6 @@
     "reply-icon-direction": "-1",
     "instance-software-fg-color": "#bbb",
     "instance-software-bg-color": "#444",
-    "transition-type": "auto"
+    "transition-type": "auto",
+	"link-underline": "none"
 }

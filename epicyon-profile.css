@@ -233,6 +233,7 @@
     --diff-remove: #aaa;
     --reply-icon-direction: -1;
     --transition-type: auto;
+	--link-underline: none;
 }
 
 @font-face {
@@ -466,14 +467,14 @@ a:visited {
     color: var(--main-visited-color);
     background: var(--link-bg-color);
     font-weight: normal;
-    text-decoration: none;
+    text-decoration: var(--link-underline);
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: normal;
-    text-decoration: none;
+    text-decoration: var(--link-underline);
 }
 
 a:link[type=application/activity+json]::before {
