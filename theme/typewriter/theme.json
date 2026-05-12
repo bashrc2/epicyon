@@ -282,6 +282,6 @@
     "post-separator-margin-top": "0",
     "post-separator-margin-bottom": "0",
     "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#777",
+    "instance-software-bg-color": "#111",
     "transition-type": "auto"
 }
