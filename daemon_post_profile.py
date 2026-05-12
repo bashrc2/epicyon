@@ -2490,6 +2490,7 @@ def _profile_post_theme_change(base_dir: str, nickname: str,
                           domain, allow_local_network_access,
                           system_language,
                           dyslexic_font, True)
+                self.server.theme_name = theme_name
                 self.server.text_mode_banner = get_text_mode_banner(base_dir)
                 self.server.iconsCache = {}
                 self.server.fontsCache = {}
