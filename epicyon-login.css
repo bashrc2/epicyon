@@ -26,19 +26,20 @@
     --main-link-color-hover: blue;
     --rendering: normal;
     --transition-type: auto;
+    --font-weight: normal;
 }
 
 @font-face {
   font-family: 'NimbusSanL';
   font-style: italic;
-  font-weight: normal;
+  font-weight: var(--font-weight);
   font-display: block;
   src: url('./fonts/NimbusSanL-italic.otf') format('opentype');
 }
 @font-face {
   font-family: 'NimbusSanL';
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--font-weight);
   font-display: block;
   src: url('./fonts/NimbusSanL.otf') format('opentype');
 }

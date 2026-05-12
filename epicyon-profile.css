@@ -130,6 +130,7 @@
     --icons-side: right;
     --title-color: #999;
     --focus-color: white;
+    --font-weight: normal;
     --quote-right-margin: 0.1em;
     --quote-font-weight: normal;
     --quote-font-size: 120%;
@@ -237,14 +238,14 @@
 @font-face {
     font-family: 'Bedstead';
     font-style: italic;
-    font-weight: normal;
+    font-weight: var(--font-weight);
     font-display: block;
     src: url('./fonts/bedstead.otf') format('opentype');
 }
 @font-face {
     font-family: 'Bedstead';
     font-style: normal;
-    font-weight: normal;
+    font-weight: var(--font-weight);
     font-display: block;
     src: url('./fonts/bedstead.otf') format('opentype');
 }

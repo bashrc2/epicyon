@@ -57,19 +57,20 @@
     --rendering: normal;
     --reply-icon-direction: -1;
     --transition-type: auto;
+    --font-weight: normal;
 }
 
 @font-face {
   font-family: 'Bedstead';
   font-style: italic;
-  font-weight: normal;
+  font-weight: var(--font-weight);
   font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
 }
 @font-face {
   font-family: 'Bedstead';
   font-style: normal;
-  font-weight: normal;
+  font-weight: var(--font-weight);
   font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
 }

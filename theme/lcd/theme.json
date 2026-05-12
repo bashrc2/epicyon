@@ -153,6 +153,7 @@
     "gallery-hover": "#777",
     "gallery-font-size-tiny": "17.5px",
     "icons-side": "right",
+    "font-weight": "normal",
     "quote-right-margin": "0.1em",
     "quote-font-weight": "normal",
     "quote-font-size": "120%",

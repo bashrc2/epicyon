@@ -150,6 +150,7 @@
     "gallery-font-size-mobile": "35px",
     "gallery-font-size-tiny": "17.5px",
     "icons-side": "right",
+    "font-weight": "normal",
     "quote-font-weight": "normal",
     "quote-font-size": "120%",
     "quote-font-size-mobile": "120%",
