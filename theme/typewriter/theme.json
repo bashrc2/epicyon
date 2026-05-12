@@ -281,7 +281,7 @@
     "button-event-background-color": "green",
     "post-separator-margin-top": "0",
     "post-separator-margin-bottom": "0",
-    "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#111",
+    "instance-software-fg-color": "#333",
+    "instance-software-bg-color": "#ddd",
     "transition-type": "auto"
 }
