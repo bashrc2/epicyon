@@ -64,7 +64,7 @@
     "welcome-fg-color": "#2d2c37",
     "options-fg-color": "#2d2c37",
     "column-left-fg-color": "#2d2c37",
-    "border-color": "#c0cdd9",
+    "border-color": "#fbfbf6",
     "main-link-color": "#2a2c37",
     "main-link-color-hover": "#777",
     "options-main-link-color": "#2a2c37",
@@ -269,8 +269,8 @@
     "hashtag-size2": "40px",
     "hashtag-margin": "2%",
     "column-right-fg-color": "yellow",
-    "border-width": "2px",
-    "border-width-header": "2px",
+    "border-width": "0px",
+    "border-width-header": "0px",
     "font-size-likes": "20px",
     "button-highlighted": "green",
     "button-selected-highlighted": "darkgreen",
@@ -282,6 +282,6 @@
     "post-separator-margin-top": "0",
     "post-separator-margin-bottom": "0",
     "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#444",
+    "instance-software-bg-color": "#777",
     "transition-type": "auto"
 }
