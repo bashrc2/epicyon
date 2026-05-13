@@ -5938,11 +5938,16 @@ def _check_method_args(mod_name: str, method_name: str,
 
 def _test_functions():
     print('test_functions')
-    function = {}
-    function_properties = {}
-    modules = {}
-    mod_groups = {}
+    function: dict = {}
+    function_properties: dict = {}
+    modules: dict = {}
+    mod_groups: dict = {}
     method_loc: list[str] = []
+
+    # some methods are permitted to contain a self argument
+    allowed_self_server_methods: list[str] = [
+        '_profile_post_theme_change'
+    ]
 
     for _, _, files in os.walk('.'):
         for source_file in files:
@@ -5993,10 +5998,11 @@ def _test_functions():
                 # reading function lines
                 if not line.strip().startswith('def '):
                     if 'self.server.' in line:
-                        assert _check_self_variables(mod_name,
-                                                     method_name,
-                                                     method_args, line,
-                                                     module_line)
+                        if method_name not in allowed_self_server_methods:
+                            assert _check_self_variables(mod_name,
+                                                         method_name,
+                                                         method_args, line,
+                                                         module_line)
                     if line_count > 0:
                         line_count += 1
                     # add LOC count for this function
