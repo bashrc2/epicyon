@@ -1129,7 +1129,8 @@ def html_timeline(default_timeline: str,
                         if not reverse_sequence:
                             tl_items_str += last_item_str
                             if separator_str:
-                                tl_items_str += separator_str
+                                if not tl_items_str.endswith(separator_str):
+                                    tl_items_str += separator_str
                         else:
                             tl_items_str = last_item_str + tl_items_str
                             if separator_str:
