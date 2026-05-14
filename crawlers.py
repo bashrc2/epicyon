@@ -136,7 +136,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'chatglm', 'cloudflare-autorag', 'crawl4ai',
             'facebookbot', 'facebookexternalhit',
             'google-cloudvertexbot', 'google-extended', 'googleother',
-            'google-firebase', 'notebooklm', 'googleagent',
+            'google-firebase', 'google-gemini', 'notebooklm', 'googleagent',
             'iaskbot', 'imagespider', 'kunato', 'laion', 'lcc',
             'linkupbot', 'manus-', 'poggio', 'tavily', 'twinagent',
             'wrtnbot', 'yandexadditional', 'zanista',
@@ -161,9 +161,9 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'meta-externalfetcher', 'meta-webindexer', 'aiscraper',
             'openai', 'panscient', 'phindbot', 'qualifiedbot', 'quillbot',
             'sbIntuitionsbot', 'semrushbot', 'shapbot', 'terracotta',
-            'velenpublicwebcrawler', 'wpbot', 'yak', 'amzn-', 'azureai',
-            'kagi-fetcher', 'aranet-', 'apifybot', 'apifyweb', 'exabot',
-            'nagetbot', 'newsai'
+            'terra cotta', 'velenpublicwebcrawler', 'wpbot', 'yak', 'amzn-',
+            'azureai', 'kagi-fetcher', 'aranet-', 'apifybot', 'apifyweb',
+            'exabot', 'nagetbot', 'newsai', 'henkbot', 'opencode', 'trae'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
