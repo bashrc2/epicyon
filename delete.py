@@ -47,13 +47,13 @@ def send_delete_via_server(base_dir: str, session,
         print('WARN: No session for send_delete_via_server')
         return 6
 
-    from_domain_full = get_full_domain(from_domain, from_port)
+    from_domain_full: str = get_full_domain(from_domain, from_port)
 
-    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
-    to_url = 'https://www.w3.org/ns/activitystreams#Public'
-    cc_url = actor + '/followers'
+    actor: str = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url: str = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url: str = actor + '/followers'
 
-    new_delete_json = {
+    new_delete_json: dict = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
@@ -65,10 +65,10 @@ def send_delete_via_server(base_dir: str, session,
         'type': 'Delete'
     }
 
-    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
+    handle: str = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wf_request = \
+    wf_request: dict = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
                          signing_priv_key_pem, mitm_servers)
@@ -81,10 +81,10 @@ def send_delete_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
-    origin_domain = from_domain
+    origin_domain: str = from_domain
     (inbox_url, _, _, from_person_id, _, _,
      _, _) = get_person_box(signing_priv_key_pem, origin_domain,
                             base_dir, session,
@@ -104,14 +104,14 @@ def send_delete_via_server(base_dir: str, session,
             print('DEBUG: delete no actor was found for ' + handle)
         return 4
 
-    auth_header = create_basic_auth_header(from_nickname, password)
+    auth_header: str = create_basic_auth_header(from_nickname, password)
 
-    headers = {
+    headers: dict = {
         'host': from_domain,
         'Content-type': 'application/json',
         'Authorization': auth_header
     }
-    post_result = \
+    post_result: str = \
         post_json(http_prefix, from_domain_full,
                   session, new_delete_json, [], inbox_url, headers, 3, True)
     if not post_result:
@@ -144,15 +144,15 @@ def outbox_delete(base_dir: str, http_prefix: str,
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
-    delete_prefix = http_prefix + '://' + domain
-    actor_url = get_actor_from_post(message_json)
+    delete_prefix: str = http_prefix + '://' + domain
+    actor_url: str = get_actor_from_post(message_json)
     if (not allow_deletion and
         (not message_json['object'].startswith(delete_prefix) or
          not actor_url.startswith(delete_prefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return
-    message_id = remove_id_ending(message_json['object'])
+    message_id: str = remove_id_ending(message_json['object'])
     if '/statuses/' not in message_id:
         if debug:
             print('DEBUG: c2s delete object is not a status')
@@ -161,22 +161,22 @@ def outbox_delete(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return
-    delete_nickname = get_nickname_from_actor(message_id)
+    delete_nickname: str = get_nickname_from_actor(message_id)
     if delete_nickname != nickname:
         if debug:
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (nickname does not match)")
         return
     delete_domain, _ = get_domain_from_actor(message_id)
-    domain = remove_domain_port(domain)
+    domain: str = remove_domain_port(domain)
     if delete_domain != domain:
         if debug:
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (domain does not match)")
         return
     remove_moderation_post_from_index(base_dir, message_id, debug)
-    post_filename = locate_post(base_dir, delete_nickname, delete_domain,
-                                message_id)
+    post_filename: str = locate_post(base_dir, delete_nickname, delete_domain,
+                                     message_id)
     if not post_filename:
         if debug:
             print('DEBUG: c2s delete post not found in inbox or outbox')
@@ -191,14 +191,14 @@ def outbox_delete(base_dir: str, http_prefix: str,
 def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     """Remove old hashtags
     """
-    max_months = min(max_months, 11)
+    max_months: int = min(max_months, 11)
     prev_date = date_from_numbers(1970, 1 + max_months, 1, 0, 0)
-    max_days_since_epoch = (date_utcnow() - prev_date).days
+    max_days_since_epoch: int = (date_utcnow() - prev_date).days
     remove_hashtags: list[str] = []
 
     for _, _, files in os.walk(base_dir + '/tags'):
         for fname in files:
-            tags_filename = os.path.join(base_dir + '/tags', fname)
+            tags_filename: str = os.path.join(base_dir + '/tags', fname)
             if not is_a_file(tags_filename):
                 continue
             # get last modified datetime

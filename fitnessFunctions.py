@@ -33,7 +33,7 @@ def fitness_performance(start_time, fitness_state: {},
             "ctr": int(0)
         }
 
-    time_diff = float(time.time() - start_time)
+    time_diff: float = float(time.time() - start_time)
 
     fitness_state['performance'][fitness_id][watch_point]['total'] += time_diff
     fitness_state['performance'][fitness_id][watch_point]['ctr'] += 1
@@ -44,8 +44,9 @@ def fitness_performance(start_time, fitness_state: {},
                 2)
 
     if debug:
-        ctr = fitness_state['performance'][fitness_id][watch_point]['ctr']
-        total = fitness_state['performance'][fitness_id][watch_point]['total']
+        ctr: int = fitness_state['performance'][fitness_id][watch_point]['ctr']
+        total: float = \
+            fitness_state['performance'][fitness_id][watch_point]['total']
         print('FITNESS: performance/' + fitness_id + '/' +
               watch_point + '/' + str(total * 1000 / ctr))
 
@@ -73,16 +74,15 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
                             max_entries: int) -> str:
     """Returns the html for a graph of watchpoints
     """
-    watch_points_list = sorted_watch_points(fitness, fitness_id)
+    watch_points_list: list[str] = sorted_watch_points(fitness, fitness_id)
 
-    css_filename = base_dir + '/epicyon-graph.css'
+    css_filename: str = base_dir + '/epicyon-graph.css'
     if is_a_file(base_dir + '/graph.css'):
         css_filename = base_dir + '/graph.css'
 
-    instance_title = \
-        get_config_param(base_dir, 'instanceTitle')
+    instance_title: str = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
-    html_str = \
+    html_str: str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     html_str += \
@@ -96,7 +96,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
         '</thead><tbody>\n'
 
     # get the maximum time
-    max_average_time = float(1)
+    max_average_time: float = float(1)
     if watch_points_list:
         max_average_time = float(watch_points_list[0].split(' ')[0])
     for watch_point in watch_points_list:
@@ -106,10 +106,10 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
 
     ctr: int = 0
     for watch_point in watch_points_list:
-        name = watch_point.split(' ', 1)[1]
-        average_time = float(watch_point.split(' ')[0])
-        height_percent = int(average_time * 100 / max_average_time)
-        time_ms = int(average_time)
+        name: str = watch_point.split(' ', 1)[1]
+        average_time: float = float(watch_point.split(' ')[0])
+        height_percent: int = int(average_time * 100 / max_average_time)
+        time_ms: int = int(average_time)
         if height_percent == 0:
             continue
         html_str += \
@@ -128,7 +128,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
 def fitness_thread(base_dir: str, fitness: {}) -> None:
     """Thread used to save fitness function scores
     """
-    fitness_filename = data_dir(base_dir) + '/fitness.json'
+    fitness_filename: str = data_dir(base_dir) + '/fitness.json'
     while True:
         # every 10 mins
         time.sleep(60 * 10)

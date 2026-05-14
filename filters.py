@@ -26,7 +26,8 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """Adds a filter for particular words within the content of a
     incoming posts
     """
-    filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    filters_filename: str = \
+        acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if is_a_file(filters_filename):
         if text_in_file(words, filters_filename):
             return False
@@ -44,7 +45,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         return False
     if len(words) < 2:
         return False
-    filters_filename = data_dir(base_dir) + '/filters.txt'
+    filters_filename: str = data_dir(base_dir) + '/filters.txt'
     if is_a_file(filters_filename):
         if text_in_file(words, filters_filename):
             return False
@@ -58,12 +59,13 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
                   words: str) -> bool:
     """Removes a word filter
     """
-    filters_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    filters_filename: str = \
+        acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if not is_a_file(filters_filename):
         return False
     if not text_in_file(words, filters_filename):
         return False
-    new_filters_filename = filters_filename + '.new'
+    new_filters_filename: str = filters_filename + '.new'
 
     filters_list: list[str] = \
         load_list(filters_filename,
@@ -92,12 +94,12 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
 def remove_global_filter(base_dir: str, words: str) -> bool:
     """Removes a global word filter
     """
-    filters_filename = data_dir(base_dir) + '/filters.txt'
+    filters_filename: str = data_dir(base_dir) + '/filters.txt'
     if not is_a_file(filters_filename):
         return False
     if not text_in_file(words, filters_filename):
         return False
-    new_filters_filename = filters_filename + '.new'
+    new_filters_filename: str = filters_filename + '.new'
 
     global_list: list[str] = \
         load_list(filters_filename,
@@ -126,7 +128,7 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
 def _is_twitter_post(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
-    features = (
+    features: list[str] = (
         '/x.com', '/twitter.', '/nitter.',
         '@twitter.', '@nitter.', '@x.com',
         '>RT <', '_tw<', '_tw@', 'tweet', 'Tweet', '🐦🔗'
@@ -157,7 +159,7 @@ def _is_filtered_base(filename: str, content: str,
     if not is_a_file(filename):
         return False
 
-    content = remove_inverted_text(content, system_language)
+    content: str = remove_inverted_text(content, system_language)
     content = remove_square_capitals(content, system_language)
 
     # convert any fancy characters to ordinary ones
@@ -168,7 +170,7 @@ def _is_filtered_base(filename: str, content: str,
                   'EX: _is_filtered_base ' + filename + ' [ex]')
     if filtered_list is not None:
         for line in filtered_list:
-            filter_str = remove_eol(line)
+            filter_str: str = remove_eol(line)
             if not filter_str:
                 continue
             if len(filter_str) < 2:
@@ -177,7 +179,8 @@ def _is_filtered_base(filename: str, content: str,
                 if filtered_match(filter_str, content):
                     return True
             else:
-                filter_words = filter_str.replace('"', '').split('+')
+                filter_words: list[str] = \
+                    filter_str.replace('"', '').split('+')
                 for filter_wrd in filter_words:
                     if not filtered_match(filter_wrd, content):
                         return False
@@ -189,7 +192,7 @@ def is_filtered_globally(base_dir: str, content: str,
                          system_language: str) -> bool:
     """Is the given content globally filtered?
     """
-    global_filters_filename = data_dir(base_dir) + '/filters.txt'
+    global_filters_filename: str = data_dir(base_dir) + '/filters.txt'
     if _is_filtered_base(global_filters_filename, content,
                          system_language):
         return True
@@ -207,7 +210,7 @@ def is_filtered_bio(base_dir: str,
     if not nickname or not domain:
         return False
 
-    account_filters_filename = \
+    account_filters_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     return _is_filtered_base(account_filters_filename, bio, system_language)
 
@@ -226,12 +229,13 @@ def is_filtered(base_dir: str, nickname: str, domain: str,
         return False
 
     # optionally remove retweets
-    remove_twitter = acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
+    remove_twitter: str = \
+        acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
     if is_a_file(remove_twitter):
         if _is_twitter_post(content):
             return True
 
-    account_filters_filename = \
+    account_filters_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     return _is_filtered_base(account_filters_filename, content,
                              system_language)
@@ -242,12 +246,15 @@ def is_question_filtered(base_dir: str, nickname: str, domain: str,
     """is the given question filtered based on its options?
     """
     if question_json.get('oneOf'):
-        question_options = question_json['oneOf']
+        question_options: list[str] = question_json['oneOf']
     else:
-        question_options = question_json['object']['oneOf']
+        question_options: list[str] = question_json['object']['oneOf']
     for option in question_options:
-        if option.get('name'):
-            if is_filtered(base_dir, nickname, domain, option['name'],
-                           system_language):
-                return True
+        if not option.get('name'):
+            continue
+        if not isinstance(option['name'], str):
+            continue
+        if is_filtered(base_dir, nickname, domain, option['name'],
+                       system_language):
+            return True
     return False

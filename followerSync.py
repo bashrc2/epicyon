@@ -21,7 +21,7 @@ def remove_followers_sync(followers_sync_cache: {},
     """Remove an entry within the followers synchronization cache,
     so that it will subsequently be regenerated
     """
-    foll_sync_key = nickname + ':' + follower_domain
+    foll_sync_key: str = nickname + ':' + follower_domain
     if not followers_sync_cache.get(foll_sync_key):
         return
     del followers_sync_cache[foll_sync_key]
@@ -33,7 +33,7 @@ def _get_followers_for_domain(base_dir: str,
     """Returns the followers for a given domain
     this is used for followers synchronization
     """
-    followers_filename = \
+    followers_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not is_a_file(followers_filename):
         return []
@@ -46,20 +46,20 @@ def _get_followers_for_domain(base_dir: str,
         foll_text: str = ''
     if search_domain not in foll_text:
         return []
-    lines = foll_text.splitlines()
+    lines: list[str] = foll_text.splitlines()
     result: list[str] = []
     for line_str in lines:
         if search_domain not in line_str:
             continue
         if line_str.endswith('@' + search_domain):
-            nick = line_str.split('@')[0]
-            paths_list = get_user_paths()
+            nick: str = line_str.split('@')[0]
+            paths_list: list[str] = get_user_paths()
             found: bool = False
             for prefix in ('https', 'http'):
                 if found:
                     break
                 for possible_path in paths_list:
-                    url = prefix + '://' + search_domain + \
+                    url: str = prefix + '://' + search_domain + \
                         possible_path + nick
                     filename = base_dir + '/cache/actors/' + \
                         url.replace('/', '#') + '.json'
@@ -70,7 +70,7 @@ def _get_followers_for_domain(base_dir: str,
                     found = True
                     break
                 if not found:
-                    url = prefix + '://' + search_domain + '/' + nick
+                    url: str = prefix + '://' + search_domain + '/' + nick
                     filename = base_dir + '/cache/actors/' + \
                         url.replace('/', '#') + '.json'
                     if is_a_file(filename):
@@ -91,13 +91,13 @@ def _get_followers_sync_json(base_dir: str,
     See
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
-    sync_list = \
+    sync_list: list[str] = \
         _get_followers_for_domain(base_dir,
                                   nickname, domain,
                                   search_domain)
-    actor = http_prefix + '://' + domain_full + '/users/' + nickname
-    id_str = actor + '/followers?domain=' + search_domain
-    sync_json = {
+    actor: str = http_prefix + '://' + domain_full + '/users/' + nickname
+    id_str: str = actor + '/followers?domain=' + search_domain
+    sync_json: dict = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
@@ -142,18 +142,18 @@ def update_followers_sync_cache(base_dir: str,
     """Updates the followers synchronization cache
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
-    foll_sync_key = nickname + ':' + calling_domain
+    foll_sync_key: str = nickname + ':' + calling_domain
     if sync_cache.get(foll_sync_key):
-        sync_hash = sync_cache[foll_sync_key]['hash']
-        sync_json = sync_cache[foll_sync_key]['response']
+        sync_hash: str = sync_cache[foll_sync_key]['hash']
+        sync_json: dict = sync_cache[foll_sync_key]['response']
     else:
-        sync_json = \
+        sync_json: dict = \
             _get_followers_sync_json(base_dir,
                                      nickname, domain,
                                      http_prefix,
                                      domain_full,
                                      calling_domain)
-        sync_hash = get_followers_sync_hash(sync_json)
+        sync_hash: str = get_followers_sync_hash(sync_json)
         if sync_hash:
             sync_cache[foll_sync_key] = {
                 "hash": sync_hash,

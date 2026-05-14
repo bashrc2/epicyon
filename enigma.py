@@ -59,7 +59,7 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
         actor_json['attachment']: list[dict] = []
 
     # remove any existing value
-    property_found = None
+    property_found: str = None
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))

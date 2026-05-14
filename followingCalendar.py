@@ -66,16 +66,16 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
     if following_nickname == nickname and following_domain == domain:
         # reminder post
         return True
-    calendar_filename = \
+    calendar_filename: str = \
         _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
-    handle = following_nickname + '@' + following_domain
+    handle: str = following_nickname + '@' + following_domain
     if not is_a_file(calendar_filename):
-        following_filename = \
+        following_filename: str = \
             _dir_acct(base_dir, nickname, domain) + '/following.txt'
         if not is_a_file(following_filename):
             return False
         # create a new calendar file from the following file
-        following_handles = \
+        following_handles: str = \
             load_string(following_filename,
                         'EX: receiving_calendar_events ' + following_filename)
         if following_handles:
@@ -92,21 +92,21 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
     indicating whether to receive calendar events from that account
     """
     # check that a following file exists
-    domain = _port_domain_remove(domain)
-    following_filename = \
+    domain: str = _port_domain_remove(domain)
+    following_filename: str = \
         _dir_acct(base_dir, nickname, domain) + '/following.txt'
     if not is_a_file(following_filename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
         return
-    handle = following_nickname + '@' + following_domain
+    handle: str = following_nickname + '@' + following_domain
 
     # check that you are following this handle
     if not _text_in_file2(handle + '\n', following_filename, False):
         print('WARN: ' + handle + ' is not in ' + following_filename)
         return
 
-    calendar_filename = \
+    calendar_filename: str = \
         _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
 
     # get the contents of the calendar file, which is
@@ -118,7 +118,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             load_string(calendar_filename,
                         'EX: _receive_calendar_events ' + calendar_filename)
         if following_handles is None:
-            following_handles: str = ''
+            following_handles = ''
     else:
         # create a new calendar file from the following file
         print('Creating calendar file ' + calendar_filename)
@@ -140,8 +140,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             return
         # remove from calendar file
         new_following_handles: str = ''
-        following_handles_list = following_handles.split('\n')
-        handle_lower = handle.lower()
+        following_handles_list: list[str] = following_handles.split('\n')
+        handle_lower: str = handle.lower()
         for followed in following_handles_list:
             if followed.lower() != handle_lower:
                 new_following_handles += followed + '\n'

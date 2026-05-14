@@ -38,7 +38,7 @@ def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """
-    features_blocked_filename = \
+    features_blocked_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/.nofeatures'
     return not is_a_file(features_blocked_filename)
 
@@ -48,23 +48,23 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
-    last_seen_filename = acct_dir(base_dir, nickname, domain) + \
+    last_seen_filename: str = acct_dir(base_dir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
     if not is_a_file(last_seen_filename):
         return False
 
-    days_since_epoch_str = \
+    days_since_epoch_str: str = \
         load_string(last_seen_filename, 'EX: failed to read last seen ' +
                     last_seen_filename)
     if days_since_epoch_str is None:
         return False
 
     if days_since_epoch_str:
-        days_since_epoch = int(days_since_epoch_str)
+        days_since_epoch: int = int(days_since_epoch_str)
         curr_time = date_utcnow()
-        curr_days_since_epoch = (curr_time - date_epoch()).days
-        time_diff_months = \
+        curr_days_since_epoch: int = (curr_time - date_epoch()).days
+        time_diff_months: int = \
             int((curr_days_since_epoch - days_since_epoch) / 30)
         if time_diff_months >= dormant_months:
             return True
@@ -77,7 +77,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     editors_file = data_dir(base_dir) + '/editors.txt'
 
     if not is_a_file(editors_file):
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
                 return True
@@ -90,12 +90,12 @@ def is_editor(base_dir: str, nickname: str) -> bool:
         lines = lines.split('\n')
 
     if not lines:
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
                 return True
     for editor in lines:
-        editor = editor.strip('\n').strip('\r')
+        editor: str = editor.strip('\n').strip('\r')
         if editor == nickname:
             return True
     return False
@@ -104,10 +104,10 @@ def is_editor(base_dir: str, nickname: str) -> bool:
 def is_artist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
-    artists_file = data_dir(base_dir) + '/artists.txt'
+    artists_file: str = data_dir(base_dir) + '/artists.txt'
 
     if not is_a_file(artists_file):
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
                 return True
@@ -120,12 +120,12 @@ def is_artist(base_dir: str, nickname: str) -> bool:
         lines = lines.split('\n')
 
     if not lines:
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
                 return True
     for artist in lines:
-        artist = artist.strip('\n').strip('\r')
+        artist: str = artist.strip('\n').strip('\r')
         if artist == nickname:
             return True
     return False
@@ -151,7 +151,7 @@ def is_system_account(nickname: str) -> bool:
 def is_memorial_account(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a memorial account
     """
-    memorial_file = data_dir(base_dir) + '/memorial'
+    memorial_file: str = data_dir(base_dir) + '/memorial'
     if not is_a_file(memorial_file):
         return False
     memorial_list: list[str] = \
@@ -167,13 +167,13 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
 def is_suspended(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
-    admin_nickname = get_config_param(base_dir, 'admin')
+    admin_nickname: str = get_config_param(base_dir, 'admin')
     if not admin_nickname:
         return False
     if nickname == admin_nickname:
         return False
 
-    suspended_filename = data_dir(base_dir) + '/suspended.txt'
+    suspended_filename: str = data_dir(base_dir) + '/suspended.txt'
     if is_a_file(suspended_filename):
         lines: list[str] = \
             load_string(suspended_filename,
@@ -196,7 +196,7 @@ def is_evil(domain: str) -> bool:
         return True
     # if a domain contains any of these strings then it is
     # declaring itself to be hostile
-    evil_emporium = (
+    evil_emporium: list[str] = (
         'nazi', 'extremis', 'extreemis', 'gendercritic',
         'kiwifarm', 'illegal', 'raplst', 'rapist', 'loli.',
         'rapl.st', 'rapi.st', 'antivax', 'plandemic', 'terror'
@@ -204,7 +204,7 @@ def is_evil(domain: str) -> bool:
     for hostile_str in evil_emporium:
         if hostile_str in domain:
             return True
-    evil_domains = evil_incarnate()
+    evil_domains: list[str] = evil_incarnate()
     for concentrated_evil in evil_domains:
         if domain.endswith(concentrated_evil):
             return True
@@ -214,7 +214,7 @@ def is_evil(domain: str) -> bool:
 def is_local_network_address(ip_address: str) -> bool:
     """Is the given ip address local?
     """
-    local_ips = get_local_network_addresses()
+    local_ips: list[str] = get_local_network_addresses()
     for ip_addr in local_ips:
         if ip_address.startswith(ip_addr):
             return True
@@ -249,10 +249,10 @@ def is_public_post_from_url(base_dir: str, nickname: str, domain: str,
                             post_url: str) -> bool:
     """Returns whether the given url is a public post
     """
-    post_filename = locate_post(base_dir, nickname, domain, post_url)
+    post_filename: str = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
         return False
-    post_json_object = load_json(post_filename)
+    post_json_object: dict = load_json(post_filename)
     if not post_json_object:
         return False
     return is_public_post(post_json_object)
@@ -370,10 +370,10 @@ def is_recent_post(post_json_object: {}, max_days: int) -> bool:
     if not isinstance(post_json_object['object']['published'], str):
         return False
     curr_time = date_utcnow()
-    days_since_epoch = (curr_time - date_epoch()).days
-    recently = days_since_epoch - max_days
+    days_since_epoch: int = (curr_time - date_epoch()).days
+    recently: int = days_since_epoch - max_days
 
-    published_date_str = post_json_object['object']['published']
+    published_date_str: str = post_json_object['object']['published']
     if '.' in published_date_str:
         published_date_str = published_date_str.split('.')[0] + 'Z'
 
@@ -385,8 +385,7 @@ def is_recent_post(post_json_object: {}, max_days: int) -> bool:
               str(published_date_str))
         return False
 
-    published_days_since_epoch = \
-        (published_date - date_epoch()).days
+    published_days_since_epoch: int = (published_date - date_epoch()).days
     if published_days_since_epoch < recently:
         return False
     return True
@@ -418,7 +417,7 @@ def is_reply(post_json_object: {}, actor: str) -> bool:
                                                   'EncryptedMessage',
                                                   'ChatMessage', 'Article'):
         return False
-    reply_id = get_reply_to(post_json_object['object'])
+    reply_id: str = get_reply_to(post_json_object['object'])
     if reply_id:
         if isinstance(reply_id, str):
             if reply_id.startswith(actor):
@@ -492,7 +491,7 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
                    debug: bool = False) -> bool:
     """Is the given actor a group?
     """
-    person_cache_actor = None
+    person_cache_actor: str = None
     if person_cache:
         if person_cache.get(actor):
             if person_cache[actor].get('actor'):
@@ -508,7 +507,7 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
 
     if debug:
         print('Actor ' + actor + ' not in cache')
-    cached_actor_filename = \
+    cached_actor_filename: str = \
         base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
     if not is_a_file(cached_actor_filename):
         if debug:
@@ -524,7 +523,7 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
 def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account is a group
     """
-    account_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    account_filename: str = acct_dir(base_dir, nickname, domain) + '.json'
     if not is_a_file(account_filename):
         return False
     if text_in_file('"type": "Group"', account_filename):
@@ -538,7 +537,7 @@ def has_group_type(base_dir: str, actor: str, person_cache: {},
     """
     # does the actor path clearly indicate that this is a group?
     # eg. https://lemmy/c/groupname
-    group_paths = get_group_paths()
+    group_paths: list[str] = get_group_paths()
     for grp_path in group_paths:
         if grp_path in actor:
             if debug:
@@ -566,7 +565,7 @@ def is_right_to_left_text(text: str) -> bool:
     Arabic \u0627-\u064a
     Hebrew/Yiddish \u0590-\u05FF\uFB2A-\uFB4E
     """
-    unicode_str = '[\u0627-\u064a]|[\u0600-\u06FF]|' + \
+    unicode_str: str = '[\u0627-\u064a]|[\u0600-\u06FF]|' + \
         '[\u0590-\u05FF\uFB2A-\uFB4E]'
     pattern = re.compile(unicode_str)
 
@@ -588,15 +587,15 @@ def is_valid_date(date_str: str) -> bool:
         if not section_str.isdigit():
             return False
         if date_sect_ctr == 0:
-            date_year = int(section_str)
+            date_year: int = int(section_str)
             if date_year < 1920 or date_year > 3000:
                 return False
         elif date_sect_ctr == 1:
-            date_month = int(section_str)
+            date_month: int = int(section_str)
             if date_month < 1 or date_month > 12:
                 return False
         elif date_sect_ctr == 2:
-            date_day = int(section_str)
+            date_day: int = int(section_str)
             if date_day < 1 or date_day > 31:
                 return False
         date_sect_ctr += 1
@@ -606,7 +605,7 @@ def is_valid_date(date_str: str) -> bool:
 def is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
     """ Is the given account a premium one?
     """
-    premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
+    premium_filename: str = acct_dir(base_dir, nickname, domain) + '/.premium'
     return is_a_file(premium_filename)
 
 
@@ -626,7 +625,7 @@ def url_permitted(url: str, federation_list: []) -> bool:
 def is_corporate(server_name: str) -> bool:
     """Is the given server name a corporate leech?
     """
-    server_lower = server_name.lower()
+    server_lower: str = server_name.lower()
     if 'google' in server_lower or \
        'cloudflare' in server_lower or \
        'facebook' in server_lower or \
@@ -647,11 +646,11 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     if '/statuses/' not in post_url:
         return True
     if not post_json_object:
-        post_filename = locate_post(base_dir, nickname, domain, post_url)
+        post_filename: str = locate_post(base_dir, nickname, domain, post_url)
         if not post_filename:
             # the post is not stored locally
             return True
-        post_json_object = load_json(post_filename)
+        post_json_object: dict = load_json(post_filename)
     if not post_json_object:
         return False
     published = get_published_date(post_json_object)
@@ -671,7 +670,7 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
             print('EX: can_reply_to unrecognized current date ' +
                   str(curr_date_str))
             return False
-    hours_since_publication = \
+    hours_since_publication: int = \
         int((curr_date - pub_date).total_seconds() / 3600)
     if hours_since_publication < 0 or \
        hours_since_publication >= reply_interval_hours:
@@ -701,8 +700,8 @@ def local_only_is_local(message_json: {}, domain_full: str) -> bool:
                 return False
 
     # check that the sender is local
-    attrib_field = message_json['object']['attributedTo']
-    local_actor = get_attributed_to(attrib_field)
+    attrib_field: str | dict = message_json['object']['attributedTo']
+    local_actor: str = get_attributed_to(attrib_field)
     local_domain, local_port = \
         get_domain_from_actor(local_actor)
     if local_domain:
@@ -719,10 +718,10 @@ def local_only_is_local(message_json: {}, domain_full: str) -> bool:
 def is_moderator(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
     """
-    moderators_file = data_dir(base_dir) + '/moderators.txt'
+    moderators_file: str = data_dir(base_dir) + '/moderators.txt'
 
     if not is_a_file(moderators_file):
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
         if admin_name == nickname:
@@ -736,13 +735,13 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
         lines = lines.split('\n')
 
     if not lines:
-        admin_name = get_config_param(base_dir, 'admin')
+        admin_name: str = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
         if admin_name == nickname:
             return True
     for moderator in lines:
-        moderator = moderator.strip('\n').strip('\r')
+        moderator: str = moderator.strip('\n').strip('\r')
         if moderator == nickname:
             return True
     return False

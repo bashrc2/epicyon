@@ -61,16 +61,16 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
     """
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(dir_str, acct)
-            following_filename = account_dir + '/following.txt'
+            account_dir: str = os.path.join(dir_str, acct)
+            following_filename: str = account_dir + '/following.txt'
             if not is_a_file(following_filename):
                 continue
-            last_seen_dir = account_dir + '/lastseen'
+            last_seen_dir: str = account_dir + '/lastseen'
             if not is_a_dir(last_seen_dir):
                 makedir(last_seen_dir)
             following_handles: list[str] = \
@@ -84,17 +84,17 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                     continue
                 if '@' not in handle:
                     continue
-                handle = remove_eol(handle)
-                nickname = handle.split('@')[0]
-                domain = handle.split('@')[1]
+                handle: str = remove_eol(handle)
+                nickname: str = handle.split('@')[0]
+                domain: str = handle.split('@')[1]
                 if nickname.startswith('!'):
                     nickname = nickname[1:]
-                actor = local_actor_url(http_prefix, nickname, domain)
-                last_seen_filename = \
+                actor: str = local_actor_url(http_prefix, nickname, domain)
+                last_seen_filename: str = \
                     last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
                 if is_a_file(last_seen_filename):
                     continue
-                text = str(100)
+                text: str = str(100)
                 save_string(text, last_seen_filename,
                             'EX: create_initial_last_seen 2 ' +
                             last_seen_filename)
@@ -106,8 +106,8 @@ def _pre_approved_follower(base_dir: str,
                            approve_handle: str) -> bool:
     """Is the given handle an already manually approved follower?
     """
-    account_dir = acct_dir(base_dir, nickname, domain)
-    approved_filename = account_dir + '/approved.txt'
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+    approved_filename: str = account_dir + '/approved.txt'
     if is_a_file(approved_filename):
         if text_in_file(approve_handle, approved_filename):
             return True
@@ -120,21 +120,21 @@ def _remove_from_follow_base(base_dir: str,
                              debug: bool) -> None:
     """Removes a handle/actor from follow requests or rejects file
     """
-    accounts_dir = acct_dir(base_dir, nickname, domain)
-    approve_follows_filename = accounts_dir + '/' + follow_file + '.txt'
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
+    approve_follows_filename: str = accounts_dir + '/' + follow_file + '.txt'
     if not is_a_file(approve_follows_filename):
         if debug:
             print('There is no ' + follow_file +
                   ' to remove ' + nickname + '@' + domain + ' from')
         return
-    accept_deny_actor = None
+    accept_deny_actor: str = None
     if not text_in_file(accept_or_deny_handle, approve_follows_filename):
         # is this stored in the file as an actor rather than a handle?
-        accept_deny_nickname = accept_or_deny_handle.split('@')[0]
-        accept_deny_domain = accept_or_deny_handle.split('@')[1]
+        accept_deny_nickname: str = accept_or_deny_handle.split('@')[0]
+        accept_deny_domain: str = accept_or_deny_handle.split('@')[1]
         # for each possible users path construct an actor and
         # check if it exists in the file
-        users_paths = get_user_paths()
+        users_paths: list[str] = get_user_paths()
         actor_found: bool = False
         for users_name in users_paths:
             accept_deny_actor = \
@@ -200,17 +200,17 @@ def is_following_actor(base_dir: str,
     The actor can also be a handle: nickname@domain
     """
     domain = remove_domain_port(domain)
-    accounts_dir = acct_dir(base_dir, nickname, domain)
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir):
         return False
-    following_file = accounts_dir + '/following.txt'
+    following_file: str = accounts_dir + '/following.txt'
     if not is_a_file(following_file):
         return False
     if actor.startswith('@'):
         actor = actor[1:]
     if text_in_file(actor, following_file, False):
         return True
-    following_nickname = get_nickname_from_actor(actor)
+    following_nickname: str = get_nickname_from_actor(actor)
     if not following_nickname:
         print('WARN: unable to find nickname in ' + actor)
         return False
@@ -218,7 +218,7 @@ def is_following_actor(base_dir: str,
     if not following_domain:
         print('WARN: unable to find domain in ' + actor)
         return False
-    following_handle = \
+    following_handle: str = \
         get_full_domain(following_nickname + '@' + following_domain,
                         following_port)
     if text_in_file(following_handle, following_file, False):
@@ -242,7 +242,8 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
     """Returns a list of domains for followers
     """
     domain = remove_domain_port(domain)
-    followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    followers_file: str = \
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not is_a_file(followers_file):
         return []
 
@@ -254,7 +255,7 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
 
     domains_list: list[str] = []
     for handle in lines:
-        handle = remove_eol(handle)
+        handle: str = remove_eol(handle)
         follower_domain, _ = get_domain_from_actor(handle)
         if not follower_domain:
             continue
@@ -275,30 +276,31 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
         print('No follower_nickname for ' + follower_domain)
         return False
     domain = remove_domain_port(domain)
-    followers_file = acct_dir(base_dir, nickname, domain) + '/followers.txt'
+    followers_file: str = \
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not is_a_file(followers_file):
         return False
-    handle = follower_nickname + '@' + follower_domain
+    handle: str = follower_nickname + '@' + follower_domain
 
     already_following: bool = False
 
-    followers_str = load_string(followers_file,
-                                'EX: is_follower_of_person ' +
-                                followers_file)
+    followers_str: str = load_string(followers_file,
+                                     'EX: is_follower_of_person ' +
+                                     followers_file)
     if followers_str is None:
-        followers_str: str = ''
+        followers_str = ''
 
     if handle in followers_str:
         already_following = True
     else:
-        paths = get_user_paths()
+        paths: list[str] = get_user_paths()
         for user_path in paths:
-            url = '://' + follower_domain + user_path + follower_nickname
+            url: str = '://' + follower_domain + user_path + follower_nickname
             if url in followers_str:
                 already_following = True
                 break
         if not already_following:
-            url = '://' + follower_domain + '/' + follower_nickname
+            url: str = '://' + follower_domain + '/' + follower_nickname
             if url in followers_str:
                 already_following = True
 
@@ -312,24 +314,24 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     """Removes a person to the follow list
     """
     domain = remove_domain_port(domain)
-    handle = nickname + '@' + domain
-    handle_to_unfollow = follow_nickname + '@' + follow_domain
+    handle: str = nickname + '@' + domain
+    handle_to_unfollow: str = follow_nickname + '@' + follow_domain
     if group_account:
         handle_to_unfollow = '!' + handle_to_unfollow
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     if not is_a_dir(dir_str):
         makedir(dir_str)
-    handle_dir = acct_handle_dir(base_dir, handle)
+    handle_dir: str = acct_handle_dir(base_dir, handle)
     if not is_a_dir(handle_dir):
         makedir(handle_dir)
 
-    accounts_dir = acct_dir(base_dir, nickname, domain)
-    filename = accounts_dir + '/' + follow_file
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
+    filename: str = accounts_dir + '/' + follow_file
     if not is_a_file(filename):
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
-    handle_to_unfollow_lower = handle_to_unfollow.lower()
+    handle_to_unfollow_lower: str = handle_to_unfollow.lower()
     if not text_in_file(handle_to_unfollow_lower, filename, False):
         if debug:
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
@@ -354,7 +356,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
-    unfollowed_filename = accounts_dir + '/unfollowed.txt'
+    unfollowed_filename: str = accounts_dir + '/unfollowed.txt'
     if is_a_file(unfollowed_filename):
         if not text_in_file(handle_to_unfollow_lower,
                             unfollowed_filename, False):
@@ -383,13 +385,13 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
                   follow_file: str) -> None:
     """Removes all follows
     """
-    dir_str = data_dir(base_dir)
+    dir_str: str = data_dir(base_dir)
     if not is_a_dir(dir_str):
         makedir(dir_str)
-    accounts_dir = acct_dir(base_dir, nickname, domain)
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir):
         makedir(accounts_dir)
-    filename = accounts_dir + '/' + follow_file
+    filename: str = accounts_dir + '/' + follow_file
     if is_a_file(filename):
         erase_file(filename,
                    'EX: clear_follows unable to delete ' + filename)
@@ -409,8 +411,8 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     # account holders
     # if not authenticated:
     #     return 9999
-    accounts_dir = acct_dir(base_dir, nickname, domain)
-    filename = accounts_dir + '/' + follow_file
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
+    filename: str = accounts_dir + '/' + follow_file
     if not is_a_file(filename):
         return 0
     ctr: int = 0
@@ -455,10 +457,10 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     if '/' + follow_file not in path:
         return None
     # handle page numbers
-    header_only = True
-    page_number = None
+    header_only: bool = True
+    page_number: int = None
     if '?page=' in path:
-        page_number: int = path.split('?page=')[1]
+        page_number = path.split('?page=')[1]
         if len(page_number) > 5:
             page_number = "1"
         if page_number == 'true' or not authorized:
@@ -510,7 +512,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     if not page_number:
         page_number = 1
 
-    next_page_number = int(page_number + 1)
+    next_page_number: int = int(page_number + 1)
     following_of_actor = local_actor_url(http_prefix, nickname, domain)
     part_of_str = following_of_actor + '/' + follow_file
     collection_id = part_of_str + '?page=' + str(page_number)

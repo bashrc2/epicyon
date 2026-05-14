@@ -31,7 +31,7 @@ def get_donation_url(actor_json: {}) -> str:
         return ''
     if not isinstance(actor_json['attachment'], list):
         return ''
-    donation_type_list = _get_donation_types()
+    donation_type_list: list[str] = _get_donation_types()
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
@@ -99,8 +99,8 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
     if not actor_json.get('attachment'):
         actor_json['attachment']: list[dict] = []
 
-    donation_type = _get_donation_types()
-    donate_name = None
+    donation_type: list[str] = _get_donation_types()
+    donate_name: str = None
     for payment_service in donation_type:
         if payment_service in donate_url:
             donate_name = payment_service
@@ -108,7 +108,7 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         return
 
     # remove any existing value
-    property_found = None
+    property_found: str = None
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))
@@ -133,7 +133,7 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
     if not_url:
         return
 
-    donate_value = \
+    donate_value: str = \
         '<a href="' + donate_url + \
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
         donate_url + '</a>'
