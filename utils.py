@@ -2539,7 +2539,7 @@ def _is_reserved_name(nickname: str) -> bool:
     reserved_names: list[str] = (
         'users', 'accounts', 'profile', 'statuses', 'packs', 'backend',
         'search', 'channel', 'config', 'settings', 'credentials', 'apis',
-        'http', 'https', 'ipfs', 'ipns', 'laravel', 'js', 'root', 'webmail',
+        'http', 'https', 'ipfs', 'ipns', 'laravel', 'root', 'webmail',
         'mail', 'statistics'
     )
     if nickname in reserved_names:
