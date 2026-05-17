@@ -25,6 +25,7 @@
     --post-bg-color: #282c37;
     --code-color: lightblue;
     --column-left-color: #282c37;
+	--column-icons-width-mobile: 5%;
     --link-bg-color: #282c37;
     --dropdown-fg-color: #dddddd;
     --dropdown-bg-color: #111;
@@ -2878,6 +2879,7 @@ address {
     .columnIcons img {
         float: right;
         margin-right: 1vw;
+		width: var(--column-icons-width-mobile);
     }
     .pageslist {
         font-size: var(--font-size-pageslist);
