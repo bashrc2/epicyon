@@ -2051,14 +2051,36 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     continue
                 if property_dict['name'] == "GPSLongitude":
                     longitude = property_dict['value']
+                    is_west = False
+                    if isinstance(longitude, str):
+                        if 'E' in longitude:
+                            longitude = longitude.replace('E', '')
+                        elif 'W' in longitude:
+                            longitude = longitude.replace('W', '')
+                            is_west = True
                     if not is_float(longitude):
                         if isinstance(longitude, str):
                             longitude = float(longitude)
+                            if is_west and longitude > 0:
+                                longitude = -longitude
+                    if not isinstance(longitude, float):
+                        longitude = None
                 if property_dict['name'] == "GPSLatitude":
                     latitude = property_dict['value']
+                    is_south = False
+                    if isinstance(latitude, str):
+                        if 'S' in latitude:
+                            latitude = latitude.replace('S', '')
+                            is_south = True
+                        elif 'N' in latitude:
+                            latitude = latitude.replace('N', '')
                     if not is_float(latitude):
                         if isinstance(latitude, str):
                             latitude = float(latitude)
+                            if is_south and latitude > 0:
+                                latitude = -latitude
+                    if not isinstance(latitude, float):
+                        latitude = None
             if latitude is not None and \
                longitude is not None:
                 osm_domain = 'osm.org'
