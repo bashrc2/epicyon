@@ -317,14 +317,18 @@ def get_location_from_post(post_json_object: {}) -> str:
                     continue
                 if property_dict['name'] == "GPSLongitude":
                     longitude = property_dict['value']
+                    is_west = False
                     if isinstance(longitude, str):
                         if 'E' in longitude:
                             longitude = longitude.replace('E', '')
                         elif 'W' in longitude:
                             longitude = longitude.replace('W', '')
+                            is_west = True
                     if not is_float(longitude):
                         if isinstance(longitude, str):
                             longitude = float(longitude)
+                            if is_west and longitude > 0:
+                                longitude = - longitude
                 if property_dict['name'] == "GPSLatitude":
                     latitude = property_dict['value']
                     is_south = False
