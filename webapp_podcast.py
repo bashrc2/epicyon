@@ -143,15 +143,17 @@ def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
         return ''
     ctr: int = 1
     html_str: str = ''
-    for _ in podcast_properties[key]:
+    for item in podcast_properties[key]:
+        if not isinstance(item, dict):
+            continue
         transcript_url: str = None
-        if podcast_properties[key].get('url'):
-            url_str: str = get_url_from_post(podcast_properties[key]['url'])
+        if item.get('url'):
+            url_str: str = get_url_from_post(item['url'])
             if url_str:
                 transcript_url = remove_html(url_str)
-        elif podcast_properties[key].get('uri'):
-            if isinstance(podcast_properties[key]['uri'], str):
-                transcript_url = podcast_properties[key]['uri']
+        elif item.get('uri'):
+            if isinstance(item['uri'], str):
+                transcript_url = item['uri']
         if not transcript_url:
             continue
         if ctr > 1:
