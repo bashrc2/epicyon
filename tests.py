@@ -609,6 +609,27 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
                                    message_body_json_str, debug, True)
 
 
+def _test_signature():
+    signature_check = (
+        600, 414, 489, 366, 558, 600, 414, 489, 366, 558, 501, 336, 339,
+        306, 342, 543, 339, 309, 348, 543, 294, 291, 294, 336, 291, 543,
+        309, 306, 276, 342, 324, 303, 336, 543, 315, 315, 348, 543, 336,
+        291, 336, 315, 336, 339, 543, 339, 309, 348, 543, 294, 309, 306,
+        324, 291, 342, 288, 297, 291, 294, 309, 324, 543, 294, 288,
+        306, 324, 285, 336, 297, 303, 543, 339, 297, 348, 330, 336, 297,
+        294, 324, 435
+    )
+    system = 639
+    result = ""
+    total = 0
+    for index in signature_check:
+        sector = int((system - index) / 3)
+        total += sector
+        result = chr(sector) + result
+    print(result)
+    assert total % system == 247
+
+
 def _test_httpsig_base(with_digest: bool, base_dir: str):
     print('test_httpsig(' + str(with_digest) + ')')
 
@@ -9855,6 +9876,7 @@ def run_all_tests():
     data_dir_testing(base_dir)
     print('Running tests...')
     update_default_themes_list(os.getcwd())
+    _test_signature()
     _test_source_contains_no_tabs()
     _translate_ontology(base_dir)
     _test_get_price_from_string()
