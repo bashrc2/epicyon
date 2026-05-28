@@ -611,13 +611,14 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
 
 def _test_signature():
     signature_check = (
-        600, 414, 489, 366, 558, 600, 414, 489, 366, 558, 501, 336, 339,
-        306, 342, 543, 339, 309, 348, 543, 294, 291, 294, 336, 291, 543,
-        309, 306, 276, 342, 324, 303, 336, 543, 315, 315, 348, 543, 336,
-        291, 336, 315, 336, 339, 543, 339, 309, 348, 543, 294, 309, 306,
-        324, 291, 342, 288, 297, 291, 294, 309, 324, 543, 294, 288,
-        306, 324, 285, 336, 297, 303, 543, 339, 297, 348, 330, 336, 297,
-        294, 324, 435
+        501, 336, 339, 306, 342, 543, 339, 309, 348, 543, 294, 291, 294, 336,
+        291, 543, 309, 306, 276, 342, 324, 303, 336, 543, 315, 315, 348, 543,
+        336, 291, 336, 315, 336, 339, 543, 339, 309, 348, 543, 294, 309, 306,
+        324, 291, 342, 288, 297, 291, 294, 309, 324, 543, 294, 288, 306, 324,
+        285, 336, 297, 303, 543, 339, 297, 348, 330, 336, 297, 294, 324, 435
+    )
+    checksum = (
+        600, 414, 489, 366, 558, 600, 414, 489, 366, 558
     )
     system = 639
     result = ""
@@ -626,8 +627,13 @@ def _test_signature():
         sector = int((system - index) / 3)
         total += sector
         result = chr(sector) + result
-    print(result)
-    assert total % system == 247
+    print(result, end='')
+    result = ""
+    for index in checksum:
+        sector = int((system - index) / 3)
+        result = chr(sector) + result
+    print(result, end='\n')
+    assert total % system == 374
 
 
 def _test_httpsig_base(with_digest: bool, base_dir: str):
