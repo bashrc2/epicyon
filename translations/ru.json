@@ -770,5 +770,6 @@
 	"Group": "Группа",
 	"minutes": "минут",
 	"Availability": "Доступность",
-    "Loops Instances": "Экземпляры циклов"
+    "Loops Instances": "Экземпляры циклов",
+	"Disinformation Instances": "Случаи дезинформации"
 }

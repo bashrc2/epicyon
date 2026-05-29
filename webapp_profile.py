@@ -1540,6 +1540,19 @@ def html_profile(signing_priv_key_pem: str,
                               'EX: html_profile unable to read 2 ' +
                               follow_requests_filename + ' [ex]')
                 if follow_requests_list is not None:
+                    # custom disinformation domains file
+                    disinfo_filename = \
+                        data_dir(base_dir) + '/disinfo.json'
+                    if not is_a_file(disinfo_filename):
+                        # default disinformation domains file
+                        disinfo_filename = base_dir + '/cwlists/iftas.json'
+                    # load disinformation domains file
+                    disinfo_domains = load_json(disinfo_filename)
+                    # string which gets appended if follower domain is in
+                    # the disinformation domains list
+                    disinfo_str = \
+                        ' (' + translate['Disinformation Instances'] + ')'
+                    # for each follow request pending
                     for follower_handle in follow_requests_list:
                         if not follower_handle:
                             continue
@@ -1559,6 +1572,12 @@ def html_profile(signing_priv_key_pem: str,
                         new_follower_domain: str = ''
                         if follower_domain not in curr_follower_domains:
                             new_follower_domain = ' ✨'
+
+                        # check disinformation domains list
+                        if disinfo_domains:
+                            if disinfo_domains.get('domains'):
+                                if follower_domain in disinfo_domains:
+                                    new_follower_domain += disinfo_str
 
                         # Show the handle of the potential follower
                         # being approved, linking to search on that handle
