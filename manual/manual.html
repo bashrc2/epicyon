@@ -1011,6 +1011,15 @@ then select the <strong>edit</strong> icon. Open the <strong>Filtering
 and blocking</strong> section and look for <strong>“Add content warnings
 for the following sites”</strong>. You can then select the types of
 warnings to be added to your timeline.</p>
+<p>When receiving a follow request if manual authorisation is required
+then in addition a warning may be shown if the requester belongs to one
+of the disinformation domains within <em>cwlists/iftas.json</em>.
+Because adversaries are always changing, if you want to create your own
+disinformation domain list then copy <em>cwlists/iftas.json</em> to
+<em>accounts/disinfo.json</em> and then with your favourite editor
+change the domains as needed. You will also need to set permissions on
+the new file to ensure that it’s readable by the <em>epicyon</em>
+operating system user account.</p>
 <h2 id="emergencies">Emergencies</h2>
 <p>The fediverse is typically calmer than the centralized social
 networks, but there can be times when disputes break out and tempers

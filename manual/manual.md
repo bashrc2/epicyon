@@ -731,6 +731,8 @@ Content warning lists are lists of domains and/or keywords which can be used to 
 
 From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and look for **"Add content warnings for the following sites"**. You can then select the types of warnings to be added to your timeline.
 
+When receiving a follow request if manual authorisation is required then in addition a warning may be shown if the requester belongs to one of the disinformation domains within *cwlists/iftas.json*. Because adversaries are always changing, if you want to create your own disinformation domain list then copy *cwlists/iftas.json* to *accounts/disinfo.json* and then with your favourite editor change the domains as needed. You will also need to set permissions on the new file to ensure that it's readable by the *epicyon* operating system user account.
+
 ## Emergencies
 The fediverse is typically calmer than the centralized social networks, but there can be times when disputes break out and tempers become heated. In the worst cases this can lead to administrator burnout and instances shutting down.
 
