@@ -12,6 +12,8 @@ from utils import load_json
 from utils import get_content_from_post
 from utils import content_is_single_url
 from utils import is_yggdrasil_address
+from utils import get_attributed_to
+from utils import has_object_dict
 from data import is_a_dir
 
 
@@ -169,10 +171,23 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         if matched:
             continue
 
-        # match domains within the content
+        # match domains within the content and the original post author
         if item.get('domains'):
+            # when checking domains also check the domain of the post author.
+            # A typical scenario might be someone you follow boosting a post
+            # from a disinformation instance
+            attrib_str: str = ''
+            this_post_json: dict = post_json_object
+            if has_object_dict(post_json_object):
+                this_post_json = post_json_object['object']
+            if this_post_json.get('attributedTo'):
+                attrib: str = get_attributed_to(this_post_json['attributedTo'])
+                if attrib:
+                    attrib_str = ' ' + attrib
+
             matched, cw_text = \
-                _add_cw_match_domains(item, content, cw_text, warning)
+                _add_cw_match_domains(item, content + attrib_str, cw_text,
+                                      warning)
 
         if matched:
             continue
