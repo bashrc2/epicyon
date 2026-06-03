@@ -1,8 +1,6 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
-<center>
-<img src="https://libreserver.org/epicyon/images/login.png" width="20%"/>
-</center>
+<img src="https://libreserver.org/epicyon/images/login.png" width="20%" style="text-align: center;"/>
 
 Epicyon is an ActivityPub server for people who are tired of Big Tech social media and want something simpler which they can self host on minimal hardware. Connect with friends instead of getting mired in horrible and irrelevant business models.
 
