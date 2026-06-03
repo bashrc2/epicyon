@@ -1,8 +1,10 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
+<center>
 <img src="https://libreserver.org/epicyon/images/login.png" width="20%"/>
+</center>
 
-Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitable for self-hosting a small number of accounts on low power systems.
+Epicyon is an ActivityPub server for people who are tired of Big Tech social media and want something simpler which they can self host on minimal hardware. Connect with friends instead of getting mired in horrible and irrelevant business models.
 
 Key features:
 
@@ -22,8 +24,6 @@ Key features:
  * Written in Python, with few dependencies.
  * Can also federate on Tor, i2p, and yggdrasil.
  * AGPL license, which big tech hates.
-
-Epicyon is for people who are tired of *enshittified Big Tech garbage* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *doomscrolling* and *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
 
 [Install](INSTALL.md) - [User Manual](manual/manual.epub) - [Keyboard navigation](README_keyboard_navigation.md) - [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md) - [Principles of Unity](principlesofunity.md) - [C2S Desktop Client](README_desktop_client.md) - [Coding Style](README_coding_style.md)
 
