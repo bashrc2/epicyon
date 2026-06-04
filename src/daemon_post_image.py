@@ -1,0 +1,85 @@
+__filename__ = "daemon_post_image.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.7.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@libreserver.org"
+__status__ = "Production"
+__module_group__ = "Daemon POST"
+
+import os
+import errno
+from socket import error as SocketError
+from src.httpcodes import http_404
+from src.utils import acct_dir
+from src.utils import binary_is_image
+from src.formats import get_image_extension_from_mime_type
+from src.data import save_binary
+from src.data import is_a_dir
+from src.data import is_a_file
+
+
+def receive_image_attachment(self, length: int, path: str, base_dir: str,
+                             domain: str, debug: bool,
+                             outbox_authenticated: bool) -> None:
+    """Receives an image via POST
+    """
+    if not outbox_authenticated:
+        if debug:
+            print('DEBUG: unauthenticated attempt to ' +
+                  'post image to outbox')
+        self.send_response(403)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return
+    path_users_section = path.split('/users/')[1]
+    if '/' not in path_users_section:
+        http_404(self, 12)
+        self.server.postreq_busy = False
+        return
+    self.post_from_nickname = path_users_section.split('/')[0]
+    accounts_dir = acct_dir(base_dir, self.post_from_nickname, domain)
+    if not is_a_dir(accounts_dir):
+        http_404(self, 13)
+        self.server.postreq_busy = False
+        return
+
+    try:
+        media_bytes = self.rfile.read(length)
+    except SocketError as ex:
+        if ex.errno == errno.ECONNRESET:
+            print('EX: POST media_bytes ' +
+                  'connection reset by peer')
+        else:
+            print('EX: POST media_bytes socket error')
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return
+    except ValueError as ex:
+        print('EX: POST media_bytes rfile.read failed, ' + str(ex))
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return
+
+    media_filename_base = accounts_dir + '/upload'
+    media_filename = \
+        media_filename_base + '.' + \
+        get_image_extension_from_mime_type(self.headers['Content-type'])
+    if not binary_is_image(media_filename, media_bytes):
+        print('WARN: _receive_image image binary is not recognized ' +
+              media_filename)
+    save_binary(media_bytes, media_filename,
+                'EX: receive_image_attachment unable to write ' +
+                media_filename)
+    if debug:
+        if is_a_file(media_filename):
+            file_size: int = os.path.getsize(media_filename)
+            print('DEBUG: uploaded image saved to ' + media_filename + ' ' +
+                  str(file_size) + ' bytes')
+        else:
+            print('WARN: uploaded image not saved ' + media_filename)
+    self.send_response(201)
+    self.end_headers()
+    self.server.postreq_busy = False

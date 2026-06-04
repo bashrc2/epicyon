@@ -3,4 +3,5 @@ git stash
 git pull
 chown -R epicyon:epicyon *
 chmod 644 *.py
+chmod 644 src/*.py
 systemctl restart epicyon

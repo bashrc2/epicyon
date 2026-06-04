@@ -1,0 +1,739 @@
+__filename__ = "daemon_get_images.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.7.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@libreserver.org"
+__status__ = "Production"
+__module_group__ = "Daemon GET"
+
+import os
+import datetime
+import time
+from shutil import copyfile
+from src.media import path_is_video
+from src.media import path_is_transcript
+from src.media import path_is_audio
+from src.httpcodes import write2
+from src.httpcodes import http_304
+from src.httpcodes import http_404
+from src.httpheaders import set_headers_etag
+from src.utils import data_dir
+from src.utils import get_nickname_from_actor
+from src.utils import acct_dir
+from src.formats import media_file_mime_type
+from src.formats import get_image_mime_type
+from src.formats import get_image_extensions
+from src.flags import is_image_file
+from src.daemon_utils import etag_exists
+from src.fitnessFunctions import fitness_performance
+from src.person import save_person_qrcode
+from src.lxmf import save_lxmf_qrcode
+from src.data import load_string
+from src.data import load_binary
+from src.data import is_a_file
+
+
+def show_avatar_or_banner(self, referer_domain: str, path: str,
+                          base_dir: str, domain: str,
+                          getreq_start_time, fitness: {},
+                          debug: bool) -> bool:
+    """Shows an avatar or banner or profile background image
+    """
+    if '/users/' not in path:
+        if '/system/accounts/avatars/' not in path and \
+           '/system/accounts/headers/' not in path and \
+           '/accounts/avatars/' not in path and \
+           '/accounts/headers/' not in path:
+            return False
+    if not is_image_file(path):
+        return False
+    if '/system/accounts/avatars/' in path:
+        avatar_str = path.split('/system/accounts/avatars/')[1]
+    elif '/accounts/avatars/' in path:
+        avatar_str = path.split('/accounts/avatars/')[1]
+    elif '/system/accounts/headers/' in path:
+        avatar_str = path.split('/system/accounts/headers/')[1]
+    elif '/accounts/headers/' in path:
+        avatar_str = path.split('/accounts/headers/')[1]
+    else:
+        avatar_str = path.split('/users/')[1]
+    if not ('/' in avatar_str and '.temp.' not in path):
+        return False
+    avatar_nickname = avatar_str.split('/')[0]
+    avatar_file = avatar_str.split('/')[1]
+    avatar_file_ext = avatar_file.split('.')[-1]
+    # remove any numbers, eg. avatar123.png becomes avatar.png
+    if avatar_file.startswith('avatar'):
+        avatar_file = 'avatar.' + avatar_file_ext
+    elif avatar_file.startswith('banner'):
+        avatar_file = 'banner.' + avatar_file_ext
+    elif avatar_file.startswith('search_banner'):
+        avatar_file = 'search_banner.' + avatar_file_ext
+    elif avatar_file.startswith('image'):
+        avatar_file = 'image.' + avatar_file_ext
+    elif avatar_file.startswith('left_col_image'):
+        avatar_file = 'left_col_image.' + avatar_file_ext
+    elif avatar_file.startswith('right_col_image'):
+        avatar_file = 'right_col_image.' + avatar_file_ext
+    elif avatar_file.startswith('watermark_image'):
+        avatar_file = 'watermark_image.' + avatar_file_ext
+    avatar_filename = \
+        acct_dir(base_dir, avatar_nickname, domain) + '/' + avatar_file
+    if not is_a_file(avatar_filename):
+        original_ext = avatar_file_ext
+        original_avatar_file = avatar_file
+        alt_ext = get_image_extensions()
+        alt_found: bool = False
+        for alt in alt_ext:
+            if alt == original_ext:
+                continue
+            avatar_file = \
+                original_avatar_file.replace('.' + original_ext,
+                                             '.' + alt)
+            avatar_filename = \
+                acct_dir(base_dir, avatar_nickname, domain) + \
+                '/' + avatar_file
+            if is_a_file(avatar_filename):
+                alt_found = True
+                break
+        if not alt_found:
+            return False
+    if etag_exists(self, avatar_filename):
+        # The file has not changed
+        http_304(self)
+        return True
+
+    avatar_tm = os.path.getmtime(avatar_filename)
+    last_modified_time = \
+        datetime.datetime.fromtimestamp(avatar_tm, datetime.timezone.utc)
+    last_modified_time_str = \
+        last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+    media_image_type = get_image_mime_type(avatar_file)
+    media_binary = load_binary(avatar_filename,
+                               'EX: unable to read avatar ' +
+                               avatar_filename)
+    if media_binary:
+        set_headers_etag(self, avatar_filename, media_image_type,
+                         media_binary, None,
+                         referer_domain, True,
+                         last_modified_time_str)
+        write2(self, media_binary)
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'show_avatar_or_banner',
+                        debug)
+    return True
+
+
+def show_cached_avatar(self, referer_domain: str, path: str,
+                       base_dir: str, getreq_start_time,
+                       fitness: {}, debug: bool) -> None:
+    """Shows an avatar image obtained from the cache
+    """
+    media_filename = base_dir + '/cache' + path
+    if is_a_file(media_filename):
+        if etag_exists(self, media_filename):
+            # The file has not changed
+            http_304(self)
+            return
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read cached avatar ' +
+                                   media_filename)
+        if media_binary:
+            mime_type = media_file_mime_type(media_filename)
+            set_headers_etag(self, media_filename,
+                             mime_type,
+                             media_binary, None,
+                             referer_domain,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_cached_avatar',
+                                debug)
+            return
+    http_404(self, 46)
+
+
+def show_help_screen_image(self, path: str,
+                           base_dir: str, getreq_start_time,
+                           theme_name: str, domain_full: str,
+                           fitness: {}, debug: bool) -> None:
+    """Shows a help screen image
+    """
+    if not is_image_file(path):
+        return
+    media_str = path.split('/helpimages/')[1]
+    if '/' not in media_str:
+        if not theme_name:
+            theme = 'default'
+        else:
+            theme = theme_name
+        icon_filename = media_str
+    else:
+        theme = media_str.split('/')[0]
+        icon_filename = media_str.split('/')[1]
+    media_filename = \
+        base_dir + '/theme/' + theme + '/helpimages/' + icon_filename
+    # if there is no theme-specific help image then use the default one
+    if not is_a_file(media_filename):
+        media_filename = \
+            base_dir + '/theme/default/helpimages/' + icon_filename
+    if etag_exists(self, media_filename):
+        # The file has not changed
+        http_304(self)
+        return
+    if is_a_file(media_filename):
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read help image ' +
+                                   media_filename)
+        if media_binary:
+            mime_type = media_file_mime_type(media_filename)
+            set_headers_etag(self, media_filename,
+                             mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_help_screen_image',
+                            debug)
+        return
+    http_404(self, 43)
+
+
+def show_manual_image(self, path: str,
+                      base_dir: str, getreq_start_time,
+                      icons_cache: {}, domain_full: str,
+                      fitness: {}, debug: bool) -> None:
+    """Shows an image within the manual
+    """
+    image_filename = path.split('/', 1)[1]
+    if '/' in image_filename:
+        http_404(self, 41)
+        return
+    media_filename = \
+        base_dir + '/manual/' + image_filename
+    if etag_exists(self, media_filename):
+        # The file has not changed
+        http_304(self)
+        return
+    if icons_cache.get(media_filename):
+        media_binary = icons_cache[media_filename]
+        mime_type_str = media_file_mime_type(media_filename)
+        set_headers_etag(self, media_filename,
+                         mime_type_str,
+                         media_binary, None,
+                         domain_full,
+                         False, None)
+        write2(self, media_binary)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_manual_image',
+                            debug)
+        return
+    if is_a_file(media_filename):
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read manual image ' +
+                                   media_filename)
+        if media_binary:
+            mime_type = media_file_mime_type(media_filename)
+            set_headers_etag(self, media_filename,
+                             mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            icons_cache[media_filename] = media_binary
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_manual_image',
+                            debug)
+        return
+    http_404(self, 42)
+
+
+def show_specification_image(self, path: str,
+                             base_dir: str, getreq_start_time,
+                             icons_cache: {}, domain_full: str,
+                             fitness: {}, debug: bool) -> None:
+    """Shows an image within the ActivityPub specification document
+    """
+    image_filename = path.split('/', 1)[1]
+    if '/' in image_filename:
+        http_404(self, 39)
+        return
+    media_filename = \
+        base_dir + '/specification/' + image_filename
+    if etag_exists(self, media_filename):
+        # The file has not changed
+        http_304(self)
+        return
+    if icons_cache.get(media_filename):
+        media_binary = icons_cache[media_filename]
+        mime_type_str = media_file_mime_type(media_filename)
+        set_headers_etag(self, media_filename,
+                         mime_type_str,
+                         media_binary, None,
+                         domain_full,
+                         False, None)
+        write2(self, media_binary)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_specification_image',
+                            debug)
+        return
+    if is_a_file(media_filename):
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read specification image ' +
+                                   media_filename)
+        if media_binary:
+            mime_type = media_file_mime_type(media_filename)
+            set_headers_etag(self, media_filename,
+                             mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            icons_cache[media_filename] = media_binary
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_specification_image',
+                            debug)
+        return
+    http_404(self, 40)
+
+
+def show_share_image(self, path: str,
+                     base_dir: str, getreq_start_time,
+                     domain_full: str, fitness: {},
+                     debug: bool) -> bool:
+    """Show a shared item image
+    """
+    if not is_image_file(path):
+        http_404(self, 101)
+        return True
+
+    media_str = path.split('/sharefiles/')[1]
+    media_filename = base_dir + '/sharefiles/' + media_str
+    if not is_a_file(media_filename):
+        http_404(self, 102)
+        return True
+
+    if etag_exists(self, media_filename):
+        # The file has not changed
+        http_304(self)
+        return True
+
+    media_file_type = get_image_mime_type(media_filename)
+    media_binary = load_binary(media_filename,
+                               'EX: unable to read binary ' +
+                               media_filename)
+    if media_binary:
+        set_headers_etag(self, media_filename,
+                         media_file_type,
+                         media_binary, None,
+                         domain_full,
+                         False, None)
+        write2(self, media_binary)
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'show_share_image',
+                        debug)
+    return True
+
+
+def show_icon(self, path: str,
+              base_dir: str, getreq_start_time,
+              theme_name: str,
+              icons_cache: {}, domain_full: str,
+              fitness: {}, debug: bool) -> None:
+    """Shows an icon
+    """
+    if not path.endswith('.png'):
+        http_404(self, 37)
+        return
+    media_str = path.split('/icons/')[1]
+    if '/' not in media_str:
+        if not theme_name:
+            theme = 'default'
+        else:
+            theme = theme_name
+        icon_filename = media_str
+    else:
+        theme = media_str.split('/')[0]
+        icon_filename = media_str.split('/')[1]
+    media_filename = \
+        base_dir + '/theme/' + theme + '/icons/' + icon_filename
+    if etag_exists(self, media_filename):
+        # The file has not changed
+        http_304(self)
+        return
+    if icons_cache.get(media_str):
+        media_binary = icons_cache[media_str]
+        mime_type_str = media_file_mime_type(media_filename)
+        set_headers_etag(self, media_filename,
+                         mime_type_str,
+                         media_binary, None,
+                         domain_full,
+                         False, None)
+        write2(self, media_binary)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_icon', debug)
+        return
+    if is_a_file(media_filename):
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read icon image ' +
+                                   media_filename)
+        if media_binary:
+            mime_type = media_file_mime_type(media_filename)
+            set_headers_etag(self, media_filename,
+                             mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            icons_cache[media_str] = media_binary
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_icon', debug)
+        return
+    http_404(self, 38)
+
+
+def show_media(self, path: str, base_dir: str,
+               getreq_start_time, fitness: {},
+               debug: bool) -> None:
+    """Returns a media file
+    """
+    if is_image_file(path) or \
+       path_is_video(path) or \
+       path_is_transcript(path) or \
+       path_is_audio(path):
+        media_str = path.split('/media/')[1]
+        media_filename = base_dir + '/media/' + media_str
+        if is_a_file(media_filename):
+            if etag_exists(self, media_filename):
+                # The file has not changed
+                http_304(self)
+                return
+
+            media_file_type = media_file_mime_type(media_filename)
+
+            media_tm = os.path.getmtime(media_filename)
+            last_modified_time = \
+                datetime.datetime.fromtimestamp(media_tm,
+                                                datetime.timezone.utc)
+            last_modified_time_str = \
+                last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+            if media_filename.endswith('.vtt'):
+                media_transcript = \
+                    load_string(media_filename,
+                                'EX: unable to read media binary ' +
+                                media_filename)
+                if media_transcript:
+                    media_file_type = 'text/vtt; charset=utf-8'
+                    media_transcript = media_transcript.encode('utf-8')
+                    set_headers_etag(self, media_filename, media_file_type,
+                                     media_transcript, None,
+                                     None, True,
+                                     last_modified_time_str)
+                    write2(self, media_transcript)
+                    fitness_performance(getreq_start_time,
+                                        fitness,
+                                        '_GET', 'show_media',
+                                        debug)
+                    return
+                http_404(self, 32)
+                return
+
+            if debug:
+                print('DEBUG: showing media ' + media_filename)
+            media_binary = load_binary(media_filename,
+                                       'EX: unable to read media binary ' +
+                                       media_filename)
+            if media_binary:
+                set_headers_etag(self, media_filename, media_file_type,
+                                 media_binary, None,
+                                 None, True,
+                                 last_modified_time_str)
+                write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_media', debug)
+            return
+    http_404(self, 33)
+
+
+def show_qrcode(self, calling_domain: str, path: str,
+                base_dir: str, domain: str, domain_full: str,
+                onion_domain: str, i2p_domain: str,
+                yggdrasil_domain: str,
+                port: int, getreq_start_time,
+                fitness: {}, debug: bool) -> bool:
+    """Shows a QR code for an account
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 93)
+        return True
+    if path.endswith('_lxmf.png'):
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
+        qrcode_scale = 6
+        save_lxmf_qrcode(base_dir, nickname, domain, qrcode_scale)
+    else:
+        if onion_domain:
+            qrcode_domain = onion_domain
+            port = 80
+        elif i2p_domain:
+            qrcode_domain = i2p_domain
+            port = 80
+        elif yggdrasil_domain:
+            qrcode_domain = yggdrasil_domain
+            port = 80
+        else:
+            qrcode_domain = domain
+        save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode.png'
+    if is_a_file(qr_filename):
+        if etag_exists(self, qr_filename):
+            # The file has not changed
+            http_304(self)
+            return True
+
+        tries: int = 0
+        media_binary = None
+        while tries < 5:
+            exc_str = 'EX: _show_qrcode ' + str(tries) + ' [ex]'
+            media_binary = load_binary(qr_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(qr_filename)
+            set_headers_etag(self, qr_filename, mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_qrcode',
+                                debug)
+            return True
+    http_404(self, 94)
+    return True
+
+
+def search_screen_banner(self, path: str,
+                         base_dir: str, domain: str,
+                         getreq_start_time,
+                         domain_full: str,
+                         fitness: {}, debug: bool) -> bool:
+    """Shows a banner image on the search screen
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 95)
+        return True
+    banner_filename = \
+        acct_dir(base_dir, nickname, domain) + '/search_banner.png'
+    if not is_a_file(banner_filename):
+        if is_a_file(base_dir + '/theme/default/search_banner.png'):
+            copyfile(base_dir + '/theme/default/search_banner.png',
+                     banner_filename)
+    if is_a_file(banner_filename):
+        if etag_exists(self, banner_filename):
+            # The file has not changed
+            http_304(self)
+            return True
+
+        tries: int = 0
+        media_binary = None
+        while tries < 5:
+            exc_str = 'EX: _search_screen_banner ' + str(tries) + ' [ex]'
+            media_binary = load_binary(banner_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(banner_filename)
+            set_headers_etag(self, banner_filename, mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'search_screen_banner',
+                                debug)
+            return True
+    http_404(self, 96)
+    return True
+
+
+def column_image(self, side: str, path: str, base_dir: str, domain: str,
+                 getreq_start_time, domain_full: str,
+                 fitness: {}, debug: bool) -> bool:
+    """Shows an image at the top of the left/right column
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 97)
+        return True
+    banner_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + \
+        side + '_col_image.png'
+    if is_a_file(banner_filename):
+        if etag_exists(self, banner_filename):
+            # The file has not changed
+            http_304(self)
+            return True
+
+        tries: int = 0
+        media_binary = None
+        while tries < 5:
+            exc_str = 'EX: _column_image ' + str(tries) + ' [ex]'
+            media_binary = load_binary(banner_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(banner_filename)
+            set_headers_etag(self, banner_filename, mime_type,
+                             media_binary, None,
+                             domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'column_image ' + side,
+                                debug)
+            return True
+    http_404(self, 98)
+    return True
+
+
+def show_default_profile_background(self, base_dir: str, theme_name: str,
+                                    getreq_start_time,
+                                    domain_full: {},
+                                    fitness: {}, debug: bool) -> bool:
+    """If a background image is missing after searching for a handle
+    then substitute this image
+    """
+    image_extensions = get_image_extensions()
+    for ext in image_extensions:
+        bg_filename = \
+            base_dir + '/theme/' + theme_name + '/image.' + ext
+        if is_a_file(bg_filename):
+            if etag_exists(self, bg_filename):
+                # The file has not changed
+                http_304(self)
+                return True
+
+            tries: int = 0
+            bg_binary = None
+            while tries < 5:
+                exc_str = 'EX: _show_default_profile_background ' + \
+                    str(tries) + ' [ex]'
+                bg_binary = load_binary(bg_filename, exc_str)
+                if bg_binary is not None:
+                    break
+                time.sleep(1)
+                tries += 1
+            if bg_binary:
+                if ext == 'jpg':
+                    ext = 'jpeg'
+                set_headers_etag(self, bg_filename,
+                                 'image/' + ext,
+                                 bg_binary, None,
+                                 domain_full,
+                                 False, None)
+                write2(self, bg_binary)
+                fitness_performance(getreq_start_time, fitness,
+                                    '_GET',
+                                    'show_default_profile_background',
+                                    debug)
+                return True
+            break
+
+    http_404(self, 100)
+    return True
+
+
+def show_background_image(self, path: str,
+                          base_dir: str, getreq_start_time,
+                          domain_full: str, fitness: {},
+                          debug: bool) -> bool:
+    """Show a background image
+    """
+    image_extensions = get_image_extensions()
+    for ext in image_extensions:
+        for bg_im in ('follow', 'options', 'login', 'welcome'):
+            # follow screen background image
+            if path.endswith('/' + bg_im + '-background.' + ext):
+                bg_filename = \
+                    data_dir(base_dir) + '/' + \
+                    bg_im + '-background.' + ext
+                if is_a_file(bg_filename):
+                    if etag_exists(self, bg_filename):
+                        # The file has not changed
+                        http_304(self)
+                        return True
+
+                    tries: int = 0
+                    bg_binary = None
+                    while tries < 5:
+                        exc_str = 'EX: _show_background_image ' + \
+                            str(tries) + ' [ex]'
+                        bg_binary = load_binary(bg_filename, exc_str)
+                        if bg_binary is not None:
+                            break
+                        time.sleep(1)
+                        tries += 1
+                    if bg_binary:
+                        if ext == 'jpg':
+                            ext = 'jpeg'
+                        set_headers_etag(self, bg_filename,
+                                         'image/' + ext,
+                                         bg_binary, None,
+                                         domain_full,
+                                         False, None)
+                        write2(self, bg_binary)
+                        fitness_performance(getreq_start_time, fitness,
+                                            '_GET',
+                                            'show_background_image',
+                                            debug)
+                        return True
+    http_404(self, 99)
+    return True
+
+
+def show_emoji(self, path: str,
+               base_dir: str, getreq_start_time,
+               domain_full: {}, fitness: {},
+               debug: bool) -> None:
+    """Returns an emoji image
+    """
+    if is_image_file(path):
+        emoji_str = path.split('/emoji/')[1]
+        emoji_filename = base_dir + '/emoji/' + emoji_str
+        if not is_a_file(emoji_filename):
+            emoji_filename = base_dir + '/emojicustom/' + emoji_str
+        if is_a_file(emoji_filename):
+            if etag_exists(self, emoji_filename):
+                # The file has not changed
+                http_304(self)
+                return
+
+            media_image_type = get_image_mime_type(emoji_filename)
+            media_binary = load_binary(emoji_filename,
+                                       'EX: unable to read emoji image ' +
+                                       emoji_filename)
+            if media_binary:
+                set_headers_etag(self, emoji_filename,
+                                 media_image_type,
+                                 media_binary, None,
+                                 domain_full,
+                                 False, None)
+                write2(self, media_binary)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_emoji', debug)
+            return
+    http_404(self, 36)

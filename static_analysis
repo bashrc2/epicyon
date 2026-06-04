@@ -11,13 +11,27 @@ echo "Starting static analysis"
 for sourceFile in *.py
 do
     if [[ "$sourceFile" == *"flycheck"* ]]; then
-	continue
+        continue
     fi
     result=$($cmd "$sourceFile")
     if [ "$result" ]; then
-	echo ''
-	echo "$result"
-	exit 1
+        echo ''
+        echo "$result"
+        exit 1
+    fi
+    echo -n '.'
+done
+
+for sourceFile in src/*.py
+do
+    if [[ "$sourceFile" == *"flycheck"* ]]; then
+        continue
+    fi
+    result=$($cmd "$sourceFile")
+    if [ "$result" ]; then
+        echo ''
+        echo "$result"
+        exit 1
     fi
     echo -n '.'
 done

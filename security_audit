@@ -1,2 +1,3 @@
 #!/bin/bash
-bandit *.py -x tests.py
+bandit *.py
+bandit src/*.py -x tests.py

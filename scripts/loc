@@ -1,2 +1,2 @@
 #!/bin/bash
-find . -name '*.py' | xargs wc -l
+find . -name 'src/*.py' | xargs wc -l
