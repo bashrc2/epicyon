@@ -34,113 +34,117 @@
     <style data-name="default">
       @font-face {
           font-family: 'Special Elite';
-      font-style: normal;
-      src: url('./fonts/SpecialElite.ttf') format('TrueType');
+          font-style: normal;
+          src: url('./fonts/SpecialElite.ttf') format('TrueType');
       }
 
       :root {
-      --width: 1000px;
-      --font-main: 'Special Elite', monospace;
-      --font-secondary: 'Special Elite', monospace;
-      --font-scale: 20px;
-      --background-color: #fbfbf6;
-      --heading-color: #333;
-      --text-color: #333;
-      --link-color: #333;
-      --visited-color:  #333;
-      --code-background-color: #333;
-      --code-color: #fbfbf6;
-      --blockquote-color: #fbfbf6;
+          --width: 1000px;
+          --font-main: 'Special Elite', monospace;
+          --font-secondary: 'Special Elite', monospace;
+          --font-scale: 20px;
+          --background-color: #fbfbf6;
+          --heading-color: #333;
+          --text-color: #333;
+          --link-color: #333;
+          --visited-color:  #333;
+          --code-background-color: #333;
+          --code-color: #fbfbf6;
+          --blockquote-color: #fbfbf6;
       }
 
       body {
-      font-family: var(--font-secondary);
-      font-size: var(--font-scale);
-      margin: auto;
-      padding: 20px;
-      max-width: var(--width);
-      text-align: left;
-      background-color: var(--background-color);
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      line-height: 1.5;
-      color: var(--text-color);
+          font-family: var(--font-secondary);
+          font-size: var(--font-scale);
+          margin: auto;
+          padding: 20px;
+          max-width: var(--width);
+          text-align: left;
+          background-color: var(--background-color);
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          line-height: 1.5;
+          color: var(--text-color);
       }
 
       h1, h2, h3, h4, h5, h6 {
-      font-family: var(--font-main);
-      color: var(--heading-color);
-      font-size: var(--font-scale);
-      font-weight: 400;
+          font-family: var(--font-main);
+          color: var(--heading-color);
+          font-size: var(--font-scale);
+          font-weight: 400;
       }
 
       a {
-      color: var(--link-color);
-      cursor: pointer;
+          color: var(--link-color);
+          cursor: pointer;
       }
 
       nav a {
-      margin-right: 8px;
+          margin-right: 8px;
       }
 
       strong, b {
-      color: var(--heading-color);
+          color: var(--heading-color);
       }
 
       button {
-      margin: 0;
-      cursor: pointer;
+          margin: 0;
+          cursor: pointer;
       }
 
       main {
-      line-height: 1.6;
+          line-height: 1.6;
       }
 
       table {
-      width: 100%;
+          width: 100%;
       }
 
       hr {
-      border: 0;
-      border-top: 1px dashed;
+          border: 0;
+          border-top: 1px dashed;
       }
 
       img {
-      max-width: 100%;
+          max-width: 100%;
       }
 
       code {
-      font-family: monospace;
-      padding: 2px;
-      background-color: var(--code-background-color);
-      color: var(--code-color);
-      border-radius: 3px;
+          font-family: monospace;
+          padding: 2px;
+          background-color: var(--code-background-color);
+          color: var(--code-color);
+          border-radius: 3px;
       }
 
       blockquote {
-      border-left: 1px solid #999;
-      color: var(--code-color);
-      padding-left: 20px;
-      font-style: italic;
+          border-left: 1px solid #999;
+          color: var(--code-color);
+          padding-left: 20px;
+          font-style: italic;
       }
 
       footer {
-      padding: 25px 0;
-      text-align: center;
+          padding: 25px 0;
+          text-align: center;
       }
 
       .inline {
-      width: auto !important;
+          width: auto !important;
       }
 
       .highlight, .code {
-      padding: 1px 15px;
-      background-color: var(--code-background-color);
-      color: var(--code-color);
-      border-radius: 3px;
-      margin-block-start: 1em;
-      margin-block-end: 1em;
-      overflow-x: auto;
+          padding: 1px 15px;
+          background-color: var(--code-background-color);
+          color: var(--code-color);
+          border-radius: 3px;
+          margin-block-start: 1em;
+          margin-block-end: 1em;
+          overflow-x: auto;
+      }
+
+      .name span {
+          color: darkred;
       }
       
     </style>
@@ -150,15 +154,17 @@
     
     <header>
       <p align="center"><img src="./images/login.png" alt="Epicyon logo" width="200"></p>
-      <nav>
-        <p><a href='epicyon.tar.gz'><b>Download</b></a>
-          <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/manual/manual.epub'><b>Manual</b></a>
-          <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/README_goals.md'><b>Goals</b></a>
-          <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md'><b>Commandline</b></a>
-          <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/code-of-conduct.md'><b>CoC</b></a>
-          <a href='https://gitlab.com/bashrc2/epicyon'><b>Repo</b></a>
-          <a href='https://www.patreon.com/freedombone'><b>Donate</b></a></p>
-      </nav>
+      <center>
+        <nav>
+          <p><a href='epicyon.tar.gz' class="name"><b><span>Download</span></b></a>—
+            <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/manual/manual.epub'  class="name"><b><span>Manual</span></b></a>—
+            <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/README_goals.md'  class="name"><b><span>Goals</span></b></a>—
+            <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md' class="name"><b><span>Commandline</span></b></a>—
+            <a href='https://gitlab.com/bashrc2/epicyon/-/blob/main/code-of-conduct.md' class="name"><b><span>CoC</span></b></a>—
+            <a href='https://gitlab.com/bashrc2/epicyon' class="name"><b><span>Repo</span></b></a>—
+            <a href='https://www.patreon.com/freedombone' class="name"><b><span>Donate</span></b></a></p>
+        </nav>
+      </center>
     </header>
     <main>
 
@@ -212,9 +218,9 @@
             <img alt="Hand coded" src="./images/gnu-linux.gif" alt "Made with GNU/Linux">
             <img alt="Hand coded" src="./images/valid-html5.gif" alt="Valid HTML5">
             <img alt="Hand coded" src="./images/internetprivacy.gif" alt="Internet privacy now!>
-            <img alt="Hand coded" src="./images/sanehtml.gif" alt="Classic HTML: sane, simple">
-            <img alt="Hand coded" src="./images/fediverse.png" alt="Join the Fediverse">
-            <img alt="Hand coded" src="./images/gpl3.gif" alt="GPL version 3">
+                                                                          <img alt="Hand coded" src="./images/sanehtml.gif" alt="Classic HTML: sane, simple">
+                                                                          <img alt="Hand coded" src="./images/fediverse.png" alt="Join the Fediverse">
+                                                                          <img alt="Hand coded" src="./images/gpl3.gif" alt="GPL version 3">
           </p>
         </span>
         
