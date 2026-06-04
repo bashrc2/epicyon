@@ -1,164 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>  
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
-	
-	<title>Epicyon ActivityPub Serverd</title>
-	<link rel="canonical" href="https://libreserver.org/epicyon/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
+    
+    <title>Epicyon ActivityPub Serverd</title>
+    <link rel="canonical" href="https://libreserver.org/epicyon/">
 
-	<!-- Primary Meta Tags -->
-	<meta name="title" content="Epicyon ActivityPub Server">
-	<meta name="description" content="Fediverse server supporting the ACtivityPub protocol">
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Epicyon ActivityPub Server">
+    <meta name="description" content="Fediverse server supporting the ACtivityPub protocol">
 
-	<!-- Open Graph / Facebook -->
-	<meta property="og:site_name" content="Epicyon ActivityPub Server">
-	<meta property="og:title" content="Epicyon ActivityPub Server">
-	<meta property="og:type" content="SoftwareApplication">
-	<meta property="og:url" content="https://libreserver.org/epicyon/">
-	<meta property="og:description" content="Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.">
-	<meta property="og:image" content="https://libreserver.org/epicyon/images/logo.png">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="Epicyon ActivityPub Server">
+    <meta property="og:title" content="Epicyon ActivityPub Server">
+    <meta property="og:type" content="SoftwareApplication">
+    <meta property="og:url" content="https://libreserver.org/epicyon/">
+    <meta property="og:description" content="Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.">
+    <meta property="og:image" content="https://libreserver.org/epicyon/images/logo.png">
 
-	<!-- Microdata -->
-	<script type="application/ld+json">
-	  {
-		  "@context": "http://schema.org",
-		  "@type": "SoftwareApplication",
-		  "name": "Epicyon ActivityPub Server",
-		  "headline": "Epicyon ActivityPub Server",
-		  "url": "https://libreserver.org/epicyon/",
-		  "description": "Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.",
-		  "image": "https://libreserver.org/epicyon/images/logo.png"
-	  }
-	</script>
-	<style data-name="default">
-	  @font-face {
-		  font-family: 'Special Elite';
-		  font-style: normal;
-		  src: url('./fonts/SpecialElite.ttf') format('TrueType');
-	  }
+    <!-- Microdata -->
+    <script type="application/ld+json">
+      {
+          "@context": "http://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Epicyon ActivityPub Server",
+          "headline": "Epicyon ActivityPub Server",
+          "url": "https://libreserver.org/epicyon/",
+          "description": "Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.",
+          "image": "https://libreserver.org/epicyon/images/logo.png"
+      }
+    </script>
+    <style data-name="default">
+      @font-face {
+          font-family: 'Special Elite';
+      font-style: normal;
+      src: url('./fonts/SpecialElite.ttf') format('TrueType');
+      }
 
-	  :root {
-		  --width: 1000px;
-  		  --font-main: 'Special Elite', monospace;
-		  --font-secondary: 'Special Elite', monospace;
-		  --font-scale: 20px;
-		  --background-color: #fbfbf6;
-		  --heading-color: #333;
-		  --text-color: #333;
-		  --link-color: #333;
-		  --visited-color:  #333;
-		  --code-background-color: #333;
-		  --code-color: #fbfbf6;
-		  --blockquote-color: #fbfbf6;
-	  }
+      :root {
+      --width: 1000px;
+      --font-main: 'Special Elite', monospace;
+      --font-secondary: 'Special Elite', monospace;
+      --font-scale: 20px;
+      --background-color: #fbfbf6;
+      --heading-color: #333;
+      --text-color: #333;
+      --link-color: #333;
+      --visited-color:  #333;
+      --code-background-color: #333;
+      --code-color: #fbfbf6;
+      --blockquote-color: #fbfbf6;
+      }
 
-	  body {
-		  font-family: var(--font-secondary);
-		  font-size: var(--font-scale);
-		  margin: auto;
-		  padding: 20px;
-		  max-width: var(--width);
-		  text-align: left;
-		  background-color: var(--background-color);
-		  word-wrap: break-word;
-		  overflow-wrap: break-word;
-		  line-height: 1.5;
-		  color: var(--text-color);
-	  }
+      body {
+      font-family: var(--font-secondary);
+      font-size: var(--font-scale);
+      margin: auto;
+      padding: 20px;
+      max-width: var(--width);
+      text-align: left;
+      background-color: var(--background-color);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.5;
+      color: var(--text-color);
+      }
 
-	  h1, h2, h3, h4, h5, h6 {
-		  font-family: var(--font-main);
-		  color: var(--heading-color);
-  		  font-size: var(--font-scale);
-  		  font-weight: 400;
-	  }
+      h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-main);
+      color: var(--heading-color);
+      font-size: var(--font-scale);
+      font-weight: 400;
+      }
 
-	  a {
-		  color: var(--link-color);
-		  cursor: pointer;
-	  }
+      a {
+      color: var(--link-color);
+      cursor: pointer;
+      }
 
-	  nav a {
-		  margin-right: 8px;
-	  }
+      nav a {
+      margin-right: 8px;
+      }
 
-	  strong, b {
-		  color: var(--heading-color);
-	  }
+      strong, b {
+      color: var(--heading-color);
+      }
 
-	  button {
-		  margin: 0;
-		  cursor: pointer;
-	  }
+      button {
+      margin: 0;
+      cursor: pointer;
+      }
 
-	  main {
-		  line-height: 1.6;
-	  }
+      main {
+      line-height: 1.6;
+      }
 
-	  table {
-		  width: 100%;
-	  }
+      table {
+      width: 100%;
+      }
 
-	  hr {
-		  border: 0;
-		  border-top: 1px dashed;
-	  }
+      hr {
+      border: 0;
+      border-top: 1px dashed;
+      }
 
-	  img {
-		  max-width: 100%;
-	  }
+      img {
+      max-width: 100%;
+      }
 
-	  code {
-		  font-family: monospace;
-		  padding: 2px;
-		  background-color: var(--code-background-color);
-		  color: var(--code-color);
-		  border-radius: 3px;
-	  }
+      code {
+      font-family: monospace;
+      padding: 2px;
+      background-color: var(--code-background-color);
+      color: var(--code-color);
+      border-radius: 3px;
+      }
 
-	  blockquote {
-		  border-left: 1px solid #999;
-		  color: var(--code-color);
-		  padding-left: 20px;
-		  font-style: italic;
-	  }
+      blockquote {
+      border-left: 1px solid #999;
+      color: var(--code-color);
+      padding-left: 20px;
+      font-style: italic;
+      }
 
-	  footer {
-		  padding: 25px 0;
-		  text-align: center;
-	  }
+      footer {
+      padding: 25px 0;
+      text-align: center;
+      }
 
-	  .inline {
-		  width: auto !important;
-	  }
+      .inline {
+      width: auto !important;
+      }
 
-	  .highlight, .code {
-		  padding: 1px 15px;
-		  background-color: var(--code-background-color);
-		  color: var(--code-color);
-		  border-radius: 3px;
-		  margin-block-start: 1em;
-		  margin-block-end: 1em;
-		  overflow-x: auto;
-	  }
+      .highlight, .code {
+      padding: 1px 15px;
+      background-color: var(--code-background-color);
+      color: var(--code-color);
+      border-radius: 3px;
+      margin-block-start: 1em;
+      margin-block-end: 1em;
+      overflow-x: auto;
+      }
       
-	</style>
+    </style>
   </head>
 
   <body class="post " onload="(function() { document.cookie = `timezone=${Intl.DateTimeFormat().resolvedOptions().timeZone};path=/`; })()">
-	
-	<header>
-	  <p align="center"><img src="./images/login.png" alt="Epicyon logo" width="200"></p>
+    
+    <header>
+      <p align="center"><img src="./images/login.png" alt="Epicyon logo" width="200"></p>
       <nav>
-		<p><a href='epicyon.tar.gz'><b>Download</b></a>
-		  <a href='https://gitlab.com/bashrc2/epicyon'><b>Repo</b></a>
-		  <a href='https://www.patreon.com/freedombone'><b>Donate</b></a></p>
+        <p><a href='epicyon.tar.gz'><b>Download</b></a>
+          <a href='https://gitlab.com/bashrc2/epicyon'><b>Repo</b></a>
+          <a href='https://www.patreon.com/freedombone'><b>Donate</b></a></p>
       </nav>
-	</header>
-	<main>
+    </header>
+    <main>
 
       <p>Epicyon is an ActivityPub server for people who are tired of Big Tech social media and want something simpler which they can self host on minimal hardware. Connect with friends instead of getting mired in horrible and irrelevant business models.</p>
+
+      <hr />
 
       <h2><b>Key features:</b></h2>
       <ul>
@@ -174,36 +176,42 @@
         <li>No fashionable web frameworks. <i>"Boring by design"</i>.</li>
         <li>No blockchain or AI garbage.</li>
         <li>Written in Python, with few dependencies.</li>
-		<li>Can also federate on Tor, i2p, and yggdrasil.</li>
+        <li>Can also federate on Tor, i2p, and yggdrasil.</li>
         <li>AGPL license, which Big Tech hates.</li>
       </ul>
 
+      <hr />
+
       <h2><b>An Internet of People, Not Corporate Manipulation</b></h2>
       <p>
-		Ever feel like corporate social media is leaving you stressed and angry? Tired of adverts and bizarre agendas which you have no interest in? On the open web there is no pressure to perform for an algorithm or play to an audience. Experience the astonishingly novel concept of <i>just hanging out with friends</i>.
+        Ever feel like corporate social media is leaving you stressed and angry? Tired of adverts and bizarre agendas which you have no interest in? On the open web there is no pressure to perform for an algorithm or play to an audience. Experience the astonishingly novel concept of <i>just hanging out with friends</i>.
       </p>
+
+      <hr />
 
       <h2><b>Small Tech Design</b></h2>
       <p>
         Epicyon is written in Python with a HTML+CSS web interface and uses no javascript which makes display in a web browser very lightweight. It can run as a <a href="https://en.wikipedia.org/wiki/Progressive_web_application">Progressive Web App</a> on mobile.
       </p>
 
-      <h2><b>Be the change. Install today!</b></h2>
-	  <p>For installation details see the <a href="https://gitlab.com/bashrc2/epicyon/-/blob/main/INSTALL.md">INSTALL file</a></p>
+      <hr />
 
-<footer>  
-  <span id="footer-directive">
-    <hr />
-	<p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a>
-          <img alt="Created by a human" src="./images/created_by_a_human.png">
-          <img alt="Hand coded" src="./images/hand_coded.png">
-		  <img alt="Hand coded" src="./images/gnu-linux.gif">
-		  <img alt="Hand coded" src="./images/valid-html5.gif">
-		  <img alt="Hand coded" src="./images/sanehtml.gif">
-		  <img alt="Hand coded" src="./images/gpl3.gif">
-	</p>
-  </span>
-  
-</footer>
-</body>
+      <h2><b>Be the change. Install today!</b></h2>
+      <p>For installation details see the <a href="https://gitlab.com/bashrc2/epicyon/-/blob/main/INSTALL.md">INSTALL file</a></p>
+
+      <footer>  
+        <span id="footer-directive">
+          <hr />
+          <p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a>
+            <img alt="Created by a human" src="./images/created_by_a_human.png">
+            <img alt="Hand coded" src="./images/hand_coded.png">
+            <img alt="Hand coded" src="./images/gnu-linux.gif">
+            <img alt="Hand coded" src="./images/valid-html5.gif">
+            <img alt="Hand coded" src="./images/sanehtml.gif">
+            <img alt="Hand coded" src="./images/gpl3.gif">
+          </p>
+        </span>
+        
+      </footer>
+  </body>
 </html>
