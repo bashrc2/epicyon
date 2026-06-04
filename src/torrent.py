@@ -54,7 +54,8 @@ def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
 
     if not post_json_object.get('infohash_v1') and \
        not post_json_object.get('infohash_v2'):
-        print('REJECT: infohash missing from src.torrent ' + str(post_json_object))
+        print('REJECT: infohash missing from src.torrent ' +
+              str(post_json_object))
         return None
 
     # who is this attributed to ?
