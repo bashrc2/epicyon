@@ -7,3 +7,6 @@ fi
 git stash
 git remote set-url origin https://gitlab.com/bashrc2/epicyon.git
 git checkout main
+chown -R epicyon:epicyon *
+chmod 644 *.py
+chmod 644 src/*.py
