@@ -141,7 +141,9 @@ def create_feature_reject(federation_list: [],
                           nickname: str, domain: str, port: int,
                           to_url: str, cc_url: str, http_prefix: str,
                           object_json: {}) -> {}:
-    """ Create json for ActivityPub FeatureRequest Reject """
+    """ Create json for ActivityPub FeatureRequest Reject
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
     if not object_json.get('id'):
         return None
 
