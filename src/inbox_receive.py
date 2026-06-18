@@ -1215,7 +1215,7 @@ def receive_feature_request(session,
                               sender_url, '', http_prefix, message_json)
     if debug:
         pprint(reject_json)
-        print('DEBUG: sending FeatureRequest Reject from ' +
+        print('REJECT: sending FeatureRequest Reject from ' +
               actor_nickname + '@' + actor_domain_full +
               ' to ' + sender_nickname + '@' + sender_domain_full)
 
