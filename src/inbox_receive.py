@@ -9,11 +9,14 @@ __module_group__ = "Timeline"
 
 import os
 import time
+from pprint import pprint
+from src.flags import has_group_type
 from src.flags import is_recent_post
 from src.flags import is_quote_toot
 from src.status import actor_status_expired
 from src.quote import get_quote_toot_url
 from src.timeFunctions import get_account_timezone
+from src.utils import is_yggdrasil_address
 from src.utils import valid_nickname
 from src.utils import get_mutuals_of_person
 from src.utils import get_actor_from_post_id
@@ -94,6 +97,8 @@ from src.data import load_string
 from src.data import erase_file
 from src.data import is_a_file
 from src.data import is_a_dir
+from src.acceptreject import create_feature_reject
+from src.posts import send_signed_json
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -1123,6 +1128,152 @@ def receive_like(recent_posts_cache: {},
                                     block_government,
                                     block_bluesky,
                                     block_nostr)
+    return True
+
+
+def receive_feature_request(session,
+                            session_onion, session_i2p, session_yggdrasil,
+                            handle: str, base_dir: str,
+                            http_prefix: str, domain: str, port: int,
+                            onion_domain: str, i2p_domain: str,
+                            yggdrasil_domain: str,
+                            cached_webfingers: {},
+                            person_cache: {}, message_json: {},
+                            debug: bool,
+                            signing_priv_key_pem: str,
+                            system_language: str,
+                            mitm_servers: [],
+                            blocked_cache: [],
+                            block_federated: [],
+                            federation_list: [],
+                            send_threads: [], post_log: [],
+                            sites_unavailable: []) -> bool:
+    """Receives a FeatureRequest activity within the POST section of HTTPServer
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
+    if message_json['type'] != 'FeatureRequest':
+        return False
+    if not has_object_string(message_json, debug):
+        return False
+    if not message_json.get('id'):
+        return False
+    if not isinstance(message_json['id'], str):
+        return False
+    if not message_json.get('instrument'):
+        return False
+    if not isinstance(message_json['instrument'], str):
+        return False
+    actor_url = message_json['object']
+    actor_nickname = get_nickname_from_actor(actor_url)
+    if not actor_nickname:
+        if debug:
+            print('DEBUG: FeatureRequest has no actor nickname ' + actor_url)
+        return False
+    if '/' + actor_nickname + '/' in actor_url:
+        actor_url = \
+            actor_url.split('/' + actor_nickname + '/')[0] + \
+            '/' + actor_nickname
+    actor_domain, actor_port = get_domain_from_actor(actor_url)
+    if not actor_domain:
+        if debug:
+            print('DEBUG: FeatureRequest has no actor domain ' + actor_url)
+        return False
+    actor_domain_full = get_full_domain(actor_domain, actor_port)
+    handle = actor_nickname + '@' + actor_domain_full
+    handle_dir = acct_handle_dir(base_dir, handle)
+    if not is_a_dir(handle_dir):
+        print('DEBUG: unknown recipient of FeatureRequest - ' + handle)
+        return True
+
+    sender_url = message_json['id']
+    sender_nickname = get_nickname_from_actor(sender_url)
+    if not sender_nickname:
+        if debug:
+            print('DEBUG: FeatureRequest has no sender nickname ' + sender_url)
+        return False
+    if '/' + sender_nickname + '/' in sender_url:
+        sender_url = \
+            sender_url.split('/' + sender_nickname + '/')[0] + \
+            '/' + sender_nickname
+    sender_domain, sender_port = get_domain_from_actor(sender_url)
+    if not sender_domain:
+        if debug:
+            print('DEBUG: FeatureRequest has no sender domain ' + sender_url)
+        return False
+    sender_domain_full = get_full_domain(sender_domain, sender_port)
+    if is_blocked(base_dir, actor_nickname, actor_domain_full,
+                  sender_nickname, sender_domain_full,
+                  blocked_cache, block_federated):
+        sender_handle = sender_nickname + '@' + sender_domain_full
+        print('BLOCK: FeatureRequest sender actor is blocked ' +
+              sender_handle + ' by ' + actor_url)
+        return False
+
+    reject_json = \
+        create_feature_reject(federation_list,
+                              actor_nickname, actor_domain, actor_port,
+                              sender_url, '', http_prefix, message_json)
+    if debug:
+        pprint(reject_json)
+        print('DEBUG: sending FeatureRequest Reject from ' +
+              actor_nickname + '@' + actor_domain_full +
+              ' to ' + sender_nickname + '@' + sender_domain_full)
+
+    curr_session = session
+    curr_domain = domain
+    curr_port = port
+    curr_http_prefix = http_prefix
+    if onion_domain and \
+       not curr_domain.endswith('.onion') and \
+       sender_domain.endswith('.onion'):
+        curr_session = session_onion
+        curr_http_prefix: str = 'http'
+        curr_domain = onion_domain
+        curr_port = 80
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain +
+                  ' to ' + curr_domain)
+    elif (i2p_domain and
+          not curr_domain.endswith('.i2p') and
+          sender_domain.endswith('.i2p')):
+        curr_session = session_i2p
+        curr_http_prefix: str = 'http'
+        curr_domain = i2p_domain
+        curr_port = 80
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain +
+                  ' to ' + curr_domain)
+    elif (yggdrasil_domain and
+          not is_yggdrasil_address(curr_domain) and
+          is_yggdrasil_address(sender_domain)):
+        curr_session = session_yggdrasil
+        curr_http_prefix: str = 'http'
+        curr_domain = yggdrasil_domain
+        curr_port = 80
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain +
+                  ' to ' + curr_domain)
+
+    extra_headers: dict = {}
+    client_to_server: bool = False
+    group_account: bool = False
+    if has_group_type(base_dir, actor_url, person_cache):
+        group_account = True
+    send_signed_json(reject_json, curr_session, base_dir,
+                     sender_nickname, sender_domain, sender_port,
+                     actor_nickname, domain, curr_port,
+                     curr_http_prefix, client_to_server,
+                     federation_list,
+                     send_threads, post_log, cached_webfingers,
+                     person_cache, debug, __version__, None,
+                     group_account, signing_priv_key_pem,
+                     326735214, curr_domain,
+                     onion_domain, i2p_domain, yggdrasil_domain,
+                     extra_headers, sites_unavailable,
+                     system_language, mitm_servers)
     return True
 
 

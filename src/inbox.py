@@ -129,6 +129,7 @@ from src.inbox_receive import inbox_update_index
 from src.inbox_receive import receive_edit_to_post
 from src.inbox_receive import receive_actor_status
 from src.inbox_receive import receive_like
+from src.inbox_receive import receive_feature_request
 from src.inbox_receive import receive_reaction
 from src.inbox_receive import receive_zot_reaction
 from src.inbox_receive import receive_bookmark
@@ -353,7 +354,7 @@ def inbox_message_has_params(message_json: {}) -> bool:
         allowed_without_to_param = [
             'Like', 'EmojiReact', 'Follow', 'Join', 'Request',
             'Accept', 'Capability', 'Undo', 'Move', 'sm:ActorStatus',
-            'ActorStatus'
+            'ActorStatus', 'FeatureRequest'
         ]
         if message_json['type'] not in allowed_without_to_param:
             return False
@@ -384,7 +385,7 @@ def inbox_permitted_message(domain: str, message_json: {},
 
     always_allowed_types = (
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move',
-        'QuoteRequest', 'sm:ActorStatus', 'ActorStatus'
+        'QuoteRequest', 'sm:ActorStatus', 'ActorStatus', 'FeatureRequest'
     )
     if message_json['type'] in always_allowed_types:
         return True
@@ -2027,6 +2028,31 @@ def _inbox_after_initial(server, inbox_start_time,
             print('DEBUG: ActorStatus from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_actor_status',
+                            debug)
+        inbox_start_time = time.time()
+        return False
+
+    if receive_feature_request(session,
+                               session_onion, session_i2p, session_yggdrasil,
+                               handle, base_dir,
+                               http_prefix, domain, port,
+                               onion_domain, i2p_domain,
+                               yggdrasil_domain,
+                               cached_webfingers,
+                               person_cache, message_json,
+                               debug,
+                               signing_priv_key_pem,
+                               system_language,
+                               mitm_servers,
+                               server.blocked_cache,
+                               server.block_federated,
+                               federation_list,
+                               send_threads, post_log,
+                               sites_unavailable):
+        if debug:
+            print('DEBUG: FeatureRequest received from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_like',
                             debug)
         inbox_start_time = time.time()
         return False

@@ -884,7 +884,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
         curr_session = session_i2p
     elif is_yggdrasil_address(domain) and session_yggdrasil:
         curr_session = session_yggdrasil
-    extra_headers = {}
+    extra_headers: dict = {}
     domain_full = get_full_domain(domain, from_port)
     remove_followers_sync(followers_sync_cache,
                           nickname_to_follow,
