@@ -2136,15 +2136,15 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
 def is_dm(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """
+    dm_types = (
+        'Note', 'Event', 'Page', 'Patch', 'EncryptedMessage', 'Article'
+    )
     if post_json_object['type'] != 'Create':
         return False
     if not has_object_dict(post_json_object):
         return False
     if post_json_object['object']['type'] != 'ChatMessage':
-        if post_json_object['object']['type'] not in ('Note', 'Event',
-                                                      'Page', 'Patch',
-                                                      'EncryptedMessage',
-                                                      'Article'):
+        if post_json_object['object']['type'] not in dm_types:
             return False
     if post_json_object['object'].get('moderationStatus'):
         return False
