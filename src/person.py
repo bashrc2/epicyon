@@ -54,6 +54,7 @@ from src.utils import acct_handle_dir
 from src.utils import safe_system_string
 from src.utils import get_attachment_property_value
 from src.utils import get_nickname_from_actor
+from src.utils import get_domain_from_actor
 from src.utils import remove_html
 from src.utils import contains_invalid_chars
 from src.utils import contains_invalid_actor_url_chars
@@ -510,6 +511,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         person_id + '/avatar' + \
         str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
+    full_domain = get_full_domain(domain, port)
     _, published = get_status_number()
     new_person = {
         '@context': [
@@ -531,6 +533,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             'pendingFollowers': person_id + '/pendingFollowers'
         },
         'featured': person_id + '/collections/featured',
+        'featuredCollections': person_id + '/featured_collections',
         'featuredTags': person_id + '/collections/tags',
         'followers': person_id + '/followers',
         'following': person_id + '/following',
@@ -582,8 +585,12 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'tag': [],
         'type': person_type,
         'url': person_url,
+        'webfinger': nickname + '@' + full_domain,
         'vcard:Address': '',
-        'vcard:bday': ''
+        'vcard:bday': '',
+        'showFeatured': False,
+        'showMedia': False,
+        'showRepliesInMedia': False
     }
 
     # extra fields used only by groups
@@ -926,6 +933,31 @@ def person_upgrade_actor(base_dir: str, person_json: {},
     if 'searchableBy' not in person_json:
         person_json['searchableBy']: list[str] = []
         update_actor = True
+
+    if 'showFeatured' not in person_json:
+        person_json['showFeatured']: bool = False
+        update_actor = True
+
+    if 'showMedia' not in person_json:
+        person_json['showMedia']: bool = False
+        update_actor = True
+
+    if 'showRepliesInMedia' not in person_json:
+        person_json['showRepliesInMedia']: bool = False
+        update_actor = True
+
+    if 'featuredCollections' not in person_json:
+        person_json['featuredCollections']: str = \
+            person_json['id'] + '/featured_collections'
+        update_actor = True
+
+    if 'webfinger' not in person_json:
+        nickname = get_nickname_from_actor(person_json['id'])
+        domain, port = get_domain_from_actor(person_json['id'])
+        if nickname and domain:
+            full_domain = get_full_domain(domain, port)
+            person_json['webfinger']: str = nickname + '@' + full_domain
+            update_actor = True
 
     # add a speaker endpoint
     if not person_json.get('tts'):
