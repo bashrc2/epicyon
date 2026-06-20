@@ -160,6 +160,7 @@ from src.daemon_get_feeds import show_following_feed
 from src.daemon_get_feeds import show_moved_feed
 from src.daemon_get_feeds import show_inactive_feed
 from src.daemon_get_feeds import show_followers_feed
+from src.daemon_get_feeds import show_featured_collections_feed
 from src.daemon_get_buttons_announce import announce_button
 from src.daemon_get_buttons_announce import announce_button_undo
 from src.daemon_get_buttons import follow_approve_button
@@ -6194,6 +6195,29 @@ def daemon_http_get(self) -> None:
 
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show profile 5 done',
+                        self.server.debug)
+
+    if show_featured_collections_feed(self, authorized,
+                                      calling_domain,
+                                      referer_domain,
+                                      self.path,
+                                      self.server.base_dir,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.port,
+                                      getreq_start_time,
+                                      proxy_type,
+                                      self.server.debug,
+                                      curr_session,
+                                      self.server.fitness,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain,
+                                      self.server.yggdrasil_domain):
+        self.server.getreq_busy = False
+        return
+
+    fitness_performance(getreq_start_time, self.server.fitness,
+                        '_GET', 'show_featured_collections_feed done',
                         self.server.debug)
 
     # look up a person

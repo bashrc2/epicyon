@@ -24,6 +24,7 @@ from src.utils import convert_domains
 from src.utils import get_json_content_from_accept
 from src.relationships import get_inactive_feed
 from src.relationships import get_moved_feed
+from src.collections import get_featured_collections_feed
 
 
 def show_shares_feed(self, authorized: bool,
@@ -1023,5 +1024,58 @@ def show_followers_feed(self, authorized: bool,
                                     '_show_followers_feed json', debug)
             else:
                 http_404(self, 85)
+        return True
+    return False
+
+
+def show_featured_collections_feed(self, authorized: bool,
+                                   calling_domain: str, referer_domain: str,
+                                   path: str, base_dir: str, http_prefix: str,
+                                   domain: str, port: int, getreq_start_time,
+                                   proxy_type: str,
+                                   debug: bool, curr_session,
+                                   fitness: {},
+                                   onion_domain: str,
+                                   i2p_domain: str,
+                                   yggdrasil_domain: str) -> bool:
+    """Shows the featured collections feed for a particular account/actor
+    """
+    collection: dict = \
+        get_featured_collections_feed(base_dir, domain, port, path,
+                                      http_prefix, authorized)
+    if collection:
+        if not request_http(self.headers, debug):
+            if secure_mode(curr_session, proxy_type, False,
+                           self.server, self.headers, self.path):
+                if '/users/' in path:
+                    nickname = path.split('/users/')[1]
+                    if '/' in nickname:
+                        nickname = nickname.split('/')[0]
+
+                msg_str = json.dumps(collection,
+                                     ensure_ascii=False)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str, http_prefix,
+                                          domain,
+                                          onion_domain,
+                                          i2p_domain,
+                                          yggdrasil_domain)
+                msg = msg_str.encode('utf-8')
+                msglen = len(msg)
+                accept_str = self.headers['Accept']
+                protocol_str = \
+                    get_json_content_from_accept(accept_str)
+                set_headers(self, protocol_str, msglen,
+                            None, calling_domain, False)
+                write2(self, msg)
+                fitness_performance(getreq_start_time,
+                                    fitness, '_GET',
+                                    '_show_featured_collections_feed json',
+                                    debug)
+            else:
+                http_404(self, 85)
+        else:
+            http_404(self, 86)
         return True
     return False
