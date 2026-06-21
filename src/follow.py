@@ -420,7 +420,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
         load_list(filename,
                   'EX: _get_no_of_follows ' + filename)
     if lines is None:
-        return False
+        return 0
 
     if lines:
         for line in lines:
