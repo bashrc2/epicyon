@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import time
+import datetime
 import urllib.parse
 from dateutil.parser import parse
 from src.auth import create_password
@@ -1388,10 +1389,18 @@ def _get_published_date_str(post_json_object: {},
     datetime_object = \
         convert_published_to_local_timezone(datetime_object, timezone)
 
-    if not show_published_date_only:
-        published_str = datetime_object.strftime("%a %b %d, %H:%M")
-    else:
-        published_str = datetime_object.strftime("%a %b %d")
+    current_year = datetime.date.today().year
+    datetime_format = "%a %b %d, %H:%M"
+    if show_published_date_only:
+        datetime_format = "%a %b %d"
+
+    # if not posted this year then show the year
+    if current_year != datetime_object.year:
+        datetime_format = "%a %b %d %Y, %H:%M"
+        if show_published_date_only:
+            datetime_format = "%a %b %d %Y"
+
+    published_str = datetime_object.strftime(datetime_format)
 
     # if the post has replies then append a symbol to indicate this
     if post_json_object.get('hasReplies'):
