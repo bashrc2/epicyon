@@ -48,7 +48,7 @@ This is a Free Software project and there is no intention to support or endorse 
 
 ## No synthetically generated content
 
-Changes created using generative AI tooling (such as Claude, CodeConductor, Devin or CoPilot) will not be accepted.
+Changes created using generative AI tooling (such as Claude, Cursor, CodeConductor, Devin or CoPilot) will not be accepted.
 
 ## Raising concerns
 
