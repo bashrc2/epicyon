@@ -1789,8 +1789,8 @@ def _profile_post_ricochet_address(fields: {}, actor_json: {},
     current_ricochet_address = get_ricochet_address(actor_json)
     if fields.get('ricochetAddress'):
         if fields['ricochetAddress'] != current_ricochet_address:
-            set_briar_address(actor_json,
-                              fields['ricochetAddress'])
+            set_ricochet_address(actor_json,
+                                 fields['ricochetAddress'])
             actor_changed = True
     else:
         if current_ricochet_address:

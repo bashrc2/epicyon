@@ -85,6 +85,8 @@ def set_ricochet_address(actor_json: {}, ricochet_address: str) -> None:
         not_ricochet_address = True
     if '<' in ricochet_address:
         not_ricochet_address = True
+    if '(' in ricochet_address:
+        not_ricochet_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment']: list[dict] = []
