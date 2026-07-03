@@ -2663,6 +2663,15 @@ def file_last_modified(filename: str) -> str:
     return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def file_created_date(filename: str) -> str:
+    """Returns the date when a file was created
+    """
+    time_val = os.path.getctime(filename)
+    created_time = \
+        datetime.datetime.strptime(time_val, "%a %b %d %H:%M:%S %Y")
+    return created_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def get_css(css_filename: str) -> str:
     """Retrieves the css for a given file, or from a cache
     """

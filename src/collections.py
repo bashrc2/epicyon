@@ -12,8 +12,13 @@ from src.utils import valid_nickname
 from src.utils import get_full_domain
 from src.utils import local_actor_url
 from src.utils import remove_domain_port
-from src.utils import load_json
+from src.utils import remove_html
+from src.utils import file_last_modified
+from src.utils import file_created_date
+from src.utils import get_nickname_from_actor
+from src.utils import get_domain_from_actor
 from src.data import is_a_file
+from src.data import load_list
 
 
 def _get_no_of_featured_collections(base_dir: str,
@@ -22,18 +27,71 @@ def _get_no_of_featured_collections(base_dir: str,
     """
     ending: str = '/featured_collections'
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
-    collection_filename: str = accounts_dir + ending + '.json'
+    collection_filename: str = accounts_dir + ending + '.txt'
     if not is_a_file(collection_filename):
         return 0
-    lines: list[dict] = load_json(collection_filename)
-    if lines is None:
+    lines: list[str] = load_list(collection_filename,
+                                 '_get_no_of_featured_collections ' +
+                                 'unable to load list')
+    if not lines:
         return 0
-    if not isinstance(lines, list):
-        return 0
-    return len(lines)
+    ctr = 0
+    for text in lines:
+        if text.startswith('# '):
+            ctr += 1
+    return ctr
 
 
-def get_featured_collections_feed(base_dir: str, domain: str, port: int,
+def _text_to_number(url: str) -> str:
+    """converts text to a number string used as an id
+    """
+    result = ''
+    for char in url:
+        num = ord(char)
+        if num > 99:
+            continue
+        if num > 9:
+            result = str(num) + result
+        else:
+            result = '0' + str(num) + result
+    num = (7439 + int(result)) % 99999999999999999999
+    return str(num)
+
+
+def _update_collections(collection_name: str, collection_items: [],
+                        collection: [],
+                        http_prefix: str, domain: str,
+                        actor: str, published: str,
+                        updated: str):
+    """Updates featured collections
+    """
+    if not collection_name or not collection_items:
+        collection_items.clear()
+        return
+    # create an id number for the collection
+    collection_id = _text_to_number(collection_name)
+    collection_url = \
+        http_prefix + '://' + domain + '/collections/' + collection_id
+    collection_dict = {
+        'attributedTo': actor,
+        'discoverable': True,
+        'id': actor + '/collections/' + collection_id,
+        'name': collection_name,
+        'orderedItems': collection_items.copy(),
+        'published': published,
+        'sensitive': False,
+        'summaryMap': {'en': ''},
+        'totalItems': len(collection_items),
+        'type': 'FeaturedCollection',
+        'updated': updated,
+        'url': collection_url
+    }
+    collection['items'].append(collection_dict)
+    collection_items.clear()
+
+
+def get_featured_collections_feed(base_dir: str,
+                                  nickname: str, domain: str, port: int,
                                   path: str, http_prefix: str,
                                   authorized: bool) -> {}:
     """Returns the featured collections feed from GET requests.
@@ -117,15 +175,19 @@ def get_featured_collections_feed(base_dir: str, domain: str, port: int,
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
     accounts_dir = acct_dir(base_dir, nickname, handle_domain)
-    collection_filename = accounts_dir + ending + '.json'
+    collection_filename = accounts_dir + ending + '.txt'
     if not is_a_file(collection_filename):
         return collection
     curr_page: int = 1
-    lines: list[dict] = load_json(collection_filename)
-    if lines is None:
+    lines: list[str] = load_list(collection_filename,
+                                 'get_featured_collections_feed ' +
+                                 'unable to load list')
+    if not lines:
         return collection
-    if not isinstance(lines, list):
-        return collection
+
+    # get file creation date
+    published = file_created_date(collection_filename)
+    updated = file_last_modified(collection_filename)
 
     fep_url = 'https://w3id.org/fep/7aa9'
     collection_context = {
@@ -165,9 +227,62 @@ def get_featured_collections_feed(base_dir: str, domain: str, port: int,
         'type': 'CollectionPage'
     }
 
+    actor = http_prefix + '://' + domain + '/users/' + nickname
+
+    collection_name = ''
+    collection_items: list[dict] = []
+    for text in lines:
+        if not text:
+            continue
+        if text.startswith('# '):
+            # store the current collection
+            _update_collections(collection_name, collection_items,
+                                collection,
+                                http_prefix, domain,
+                                actor, published,
+                                updated)
+            # get the new collection name
+            new_collection_name = text.split('# ', 1)[1]
+            collection_name = remove_html(new_collection_name).strip()
+            continue
+        if not collection_name:
+            continue
+        # add a collection item
+        item_url = ''
+        text = remove_html(text)
+        if '/tags/' in text:
+            # hashtag url
+            item_url = text
+        else:
+            # check that this is an actor url
+            item_nickname = get_nickname_from_actor(text)
+            item_domain, _ = get_domain_from_actor(text)
+            if item_nickname and item_domain:
+                item_url = text
+        if item_url:
+            # id for collection item
+            collection_item_id = _text_to_number(item_url)
+            # authorization link
+            feature_authorization = \
+                actor + '/feature_authorizations/' + collection_item_id
+            collection_item_dict = {
+                'featureAuthorization': feature_authorization,
+                'featuredObject': item_url,
+                'id': actor + '/collection_items/' + collection_item_id,
+                'published': published,
+                'type': 'FeaturedItem'
+            }
+            collection_items.append(collection_item_dict)
+    # store the current collection
+    _update_collections(collection_name, collection_items,
+                        collection,
+                        http_prefix, domain,
+                        actor, published,
+                        updated)
+
     for collection_dict in lines:
         if not isinstance(collection_dict, dict):
             continue
         collection['items'].append(collection_dict)
-        collection['totalItems'] += 1
+        collection['totalItems'] = collection['totalItems'] + 1
     return collection

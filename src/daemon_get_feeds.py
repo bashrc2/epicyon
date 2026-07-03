@@ -1031,7 +1031,8 @@ def show_followers_feed(self, authorized: bool,
 def show_featured_collections_feed(self, authorized: bool,
                                    calling_domain: str, referer_domain: str,
                                    path: str, base_dir: str, http_prefix: str,
-                                   domain: str, port: int, getreq_start_time,
+                                   domain: str, port: int,
+                                   getreq_start_time,
                                    proxy_type: str,
                                    debug: bool, curr_session,
                                    fitness: {},
@@ -1040,18 +1041,21 @@ def show_featured_collections_feed(self, authorized: bool,
                                    yggdrasil_domain: str) -> bool:
     """Shows the featured collections feed for a particular account/actor
     """
+    nickname = ''
+    if '/users/' in path:
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+    if not nickname:
+        return False
+
     collection: dict = \
-        get_featured_collections_feed(base_dir, domain, port, path,
+        get_featured_collections_feed(base_dir, nickname, domain, port, path,
                                       http_prefix, authorized)
     if collection:
         if not request_http(self.headers, debug):
             if secure_mode(curr_session, proxy_type, False,
                            self.server, self.headers, self.path):
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-
                 msg_str = json.dumps(collection,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
