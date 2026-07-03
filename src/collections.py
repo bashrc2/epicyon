@@ -22,10 +22,10 @@ def _get_no_of_featured_collections(base_dir: str,
     """
     ending: str = '/featured_collections'
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
-    filename: str = accounts_dir + ending + '.json'
-    if not is_a_file(filename):
+    collection_filename: str = accounts_dir + ending + '.json'
+    if not is_a_file(collection_filename):
         return 0
-    lines: list[dict] = load_json(filename)
+    lines: list[dict] = load_json(collection_filename)
     if lines is None:
         return 0
     if not isinstance(lines, list):
@@ -117,11 +117,11 @@ def get_featured_collections_feed(base_dir: str, domain: str, port: int,
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
     accounts_dir = acct_dir(base_dir, nickname, handle_domain)
-    filename = accounts_dir + ending + '.json'
-    if not is_a_file(filename):
+    collection_filename = accounts_dir + ending + '.json'
+    if not is_a_file(collection_filename):
         return collection
     curr_page: int = 1
-    lines: list[dict] = load_json(filename)
+    lines: list[dict] = load_json(collection_filename)
     if lines is None:
         return collection
     if not isinstance(lines, list):
