@@ -148,6 +148,7 @@ def html_person_options(default_timeline: str,
                         tox_address: str,
                         lxmf_address: str,
                         briar_address: str,
+                        ricochet_address: str,
                         cwtch_address: str,
                         enigma_pub_key: str,
                         pgp_pub_key: str,
@@ -519,6 +520,15 @@ def html_person_options(default_timeline: str,
             options_str += \
                 '  <p class="imText">briar://' + \
                 remove_html(briar_address) + '</p>\n'
+    if ricochet_address:
+        if ricochet_address.startswith('ricochet:'):
+            options_str += \
+                '  <p class="imText">' + \
+                remove_html(ricochet_address) + '</p>\n'
+        else:
+            options_str += \
+                '  <p class="imText">briar://' + \
+                remove_html(ricochet_address) + '</p>\n'
     if cwtch_address:
         options_str += \
             '  <p class="imText">Cwtch: ' + \

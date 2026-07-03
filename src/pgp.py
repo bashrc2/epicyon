@@ -37,6 +37,7 @@ from src.loops import get_loops
 from src.xmpp import get_xmpp_address
 from src.matrix import get_matrix_address
 from src.briar import get_briar_address
+from src.ricochet import get_ricochet_address
 from src.cwtch import get_cwtch_address
 from src.blog import get_blog_address
 from src.website import get_website
@@ -967,6 +968,11 @@ def actor_to_vcard(actor: {}, domain: str, translate: {},
         if briar_address.startswith('briar://'):
             briar_address = briar_address.split('briar://')[1]
         vcard_str += 'IMPP:briar:' + briar_address + '\n'
+    ricochet_address = get_ricochet_address(actor)
+    if ricochet_address:
+        if ricochet_address.startswith('ricochet:'):
+            ricochet_address = ricochet_address.split('ricochet:')[1]
+        vcard_str += 'IMPP:ricochet:' + ricochet_address + '\n'
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
         vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
@@ -1094,6 +1100,11 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {},
         vcard_str += '    <impp>' + \
             '<parameters><type><text>briar</text></type></parameters>' + \
             '<uri>' + briar_address + '</uri></impp>\n'
+    ricochet_address = get_ricochet_address(actor)
+    if ricochet_address:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>ricochet</text></type></parameters>' + \
+            '<uri>' + ricochet_address + '</uri></impp>\n'
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
         vcard_str += '    <impp>' + \

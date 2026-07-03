@@ -66,6 +66,7 @@ from src.blog import get_blog_address
 from src.tox import get_tox_address
 from src.lxmf import get_lxmf_address
 from src.briar import get_briar_address
+from src.ricochet import get_ricochet_address
 from src.cwtch import get_cwtch_address
 from src.pgp import get_pgp_fingerprint
 from src.pgp import get_email_address
@@ -712,6 +713,7 @@ def show_person_options(self, calling_domain: str, path: str,
         tox_address = None
         lxmf_address = None
         briar_address = None
+        ricochet_address = None
         cwtch_address = None
         ssb_address = None
         email_address = None
@@ -761,6 +763,7 @@ def show_person_options(self, calling_domain: str, path: str,
             tox_address = get_tox_address(actor_json)
             lxmf_address = get_lxmf_address(actor_json)
             briar_address = get_briar_address(actor_json)
+            ricochet_address = get_ricochet_address(actor_json)
             cwtch_address = get_cwtch_address(actor_json)
             email_address = get_email_address(actor_json)
             deltachat_invite = \
@@ -819,7 +822,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 xmpp_address, matrix_address,
                                 ssb_address, blog_address,
                                 tox_address, lxmf_address,
-                                briar_address,
+                                briar_address, ricochet_address,
                                 cwtch_address,
                                 enigma_pub_key,
                                 pgp_pub_key, pgp_fingerprint,

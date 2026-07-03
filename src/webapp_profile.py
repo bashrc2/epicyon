@@ -94,6 +94,7 @@ from src.enigma import get_enigma_pub_key
 from src.tox import get_tox_address
 from src.lxmf import get_lxmf_address
 from src.briar import get_briar_address
+from src.ricochet import get_ricochet_address
 from src.cwtch import get_cwtch_address
 from src.filters import is_filtered
 from src.follow import is_follower_of_person
@@ -1337,6 +1338,7 @@ def html_profile(signing_priv_key_pem: str,
     tox_address: str = get_tox_address(profile_json)
     lxmf_address: str = get_lxmf_address(profile_json)
     briar_address: str = get_briar_address(profile_json)
+    ricochet_address: str = get_ricochet_address(profile_json)
     cwtch_address: str = get_cwtch_address(profile_json)
     verified_site_checkmark: str = '✔'
     premium: bool = is_premium_account(base_dir, nickname, domain)
@@ -1344,6 +1346,7 @@ def html_profile(signing_priv_key_pem: str,
        art_site_url or music_site_url or youtube or peertube or \
        loops or pixelfed or xmpp_address or matrix_address or \
        ssb_address or tox_address or lxmf_address or briar_address or \
+       ricochet_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or pgp_fingerprint or \
        email_address or deltachat_invite:
         donate_section = '<div class="container">\n'
@@ -1477,6 +1480,15 @@ def html_profile(signing_priv_key_pem: str,
                 donate_section += \
                     '<p>briar://<label class="toxaddr">' + \
                     briar_address + '</label></p>\n'
+        if ricochet_address:
+            if ricochet_address.startswith('ricochet:'):
+                donate_section += \
+                    '<p><label class="toxaddr">' + \
+                    ricochet_address + '</label></p>\n'
+            else:
+                donate_section += \
+                    '<p>ricochet:<label class="toxaddr">' + \
+                    ricochet_address + '</label></p>\n'
         if cwtch_address:
             donate_section += \
                 '<p>Cwtch: <label class="toxaddr">' + \
@@ -3119,6 +3131,7 @@ def _html_edit_profile_contact_info(email_address: str,
                                     tox_address: str,
                                     lxmf_address: str,
                                     briar_address: str,
+                                    ricochet_address: str,
                                     cwtch_address: str,
                                     translate: {},
                                     youtube: str,
@@ -3144,6 +3157,8 @@ def _html_edit_profile_contact_info(email_address: str,
     edit_profile_form += edit_text_field('LXMF', 'lxmfAddress', lxmf_address)
     edit_profile_form += edit_text_field('Briar', 'briarAddress',
                                          briar_address)
+    edit_profile_form += edit_text_field('Ricochet', 'ricochetAddress',
+                                         ricochet_address)
     edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
                                          cwtch_address)
     edit_profile_form += edit_text_field('YouTube', 'youtubeChannel',
@@ -3638,7 +3653,7 @@ def html_edit_profile(server, translate: {},
     pgp_fingerprint = pronouns = peertube = loops = youtube = pixelfed = ''
     ssb_address = blog_address = matrix_address = ''
     tox_address = lxmf_address = ''
-    cwtch_address = briar_address = xmpp_address = ''
+    cwtch_address = briar_address = ricochet_address = xmpp_address = ''
     discord = music_site_url = art_site_url = ''
     manually_approves_followers = reject_spam_actors = ''
 
@@ -3669,6 +3684,7 @@ def html_edit_profile(server, translate: {},
         tox_address = get_tox_address(actor_json)
         lxmf_address = get_lxmf_address(actor_json)
         briar_address = get_briar_address(actor_json)
+        ricochet_address = get_ricochet_address(actor_json)
         cwtch_address = get_cwtch_address(actor_json)
         email_address = get_email_address(actor_json)
         deltachat_invite = get_deltachat_invite(actor_json, translate)
@@ -3898,7 +3914,7 @@ def html_edit_profile(server, translate: {},
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
                                         lxmf_address,
-                                        briar_address,
+                                        briar_address, ricochet_address,
                                         cwtch_address, translate,
                                         youtube, peertube, loops,
                                         pixelfed,

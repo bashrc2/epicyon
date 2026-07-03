@@ -126,6 +126,8 @@ from src.lxmf import get_lxmf_address
 from src.lxmf import set_lxmf_address
 from src.briar import get_briar_address
 from src.briar import set_briar_address
+from src.ricochet import get_ricochet_address
+from src.ricochet import set_ricochet_address
 from src.cwtch import get_cwtch_address
 from src.cwtch import set_cwtch_address
 from src.enigma import get_enigma_pub_key
@@ -1780,6 +1782,23 @@ def _profile_post_briar_address(fields: {}, actor_json: {},
     return actor_changed
 
 
+def _profile_post_ricochet_address(fields: {}, actor_json: {},
+                                   actor_changed: bool) -> bool:
+    """ HTTP POST change ricochet address
+    """
+    current_ricochet_address = get_ricochet_address(actor_json)
+    if fields.get('ricochetAddress'):
+        if fields['ricochetAddress'] != current_ricochet_address:
+            set_briar_address(actor_json,
+                              fields['ricochetAddress'])
+            actor_changed = True
+    else:
+        if current_ricochet_address:
+            set_ricochet_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_tox_address(fields: {}, actor_json: {},
                               actor_changed: bool) -> bool:
     """ HTTP POST change tox address
@@ -3074,6 +3093,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_briar_address(fields, actor_json,
                                                 actor_changed)
+
+                actor_changed = \
+                    _profile_post_ricochet_address(fields, actor_json,
+                                                   actor_changed)
 
                 actor_changed = \
                     _profile_post_cwtch_address(fields, actor_json,
