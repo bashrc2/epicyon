@@ -1109,7 +1109,7 @@ def _get_profile_header_after_search(base_dir: str,
                 '  <p>' + ricochet_address + '</p>\n'
         else:
             html_str += \
-                '  <p>ricochet: ' + ricochet_address + '</p>\n'
+                '  <p>ricochet:' + ricochet_address + '</p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             html_str += \
