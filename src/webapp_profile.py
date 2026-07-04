@@ -394,6 +394,7 @@ def html_profile_after_search(authorized: bool,
     blog_url: str = get_blog_address(profile_json)
     lxmf_address: str = get_lxmf_address(profile_json)
     ricochet_address: str = get_ricochet_address(profile_json)
+    briar_address: str = get_briar_address(profile_json)
 
     moved_to: str = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -537,6 +538,7 @@ def html_profile_after_search(authorized: bool,
                                          website_url, blog_url,
                                          lxmf_address,
                                          ricochet_address,
+                                         briar_address,
                                          repo_url, send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
@@ -954,6 +956,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      blog_url: str,
                                      lxmf_address: str,
                                      ricochet_address: str,
+                                     briar_address: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
@@ -1100,6 +1103,13 @@ def _get_profile_header_after_search(base_dir: str,
         else:
             html_str += \
                 '  <p>ricochet: ' + ricochet_address + '</p>\n'
+    if briar_address:
+        if briar_address.startswith('briar://'):
+            html_str += \
+                '<p>' + briar_address + '</p>\n'
+        else:
+            html_str += \
+                '<p>briar://' + briar_address + '</p>\n'
     if youtube:
         html_str += '  <p>YouTube: <a href="' + youtube + '">' + \
             youtube + '</a></p>\n'
