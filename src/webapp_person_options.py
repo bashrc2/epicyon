@@ -527,7 +527,7 @@ def html_person_options(default_timeline: str,
                 remove_html(ricochet_address) + '</p>\n'
         else:
             options_str += \
-                '  <p class="imText">briar://' + \
+                '  <p class="imText">ricochet:' + \
                 remove_html(ricochet_address) + '</p>\n'
     if cwtch_address:
         options_str += \

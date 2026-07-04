@@ -393,6 +393,7 @@ def html_profile_after_search(authorized: bool,
     donate_url: str = get_donation_url(profile_json)
     blog_url: str = get_blog_address(profile_json)
     lxmf_address: str = get_lxmf_address(profile_json)
+    ricochet_address: str = get_ricochet_address(profile_json)
 
     moved_to: str = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -535,6 +536,7 @@ def html_profile_after_search(authorized: bool,
                                          attached_shared_items,
                                          website_url, blog_url,
                                          lxmf_address,
+                                         ricochet_address,
                                          repo_url, send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
@@ -951,6 +953,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      website_url: str,
                                      blog_url: str,
                                      lxmf_address: str,
+                                     ricochet_address: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
@@ -1090,6 +1093,13 @@ def _get_profile_header_after_search(base_dir: str,
     if lxmf_address:
         html_str += \
             '  <p>LXMF: ' + lxmf_address + '</p>\n'
+    if ricochet_address:
+        if ricochet_address.startswith('ricochet:'):
+            html_str += \
+                '  <p>' + ricochet_address + '</p>\n'
+        else:
+            html_str += \
+                '  <p>ricochet: ' + ricochet_address + '</p>\n'
     if youtube:
         html_str += '  <p>YouTube: <a href="' + youtube + '">' + \
             youtube + '</a></p>\n'
