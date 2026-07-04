@@ -395,6 +395,7 @@ def html_profile_after_search(authorized: bool,
     lxmf_address: str = get_lxmf_address(profile_json)
     ricochet_address: str = get_ricochet_address(profile_json)
     briar_address: str = get_briar_address(profile_json)
+    xmpp_address: str = get_xmpp_address(profile_json)
 
     moved_to: str = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -539,6 +540,7 @@ def html_profile_after_search(authorized: bool,
                                          lxmf_address,
                                          ricochet_address,
                                          briar_address,
+                                         xmpp_address,
                                          repo_url, send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
@@ -957,6 +959,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      lxmf_address: str,
                                      ricochet_address: str,
                                      briar_address: str,
+                                     xmpp_address: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
@@ -1093,6 +1096,10 @@ def _get_profile_header_after_search(base_dir: str,
             blog_str = translate['Blog']
         html_str += '  <p>' + blog_str + ': <a href="' + blog_url + '">' + \
             blog_url + '</a></p>\n'
+    if xmpp_address:
+        html_str += \
+            '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
+            xmpp_address + '" tabindex="1">' + xmpp_address + '</a></p>\n'
     if lxmf_address:
         html_str += \
             '  <p>LXMF: ' + lxmf_address + '</p>\n'
