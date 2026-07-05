@@ -1,2 +1,13 @@
 #!/bin/bash
-journalctl -u epicyon | grep "Sending post to followers"
+dir_name="epicyon"
+if [ ! -d /etc/${dir_name} ]; then
+	if [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+	fi
+fi
+
+journalctl -u ${dir_name} | grep "Sending post to followers"

@@ -1,12 +1,25 @@
 #!/bin/bash
-if [ -d /etc/epicyon ]; then
-    cd /etc/epicyon || exit 0
+dir_name="epicyon"
+if [ -d /etc/${dir_name} ]; then
+    cd /etc/${dir_name} || exit 0
 else
-    cd /opt/epicyon || exit 0
+	if [ -d /opt/${dir_name} ]; then
+		cd /opt/${dir_name} || exit 0
+	elif [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+		cd /opt/${dir_name} || exit 0
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+		cd /opt/${dir_name} || exit 0
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+		cd /opt/${dir_name} || exit 0
+	fi
 fi
+
 git stash
 git remote set-url origin https://gitlab.com/bashrc2/epicyon.git
 git checkout main
-chown -R epicyon:epicyon *
+chown -R ${dir_name}:${dir_name} *
 chmod 644 *.py
 chmod 644 src/*.py

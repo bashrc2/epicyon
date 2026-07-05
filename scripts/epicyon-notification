@@ -28,6 +28,23 @@
 
 PROJECT_NAME=epicyon
 epicyonInstallDir=/opt/${PROJECT_NAME}
+dir_name=${PROJECT_NAME}
+if [ -d /etc/${dir_name} ]; then
+	epicyonInstallDir=/etc/${dir_name}
+else
+	if [ -d /opt/${dir_name} ]; then
+		epicyonInstallDir=/opt/${dir_name}
+	elif [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+		epicyonInstallDir=/opt/${dir_name}
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+		epicyonInstallDir=/opt/${dir_name}
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+		epicyonInstallDir=/opt/${dir_name}
+	fi
+fi
 
 MY_EMAIL_ADDRESS="username@domain"
 

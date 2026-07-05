@@ -1,5 +1,16 @@
 #!/bin/bash
-journalctl -u epicyon | grep 'unauthorized ' > .unauthorized.txt
+dir_name="epicyon"
+if [ ! -d /etc/${dir_name} ]; then
+	if [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+	fi
+fi
+
+journalctl -u ${dir_name} | grep 'unauthorized ' > .unauthorized.txt
 if [ ! -f .unauthorized.txt ]; then
     echo 'No unauthorized events'
 else

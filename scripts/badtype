@@ -1,2 +1,13 @@
 #!/bin/bash
-journalctl -u epicyon -r | grep "WARN: type from\|is not a string\|should be a string\|should be lists\|should be strings\|has no valid context\|should be a list"
+dir_name="epicyon"
+if [ ! -d /etc/${dir_name} ]; then
+	if [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+	fi
+fi
+
+journalctl -u ${dir_name} -r | grep "WARN: type from\|is not a string\|should be a string\|should be lists\|should be strings\|has no valid context\|should be a list"

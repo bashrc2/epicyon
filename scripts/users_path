@@ -1,5 +1,16 @@
 #!/bin/bash
-journalctl -u epicyon | grep ' unknown users path' > .unknown_users_paths.txt
+dir_name="epicyon"
+if [ ! -d /etc/${dir_name} ]; then
+	if [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+	fi
+fi
+
+journalctl -u ${dir_name} | grep ' unknown users path' > .unknown_users_paths.txt
 if [ ! -f .unknown_users_paths.txt ]; then
     echo 'No unknown users paths'
 else

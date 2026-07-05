@@ -5,16 +5,18 @@ if [ -d /etc/${dir_name} ]; then
 else
 	if [ -d /opt/${dir_name} ]; then
 		cd /opt/${dir_name} || exit 0
-	else if [ -d /opt/epicyon-tor ]; then
+	elif [ -d /opt/epicyon-tor ]; then
 		dir_name="epicyon-tor"
 		cd /opt/${dir_name} || exit 0
-	else if [ -d /opt/epicyon-i2p ]; then
+	elif [ -d /opt/epicyon-i2p ]; then
 		dir_name="epicyon-i2p"
 		cd /opt/${dir_name} || exit 0
-	else if [ -d /opt/epicyon-yggdrasil ]; then
+	elif [ -d /opt/epicyon-yggdrasil ]; then
 		dir_name="epicyon-yggdrasil"
 		cd /opt/${dir_name} || exit 0
+	fi
 fi
+
 git stash
 git pull
 chown -R ${dir_name}:${dir_name} *

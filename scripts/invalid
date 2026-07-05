@@ -1,2 +1,13 @@
 #!/bin/bash
-journalctl -u epicyon | grep "invalid expanded\|invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request"
+dir_name="epicyon"
+if [ ! -d /etc/${dir_name} ]; then
+	if [ -d /opt/epicyon-tor ]; then
+		dir_name="epicyon-tor"
+	elif [ -d /opt/epicyon-i2p ]; then
+		dir_name="epicyon-i2p"
+	elif [ -d /opt/epicyon-yggdrasil ]; then
+		dir_name="epicyon-yggdrasil"
+	fi
+fi
+
+journalctl -u ${dir_name} | grep "invalid expanded\|invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request"
