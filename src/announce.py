@@ -611,6 +611,8 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         return
     if not post_json_object['object'].get('shares'):
         return
+    if not isinstance(post_json_object['object']['shares'], dict):
+        return
     if not post_json_object['object']['shares'].get('items'):
         return
     total_items: int = 0
@@ -699,8 +701,14 @@ def update_announce_collection(recent_posts_cache: {},
         }
         post_json_object['object']['shares'] = announcements_json
     else:
-        if post_json_object['object']['shares'].get('items'):
-            shares_items = post_json_object['object']['shares']['items']
+        shares_items: list[dict] = []
+        if isinstance(post_json_object['object']['shares'], dict):
+            if post_json_object['object']['shares'].get('items'):
+                if isinstance(post_json_object['object']['shares']['items'],
+                              list):
+                    shares_items = \
+                        post_json_object['object']['shares']['items']
+        if shares_items:
             for announce_item in shares_items:
                 if not isinstance(announce_item, dict):
                     continue
