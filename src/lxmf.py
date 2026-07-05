@@ -34,7 +34,7 @@ def _is_valid_lxmf_address(lxmf_address: str) -> bool:
 def save_lxmf_qrcode(base_dir: str,
                      nickname: str, domain: str,
                      scale: int = 6) -> bool:
-    """Saves a qrcode image for the handle of the person
+    """Saves a qrcode image for the lxmf address of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
     qrcode_filename = acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'

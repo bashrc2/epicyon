@@ -29,6 +29,8 @@ from src.daemon_utils import etag_exists
 from src.fitnessFunctions import fitness_performance
 from src.person import save_person_qrcode
 from src.lxmf import save_lxmf_qrcode
+from src.ricochet import save_ricochet_qrcode
+from src.enigma import save_enigma_qrcode
 from src.data import load_string
 from src.data import load_binary
 from src.data import is_a_file
@@ -476,6 +478,16 @@ def show_qrcode(self, calling_domain: str, path: str,
             acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
         qrcode_scale = 6
         save_lxmf_qrcode(base_dir, nickname, domain, qrcode_scale)
+    elif path.endswith('_ricochet.png'):
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_ricochet.png'
+        qrcode_scale = 6
+        save_ricochet_qrcode(base_dir, nickname, domain, qrcode_scale)
+    elif path.endswith('_enigma.png'):
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_enigma.png'
+        qrcode_scale = 6
+        save_enigma_qrcode(base_dir, nickname, domain, qrcode_scale)
     else:
         if onion_domain:
             qrcode_domain = onion_domain

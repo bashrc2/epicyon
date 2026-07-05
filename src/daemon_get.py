@@ -2715,7 +2715,8 @@ def daemon_http_get(self) -> None:
     # image on login screen or qrcode
     if is_image_file(self.path) and \
        (string_starts_with(self.path,
-                           ('/login.', '/qrcode.png', '/qrcode_lxmf.png'))):
+                           ('/login.', '/qrcode.png', '/qrcode_lxmf.png',
+                            '/qrcode_ricochet.png', '/qrcode_enigma.png'))):
         icon_filename = data_dir(self.server.base_dir) + self.path
         if is_a_file(icon_filename):
             if etag_exists(self, icon_filename):
@@ -2754,7 +2755,9 @@ def daemon_http_get(self) -> None:
     # QR code for account handle
     if (users_in_path and
         (self.path.endswith('/qrcode.png') or
-         self.path.endswith('/qrcode_lxmf.png'))):
+         self.path.endswith('/qrcode_lxmf.png') or
+         self.path.endswith('/qrcode_ricochet.png') or
+         self.path.endswith('/qrcode_enigma.png'))):
         if show_qrcode(self, calling_domain, self.path,
                        self.server.base_dir,
                        self.server.domain,

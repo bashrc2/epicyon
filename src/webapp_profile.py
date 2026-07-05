@@ -1511,11 +1511,18 @@ def html_profile(signing_priv_key_pem: str,
             if ricochet_address.startswith('ricochet:'):
                 donate_section += \
                     '<p><label class="toxaddr">' + \
-                    ricochet_address + '</label></p>\n'
+                    ricochet_address + '</label>'
             else:
                 donate_section += \
                     '<p>ricochet:<label class="toxaddr">' + \
-                    ricochet_address + '</label></p>\n'
+                    ricochet_address + '</label>'
+            donate_section += \
+                ' <a href="/users/' + nickname + \
+                '/qrcode_ricochet.png" alt="' + translate['QR Code'] + \
+                '" title="' + \
+                translate['QR Code'] + '" tabindex="1">' + \
+                '<img class="qrcode" alt="' + translate['QR Code'] + \
+                '" src="/icons/qrcode.png" /></a></p>\n'
         if cwtch_address:
             donate_section += \
                 '<p>Cwtch: <label class="toxaddr">' + \
@@ -1523,7 +1530,14 @@ def html_profile(signing_priv_key_pem: str,
         if enigma_pub_key:
             donate_section += \
                 '<p>Enigma: <label class="toxaddr">' + \
-                enigma_pub_key + '</label></p>\n'
+                enigma_pub_key + '</label>'
+            donate_section += \
+                ' <a href="/users/' + nickname + \
+                '/qrcode_enigma.png" alt="' + translate['QR Code'] + \
+                '" title="' + \
+                translate['QR Code'] + '" tabindex="1">' + \
+                '<img class="qrcode" alt="' + translate['QR Code'] + \
+                '" src="/icons/qrcode.png" /></a></p>\n'
         if pgp_fingerprint:
             donate_section += \
                 '<p class="pgp">' + translate['PGP Fingerprint'] + ': ' + \

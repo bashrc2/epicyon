@@ -524,11 +524,17 @@ def html_person_options(default_timeline: str,
         if ricochet_address.startswith('ricochet:'):
             options_str += \
                 '  <p class="imText">' + \
-                remove_html(ricochet_address) + '</p>\n'
+                remove_html(ricochet_address)
         else:
             options_str += \
                 '  <p class="imText">ricochet:' + \
-                remove_html(ricochet_address) + '</p>\n'
+                remove_html(ricochet_address)
+        options_str += \
+            ' <a href="/users/' + nickname + \
+            '/qrcode_ricochet.png" alt="' + translate['QR Code'] + \
+            '" title="' + translate['QR Code'] + '" tabindex="1">' + \
+            '<img class="qrcode" alt="' + translate['QR Code'] + \
+            '" src="/icons/qrcode.png" /></a></p>\n'
     if cwtch_address:
         options_str += \
             '  <p class="imText">Cwtch: ' + \
@@ -536,7 +542,13 @@ def html_person_options(default_timeline: str,
     if enigma_pub_key:
         options_str += \
             '  <p class="imText">Enigma: ' + \
-            remove_html(enigma_pub_key) + '</p>\n'
+            remove_html(enigma_pub_key)
+        options_str += \
+            ' <a href="/users/' + nickname + \
+            '/qrcode_enigma.png" alt="' + translate['QR Code'] + \
+            '" title="' + translate['QR Code'] + '" tabindex="1">' + \
+            '<img class="qrcode" alt="' + translate['QR Code'] + \
+            '" src="/icons/qrcode.png" /></a></p>\n'
     if pgp_fingerprint:
         options_str += '<p class="pgp">' + \
             translate['PGP Fingerprint'] + ': ' + \

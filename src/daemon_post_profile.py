@@ -1709,19 +1709,24 @@ def _profile_post_pgp_pubkey(actor_json: {}, fields: {},
     return actor_changed
 
 
-def _profile_post_enigma_pubkey(actor_json: {}, fields: {},
+def _profile_post_enigma_pubkey(base_dir: str, nickname: str, domain: str,
+                                actor_json: {}, fields: {},
                                 actor_changed: bool) -> bool:
     """ HTTP POST change Enigma public key
     """
-    currentenigma_pub_key = get_enigma_pub_key(actor_json)
+    qrcode_scale = 6
+    current_enigma_pub_key = get_enigma_pub_key(actor_json)
     if fields.get('enigmapubkey'):
-        if fields['enigmapubkey'] != currentenigma_pub_key:
-            set_enigma_pub_key(actor_json,
-                               fields['enigmapubkey'])
+        if fields['enigmapubkey'] != current_enigma_pub_key:
+            set_enigma_pub_key(base_dir, nickname, domain,
+                               actor_json,
+                               fields['enigmapubkey'],
+                               qrcode_scale)
             actor_changed = True
     else:
-        if currentenigma_pub_key:
-            set_enigma_pub_key(actor_json, '')
+        if current_enigma_pub_key:
+            set_enigma_pub_key(base_dir, nickname, domain, actor_json,
+                               '', qrcode_scale)
             actor_changed = True
     return actor_changed
 
@@ -1782,19 +1787,24 @@ def _profile_post_briar_address(fields: {}, actor_json: {},
     return actor_changed
 
 
-def _profile_post_ricochet_address(fields: {}, actor_json: {},
+def _profile_post_ricochet_address(base_dir: str, nickname: str, domain: str,
+                                   fields: {}, actor_json: {},
                                    actor_changed: bool) -> bool:
     """ HTTP POST change ricochet address
     """
+    qrcode_scale = 6
     current_ricochet_address = get_ricochet_address(actor_json)
     if fields.get('ricochetAddress'):
         if fields['ricochetAddress'] != current_ricochet_address:
-            set_ricochet_address(actor_json,
-                                 fields['ricochetAddress'])
+            set_ricochet_address(base_dir, nickname, domain,
+                                 actor_json,
+                                 fields['ricochetAddress'],
+                                 qrcode_scale)
             actor_changed = True
     else:
         if current_ricochet_address:
-            set_ricochet_address(actor_json, '')
+            set_ricochet_address(base_dir, nickname, domain,
+                                 actor_json, '', qrcode_scale)
             actor_changed = True
     return actor_changed
 
@@ -3095,7 +3105,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                 actor_changed)
 
                 actor_changed = \
-                    _profile_post_ricochet_address(fields, actor_json,
+                    _profile_post_ricochet_address(base_dir, nickname, domain,
+                                                   fields, actor_json,
                                                    actor_changed)
 
                 actor_changed = \
@@ -3107,7 +3118,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 _profile_post_ntfy_topic(base_dir, nickname, domain, fields)
 
                 actor_changed = \
-                    _profile_post_enigma_pubkey(actor_json, fields,
+                    _profile_post_enigma_pubkey(base_dir, nickname, domain,
+                                                actor_json, fields,
                                                 actor_changed)
 
                 actor_changed = \

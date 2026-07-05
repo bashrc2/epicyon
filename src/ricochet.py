@@ -8,8 +8,13 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+import pyqrcode
+from src.utils import load_json
+from src.utils import acct_dir
 from src.utils import get_attachment_property_value
 from src.utils import remove_html
+from src.data import is_a_file
+from src.data import erase_file
 
 
 def get_ricochet_address(actor_json: {}) -> str:
@@ -64,9 +69,47 @@ def get_ricochet_address(actor_json: {}) -> str:
     return ''
 
 
-def set_ricochet_address(actor_json: {}, ricochet_address: str) -> None:
+def save_ricochet_qrcode(base_dir: str,
+                         nickname: str, domain: str,
+                         scale: int = 6) -> bool:
+    """Saves a qrcode image for the ricochet address of the person
+    This helps to transfer onion or i2p handles to a mobile device
+    """
+    qrcode_filename = \
+        acct_dir(base_dir, nickname, domain) + '/qrcode_ricochet.png'
+    if is_a_file(qrcode_filename):
+        return False
+    actor_filename = \
+        acct_dir(base_dir, nickname, domain) + '.json'
+    if not is_a_file(actor_filename):
+        return False
+    actor_json = load_json(actor_filename)
+    if not actor_json:
+        return False
+    ricochet_address = get_ricochet_address(actor_json)
+    if not ricochet_address:
+        return False
+    url = pyqrcode.create(ricochet_address)
+    try:
+        url.png(qrcode_filename, scale)
+        return True
+    except ModuleNotFoundError:
+        print('EX: save_ricochet_qrcode pyqrcode png module not found')
+    return False
+
+
+def set_ricochet_address(base_dir: str, nickname: str, domain: str,
+                         actor_json: {}, ricochet_address: str,
+                         qrcode_scale: int) -> None:
     """Sets an ricochet address for the given actor
     """
+    if not ricochet_address:
+        qrcode_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_ricochet.png'
+        if is_a_file(qrcode_filename):
+            erase_file(qrcode_filename,
+                       'EX: cannot remove ricochet qrcode ' + qrcode_filename)
+
     not_ricochet_address: bool = False
 
     if len(ricochet_address) < 60:
@@ -149,3 +192,4 @@ def set_ricochet_address(actor_json: {}, ricochet_address: str) -> None:
         "value": ricochet_address
     }
     actor_json['attachment'].append(new_ricochet_address)
+    save_ricochet_qrcode(base_dir, nickname, domain, qrcode_scale)
