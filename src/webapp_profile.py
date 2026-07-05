@@ -1502,11 +1502,18 @@ def html_profile(signing_priv_key_pem: str,
             if briar_address.startswith('briar://'):
                 donate_section += \
                     '<p><label class="toxaddr">' + \
-                    briar_address + '</label></p>\n'
+                    briar_address + '</label>'
             else:
                 donate_section += \
                     '<p>briar://<label class="toxaddr">' + \
-                    briar_address + '</label></p>\n'
+                    briar_address + '</label>'
+            donate_section += \
+                ' <a href="/users/' + nickname + \
+                '/qrcode_briar.png" alt="' + translate['QR Code'] + \
+                '" title="' + \
+                translate['QR Code'] + '" tabindex="1">' + \
+                '<img class="qrcode" alt="' + translate['QR Code'] + \
+                '" src="/icons/qrcode.png" /></a></p>\n'
         if ricochet_address:
             if ricochet_address.startswith('ricochet:'):
                 donate_section += \

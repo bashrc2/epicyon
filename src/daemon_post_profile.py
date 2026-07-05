@@ -1770,19 +1770,22 @@ def _profile_post_cwtch_address(fields: {}, actor_json: {},
     return actor_changed
 
 
-def _profile_post_briar_address(fields: {}, actor_json: {},
+def _profile_post_briar_address(base_dir: str, nickname: str, domain: str,
+                                fields: {}, actor_json: {},
                                 actor_changed: bool) -> bool:
     """ HTTP POST change briar address
     """
+    qrcode_scale = 6
     current_briar_address = get_briar_address(actor_json)
     if fields.get('briarAddress'):
         if fields['briarAddress'] != current_briar_address:
-            set_briar_address(actor_json,
-                              fields['briarAddress'])
+            set_briar_address(base_dir, nickname, domain, actor_json,
+                              fields['briarAddress'], qrcode_scale)
             actor_changed = True
     else:
         if current_briar_address:
-            set_briar_address(actor_json, '')
+            set_briar_address(base_dir, nickname, domain,
+                              actor_json, '', qrcode_scale)
             actor_changed = True
     return actor_changed
 
@@ -3101,7 +3104,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                actor_changed)
 
                 actor_changed = \
-                    _profile_post_briar_address(fields, actor_json,
+                    _profile_post_briar_address(base_dir, nickname, domain,
+                                                fields, actor_json,
                                                 actor_changed)
 
                 actor_changed = \

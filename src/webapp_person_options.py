@@ -515,11 +515,17 @@ def html_person_options(default_timeline: str,
         if briar_address.startswith('briar://'):
             options_str += \
                 '  <p class="imText">' + \
-                remove_html(briar_address) + '</p>\n'
+                remove_html(briar_address)
         else:
             options_str += \
                 '  <p class="imText">briar://' + \
-                remove_html(briar_address) + '</p>\n'
+                remove_html(briar_address)
+        options_str += \
+            ' <a href="/users/' + nickname + \
+            '/qrcode_briar.png" alt="' + translate['QR Code'] + '" title="' + \
+            translate['QR Code'] + '" tabindex="1">' + \
+            '<img class="qrcode" alt="' + translate['QR Code'] + \
+            '" src="/icons/qrcode.png" /></a></p>\n'
     if ricochet_address:
         if ricochet_address.startswith('ricochet:'):
             options_str += \
