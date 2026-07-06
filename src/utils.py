@@ -994,11 +994,15 @@ def evil_incarnate() -> []:
 def evil_nickname(sending_actor_nickname: str) -> bool:
     """sender nicknames which are automatically rejected
     """
-    evil_nicks: list[str] = ('hitler', '1488')
+    evil_nicks: list[str] = ['hitler']
     nickname_lower: str = sending_actor_nickname.lower()
     for nick in evil_nicks:
         if nick in nickname_lower:
             return True
+    if nickname_lower == '1488':
+        return True
+    if nickname_lower.endswith('1488'):
+        return True
     return False
 
 

@@ -5281,6 +5281,12 @@ def _test_valid_nick():
     print('test_valid_nickname')
     domain = 'somedomain.net'
 
+    nickname = '116701148894215259'
+    assert valid_nickname(domain, nickname)
+
+    nickname = 'evilnick1488'
+    assert not valid_nickname(domain, nickname)
+
     nickname = 'myvalidnick'
     assert valid_nickname(domain, nickname)
 
