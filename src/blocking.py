@@ -1982,7 +1982,7 @@ def get_bsky_domains_list() -> []:
 def get_nostr_domains_list() -> []:
     """returns a list of nostr bridges
     """
-    return ['mostr.pub']
+    return ['mostr.pub', 'momostr.pink']
 
 
 def contains_military_domain(message_str: str) -> bool:
