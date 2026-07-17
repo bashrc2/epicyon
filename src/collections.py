@@ -20,14 +20,16 @@ from src.utils import get_domain_from_actor
 from src.data import is_a_file
 from src.data import load_list
 
+FEATURED_COLLECTIONS_ENDING = '/featured_collections'
+
 
 def _get_no_of_featured_collections(base_dir: str,
                                     nickname: str, domain: str) -> int:
     """Returns the number of featured collections
     """
-    ending: str = '/featured_collections'
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
-    collection_filename: str = accounts_dir + ending + '.txt'
+    collection_filename: str = \
+        accounts_dir + FEATURED_COLLECTIONS_ENDING + '.txt'
     if not is_a_file(collection_filename):
         return 0
     lines: list[str] = load_list(collection_filename,
@@ -97,8 +99,7 @@ def get_featured_collections_feed(base_dir: str,
     """Returns the featured collections feed from GET requests.
     Example: https://mastodon.social/ap/users/1/featured_collections?page=1
     """
-    ending: str = '/featured_collections'
-    if ending not in path:
+    if FEATURED_COLLECTIONS_ENDING not in path:
         return None
 
     # handle page numbers
@@ -119,14 +120,16 @@ def get_featured_collections_feed(base_dir: str,
         path = path.split('?page=')[0]
         header_only: bool = False
 
-    if not path.endswith(ending):
+    if not path.endswith(FEATURED_COLLECTIONS_ENDING):
         return None
     nickname = None
     if path.startswith('/users/'):
         nickname = \
-            path.replace('/users/', '', 1).replace(ending, '')
+            path.replace('/users/',
+                         '', 1).replace(FEATURED_COLLECTIONS_ENDING, '')
     if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace(ending, '')
+        nickname = \
+            path.replace('/@', '', 1).replace(FEATURED_COLLECTIONS_ENDING, '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):
@@ -135,11 +138,12 @@ def get_featured_collections_feed(base_dir: str,
     domain = get_full_domain(domain, port)
 
     id_str = \
-        local_actor_url(http_prefix, nickname, domain) + ending
+        local_actor_url(http_prefix, nickname, domain) + \
+        FEATURED_COLLECTIONS_ENDING
     if header_only:
         first_str = \
             local_actor_url(http_prefix, nickname, domain) + \
-            ending + '?page=1'
+            FEATURED_COLLECTIONS_ENDING + '?page=1'
         total_str = \
             _get_no_of_featured_collections(base_dir, nickname, domain)
         collection = {
@@ -158,7 +162,7 @@ def get_featured_collections_feed(base_dir: str,
         page_number = 1
 
     collection_of_actor = local_actor_url(http_prefix, nickname, domain)
-    part_of_str = collection_of_actor + ending
+    part_of_str = collection_of_actor + FEATURED_COLLECTIONS_ENDING
     collection_id = part_of_str + '?page=' + str(page_number)
     collection = {
         "@context": [
@@ -175,7 +179,7 @@ def get_featured_collections_feed(base_dir: str,
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
     accounts_dir = acct_dir(base_dir, nickname, handle_domain)
-    collection_filename = accounts_dir + ending + '.txt'
+    collection_filename = accounts_dir + FEATURED_COLLECTIONS_ENDING + '.txt'
     if not is_a_file(collection_filename):
         return collection
     curr_page: int = 1
