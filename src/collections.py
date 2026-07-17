@@ -267,7 +267,8 @@ def get_featured_collections_feed(base_dir: str,
         if item_url:
             # id for collection item
             collection_item_id = _url_text_to_number(item_url)
-            # authorization link
+            # authorization link which should be from the same domain
+            # as item_url
             feature_authorization = \
                 actor + '/feature_authorizations/' + collection_item_id
             collection_item_dict = {
