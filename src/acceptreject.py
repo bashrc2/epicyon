@@ -137,37 +137,6 @@ def create_reject(federation_list: [],
                                  http_prefix, object_json, 'Reject')
 
 
-def create_feature_reject(federation_list: [],
-                          nickname: str, domain: str, port: int,
-                          to_url: str, cc_url: str, http_prefix: str,
-                          object_json: {}) -> {}:
-    """ Create json for ActivityPub FeatureRequest Reject
-    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
-    """
-    if not object_json.get('id'):
-        return None
-
-    if not url_permitted(to_url, federation_list):
-        return None
-
-    domain = get_full_domain(domain, port)
-
-    new_reject = {
-        "@context": [
-            'https://www.w3.org/ns/activitystreams',
-            'https://w3id.org/security/v1'
-        ],
-        'type': 'Reject',
-        'actor': local_actor_url(http_prefix, nickname, domain),
-        'to': [to_url],
-        'cc': [],
-        'object': object_json['id']
-    }
-    if cc_url:
-        new_reject['cc'] = [cc_url]
-    return new_reject
-
-
 def _reject_quote_request(message_json: {}, domain_full: str,
                           federation_list: [],
                           debug: bool,
@@ -516,3 +485,34 @@ def receive_quote_request(message_json: {}, federation_list: [],
                           mitm_servers)
 
     return True
+
+
+def create_feature_reject(federation_list: [],
+                          nickname: str, domain: str, port: int,
+                          to_url: str, cc_url: str, http_prefix: str,
+                          object_json: {}) -> {}:
+    """ Create json for ActivityPub FeatureRequest Reject
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
+    if not object_json.get('id'):
+        return None
+
+    if not url_permitted(to_url, federation_list):
+        return None
+
+    domain = get_full_domain(domain, port)
+
+    new_reject = {
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
+        'type': 'Reject',
+        'actor': local_actor_url(http_prefix, nickname, domain),
+        'to': [to_url],
+        'cc': [],
+        'object': object_json['id']
+    }
+    if cc_url:
+        new_reject['cc'] = [cc_url]
+    return new_reject
