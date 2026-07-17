@@ -21,6 +21,7 @@ from src.data import is_a_file
 from src.data import load_list
 
 FEATURED_COLLECTIONS_ENDING = '/featured_collections'
+URL_TEXT_MAGIC_NUMBER = 7439
 
 
 def _get_no_of_featured_collections(base_dir: str,
@@ -44,8 +45,8 @@ def _get_no_of_featured_collections(base_dir: str,
     return ctr
 
 
-def _text_to_number(url: str) -> str:
-    """converts text to a number string used as an id
+def _url_text_to_number(url: str) -> str:
+    """converts url text or collection name to a number string used as an id
     """
     result = ''
     for char in url:
@@ -56,7 +57,7 @@ def _text_to_number(url: str) -> str:
             result = str(num) + result
         else:
             result = '0' + str(num) + result
-    num = (7439 + int(result)) % 99999999999999999999
+    num = (URL_TEXT_MAGIC_NUMBER + int(result)) % 99999999999999999999
     return str(num)
 
 
@@ -71,7 +72,7 @@ def _update_collections(collection_name: str, collection_items: [],
         collection_items.clear()
         return
     # create an id number for the collection
-    collection_id = _text_to_number(collection_name)
+    collection_id = _url_text_to_number(collection_name)
     collection_url = \
         http_prefix + '://' + domain + '/collections/' + collection_id
     collection_dict = {
@@ -265,7 +266,7 @@ def get_featured_collections_feed(base_dir: str,
                 item_url = text
         if item_url:
             # id for collection item
-            collection_item_id = _text_to_number(item_url)
+            collection_item_id = _url_text_to_number(item_url)
             # authorization link
             feature_authorization = \
                 actor + '/feature_authorizations/' + collection_item_id
