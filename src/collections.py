@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 from src.utils import acct_dir
+from src.utils import load_json
 from src.utils import valid_nickname
 from src.utils import get_full_domain
 from src.utils import local_actor_url
@@ -21,6 +22,7 @@ from src.data import is_a_file
 from src.data import load_list
 
 FEATURED_COLLECTIONS_ENDING = '/featured_collections'
+AUTHORIZATIONS_ENDING = '/featured_authorizations'
 URL_TEXT_MAGIC_NUMBER = 7439
 
 
@@ -190,6 +192,14 @@ def get_featured_collections_feed(base_dir: str,
     if not lines:
         return collection
 
+    authorizations_filename = accounts_dir + AUTHORIZATIONS_ENDING + '.txt'
+    if not is_a_file(authorizations_filename):
+        return collection
+    curr_page: int = 1
+    authorizations: dict = load_json(authorizations_filename)
+    if not authorizations:
+        return collection
+
     # get file creation date
     published = file_created_date(collection_filename)
     updated = file_last_modified(collection_filename)
@@ -265,20 +275,20 @@ def get_featured_collections_feed(base_dir: str,
             if item_nickname and item_domain:
                 item_url = text
         if item_url:
-            # id for collection item
-            collection_item_id = _url_text_to_number(item_url)
             # authorization link which should be from the same domain
             # as item_url
-            feature_authorization = \
-                actor + '/feature_authorizations/' + collection_item_id
-            collection_item_dict = {
-                'featureAuthorization': feature_authorization,
-                'featuredObject': item_url,
-                'id': actor + '/collection_items/' + collection_item_id,
-                'published': published,
-                'type': 'FeaturedItem'
-            }
-            collection_items.append(collection_item_dict)
+            if authorizations.get(item_url):
+                feature_authorization = authorizations[item_url]
+                # id for collection item
+                collection_item_id = _url_text_to_number(item_url)
+                collection_item_dict = {
+                    'featureAuthorization': feature_authorization,
+                    'featuredObject': item_url,
+                    'id': actor + '/collection_items/' + collection_item_id,
+                    'published': published,
+                    'type': 'FeaturedItem'
+                }
+                collection_items.append(collection_item_dict)
     # store the current collection
     _update_collections(collection_name, collection_items,
                         collection,
