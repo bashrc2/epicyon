@@ -103,7 +103,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     html_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache,
@@ -160,7 +161,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
             '<center><h2>' + translate['Repeated by'] + '</h2></center>\n'
 
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     is_text_mode = text_mode_browser(ua_str)
 
     likers_list: str = ''

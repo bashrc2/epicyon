@@ -275,7 +275,8 @@ def receive_undo_like(recent_posts_cache: {},
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -436,7 +437,8 @@ def receive_undo_reaction(recent_posts_cache: {},
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -583,7 +585,8 @@ def receive_undo_bookmark(recent_posts_cache: {},
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,

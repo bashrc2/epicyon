@@ -149,7 +149,8 @@ def mute_button(self, calling_domain: str, path: str,
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads,
                                     recent_posts_cache,
@@ -341,7 +342,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads,
                                     recent_posts_cache,

@@ -240,7 +240,7 @@ def like_button(self, calling_domain: str, path: str,
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = \
+            mutuals_list: list[str] = \
                 get_mutuals_of_person(base_dir, self.post_to_nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -513,7 +513,7 @@ def like_button_undo(self, calling_domain: str, path: str,
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = \
+            mutuals_list: list[str] = \
                 get_mutuals_of_person(base_dir, self.post_to_nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     False,

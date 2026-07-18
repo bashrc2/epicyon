@@ -84,7 +84,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = \
+            mutuals_list: list[str] = \
                 get_mutuals_of_person(base_dir, nickname, domain)
             post_str = \
                 individual_post_as_html(signing_priv_key_pem,

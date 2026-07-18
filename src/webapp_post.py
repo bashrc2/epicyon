@@ -3567,7 +3567,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         actor = '/users/' + nickname
 
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         mutual_prefix: str = ''
         if by_str_handle in mutuals_list:
             if not text_mode_browser(ua_str):

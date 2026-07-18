@@ -18,12 +18,15 @@ from src.utils import file_last_modified
 from src.utils import file_created_date
 from src.utils import get_nickname_from_actor
 from src.utils import get_domain_from_actor
+from src.utils import url_text_to_number
+from src.utils import save_json
 from src.data import is_a_file
 from src.data import load_list
+from src.data import is_a_dir
+from src.data import makedir
 
 FEATURED_COLLECTIONS_ENDING = '/featured_collections'
 AUTHORIZATIONS_ENDING = '/featured_authorizations'
-URL_TEXT_MAGIC_NUMBER = 7439
 
 
 def _get_no_of_featured_collections(base_dir: str,
@@ -47,22 +50,6 @@ def _get_no_of_featured_collections(base_dir: str,
     return ctr
 
 
-def _url_text_to_number(url: str) -> str:
-    """converts url text or collection name to a number string used as an id
-    """
-    result = ''
-    for char in url:
-        num = ord(char)
-        if num > 99:
-            continue
-        if num > 9:
-            result = str(num) + result
-        else:
-            result = '0' + str(num) + result
-    num = (URL_TEXT_MAGIC_NUMBER + int(result)) % 99999999999999999999
-    return str(num)
-
-
 def _update_collections(collection_name: str, collection_items: [],
                         collection: [],
                         http_prefix: str, domain: str,
@@ -74,7 +61,7 @@ def _update_collections(collection_name: str, collection_items: [],
         collection_items.clear()
         return
     # create an id number for the collection
-    collection_id = _url_text_to_number(collection_name)
+    collection_id = url_text_to_number(collection_name)
     collection_url = \
         http_prefix + '://' + domain + '/collections/' + collection_id
     collection_dict = {
@@ -275,20 +262,8 @@ def get_featured_collections_feed(base_dir: str,
             if item_nickname and item_domain:
                 item_url = text
         if item_url:
-            # authorization link which should be from the same domain
-            # as item_url
             if authorizations.get(item_url):
-                feature_authorization = authorizations[item_url]
-                # id for collection item
-                collection_item_id = _url_text_to_number(item_url)
-                collection_item_dict = {
-                    'featureAuthorization': feature_authorization,
-                    'featuredObject': item_url,
-                    'id': actor + '/collection_items/' + collection_item_id,
-                    'published': published,
-                    'type': 'FeaturedItem'
-                }
-                collection_items.append(collection_item_dict)
+                collection_items.append(authorizations[item_url])
     # store the current collection
     _update_collections(collection_name, collection_items,
                         collection,
@@ -302,3 +277,17 @@ def get_featured_collections_feed(base_dir: str,
         collection['items'].append(collection_dict)
         collection['totalItems'] = collection['totalItems'] + 1
     return collection
+
+
+def store_feature_authorization(base_dir: str, nickname: str, domain: str,
+                                featured_item: {}) -> bool:
+    """Stores a feature authorization
+    """
+    accounts_dir: str = acct_dir(base_dir, nickname, domain)
+    if not is_a_dir(accounts_dir + '/stamps'):
+        makedir(accounts_dir + '/stamps')
+    stamp_id = featured_item['featureAuthorization'].split('/')[1]
+    feature_authorization_filename = accounts_dir + '/' + stamp_id
+    if not is_a_file(feature_authorization_filename):
+        return False
+    return save_json(featured_item, feature_authorization_filename)

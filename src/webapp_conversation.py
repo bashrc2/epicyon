@@ -140,7 +140,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                 show_individual_post_icons = False
         allow_deletion: bool = False
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     True, recent_posts_cache,

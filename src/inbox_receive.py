@@ -98,7 +98,9 @@ from src.data import erase_file
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.acceptreject import create_feature_reject
+from src.acceptreject import create_feature_accept
 from src.posts import send_signed_json
+from src.collections import store_feature_authorization
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -520,7 +522,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,
@@ -1099,7 +1102,8 @@ def receive_like(recent_posts_cache: {},
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1179,10 +1183,10 @@ def receive_feature_request(session,
             print('DEBUG: FeatureRequest has no actor domain ' + actor_url)
         return False
     actor_domain_full = get_full_domain(actor_domain, actor_port)
-    handle = actor_nickname + '@' + actor_domain_full
-    handle_dir = acct_handle_dir(base_dir, handle)
-    if not is_a_dir(handle_dir):
-        print('DEBUG: unknown recipient of FeatureRequest - ' + handle)
+    handle2 = actor_nickname + '@' + actor_domain_full
+    handle2_dir = acct_handle_dir(base_dir, handle2)
+    if not is_a_dir(handle2_dir):
+        print('DEBUG: unknown recipient of FeatureRequest - ' + handle2)
         return True
 
     sender_url = message_json['id']
@@ -1201,23 +1205,40 @@ def receive_feature_request(session,
             print('DEBUG: FeatureRequest has no sender domain ' + sender_url)
         return False
     sender_domain_full = get_full_domain(sender_domain, sender_port)
+    sender_handle = sender_nickname + '@' + sender_domain_full
     if is_blocked(base_dir, actor_nickname, actor_domain_full,
                   sender_nickname, sender_domain_full,
                   blocked_cache, block_federated):
-        sender_handle = sender_nickname + '@' + sender_domain_full
         print('BLOCK: FeatureRequest sender actor is blocked ' +
               sender_handle + ' by ' + actor_url)
         return False
 
-    reject_json = \
-        create_feature_reject(federation_list,
-                              actor_nickname, actor_domain, actor_port,
-                              sender_url, '', http_prefix, message_json)
-    if debug:
-        pprint(reject_json)
-        print('REJECT: sending FeatureRequest Reject from ' +
-              actor_nickname + '@' + actor_domain_full +
-              ' to ' + sender_nickname + '@' + sender_domain_full)
+    handle_nickname = handle.split('@')[0]
+    handle_domain = handle.split('@')[0]
+    mutuals: list[str] = \
+        get_mutuals_of_person(base_dir, handle_nickname, handle_domain)
+
+    new_featured_item = None
+    if sender_handle not in mutuals:
+        acceptreject_json = \
+            create_feature_reject(federation_list,
+                                  actor_nickname, actor_domain, actor_port,
+                                  sender_url, '', http_prefix, message_json)
+        if debug:
+            pprint(acceptreject_json)
+            print('REJECT: sending FeatureRequest Reject from ' +
+                  actor_nickname + '@' + actor_domain_full +
+                  ' to ' + sender_nickname + '@' + sender_domain_full)
+    else:
+        acceptreject_json, new_featured_item = \
+            create_feature_accept(federation_list,
+                                  actor_nickname, actor_domain, actor_port,
+                                  sender_url, '', http_prefix, message_json)
+        if debug:
+            pprint(acceptreject_json)
+            print('ACCEPT: sending FeatureRequest Accept from ' +
+                  actor_nickname + '@' + actor_domain_full +
+                  ' to ' + sender_nickname + '@' + sender_domain_full)
 
     curr_session = session
     curr_domain = domain
@@ -1262,18 +1283,22 @@ def receive_feature_request(session,
     group_account: bool = False
     if has_group_type(base_dir, actor_url, person_cache):
         group_account = True
-    send_signed_json(reject_json, curr_session, base_dir,
-                     sender_nickname, sender_domain, sender_port,
-                     actor_nickname, domain, curr_port,
-                     curr_http_prefix, client_to_server,
-                     federation_list,
-                     send_threads, post_log, cached_webfingers,
-                     person_cache, debug, __version__, None,
-                     group_account, signing_priv_key_pem,
-                     326735214, curr_domain,
-                     onion_domain, i2p_domain, yggdrasil_domain,
-                     extra_headers, sites_unavailable,
-                     system_language, mitm_servers)
+    if send_signed_json(acceptreject_json, curr_session, base_dir,
+                        sender_nickname, sender_domain, sender_port,
+                        actor_nickname, domain, curr_port,
+                        curr_http_prefix, client_to_server,
+                        federation_list,
+                        send_threads, post_log, cached_webfingers,
+                        person_cache, debug, __version__, None,
+                        group_account, signing_priv_key_pem,
+                        326735214, curr_domain,
+                        onion_domain, i2p_domain, yggdrasil_domain,
+                        extra_headers, sites_unavailable,
+                        system_language, mitm_servers) == 0:
+        if new_featured_item:
+            store_feature_authorization(base_dir,
+                                        handle_nickname, handle_domain,
+                                        new_featured_item)
     return True
 
 
@@ -1498,7 +1523,8 @@ def receive_reaction(recent_posts_cache: {},
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1700,7 +1726,8 @@ def receive_zot_reaction(recent_posts_cache: {},
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1845,7 +1872,8 @@ def receive_bookmark(recent_posts_cache: {},
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -2171,7 +2199,8 @@ def receive_announce(recent_posts_cache: {},
         show_vote_posts = False
 
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
 
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
@@ -2401,7 +2430,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,

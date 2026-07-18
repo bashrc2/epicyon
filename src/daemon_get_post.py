@@ -141,7 +141,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
             bold_reading = True
 
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
 
         msg = \
             html_individual_post(recent_posts_cache,
@@ -1053,7 +1054,8 @@ def show_replies_to_post(self, authorized: bool,
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             # get the list of mutuals for the current account
-            mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+            mutuals_list: list[str] = \
+                get_mutuals_of_person(base_dir, nickname, domain)
             msg = \
                 html_post_replies(recent_posts_cache,
                                   max_recent_posts,
@@ -1176,7 +1178,8 @@ def show_replies_to_post(self, authorized: bool,
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
         msg = \
             html_post_replies(recent_posts_cache,
                               max_recent_posts,

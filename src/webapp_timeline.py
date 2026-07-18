@@ -1020,7 +1020,8 @@ def html_timeline(default_timeline: str,
             no_seen_posts = True
 
         # get the list of mutuals for the current account
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
 
         # show each post in the timeline
         tl_items_str: str = ''

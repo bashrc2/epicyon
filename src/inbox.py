@@ -2020,7 +2020,8 @@ def _inbox_after_initial(server, inbox_start_time,
             return False
 
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, handle_name, domain)
 
     if receive_actor_status(base_dir, person_cache, message_json,
                             debug):

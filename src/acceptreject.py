@@ -29,6 +29,7 @@ from src.utils import has_actor
 from src.utils import has_object_string_type
 from src.utils import get_actor_from_post
 from src.utils import is_yggdrasil_address
+from src.utils import url_text_to_number
 from src.timeFunctions import get_current_time_int
 from src.data import is_a_file
 
@@ -490,17 +491,19 @@ def receive_quote_request(message_json: {}, federation_list: [],
 def create_feature_reject(federation_list: [],
                           nickname: str, domain: str, port: int,
                           to_url: str, cc_url: str, http_prefix: str,
-                          object_json: {}) -> {}:
+                          request_object_json: {}) -> {}:
     """ Create json for ActivityPub FeatureRequest Reject
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
     """
-    if not object_json.get('id'):
+    if not request_object_json.get('id'):
         return None
 
     if not url_permitted(to_url, federation_list):
         return None
 
     domain = get_full_domain(domain, port)
+
+    request_id = request_object_json['id']
 
     new_reject = {
         "@context": [
@@ -511,8 +514,67 @@ def create_feature_reject(federation_list: [],
         'actor': local_actor_url(http_prefix, nickname, domain),
         'to': [to_url],
         'cc': [],
-        'object': object_json['id']
+        'object': request_id
     }
     if cc_url:
         new_reject['cc'] = [cc_url]
     return new_reject
+
+
+def create_feature_accept(federation_list: [],
+                          nickname: str, domain: str, port: int,
+                          to_url: str, cc_url: str, http_prefix: str,
+                          request_object_json: {}) -> ({}, {}):
+    """ Create json for ActivityPub FeatureRequest Accept and
+    featured item to be stored
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
+    if not request_object_json.get('id'):
+        return None, None
+    if not isinstance(request_object_json['id'], str):
+        return None, None
+    if not request_object_json.get('object'):
+        return None, None
+    if not isinstance(request_object_json['object'], str):
+        return None, None
+
+    if not url_permitted(to_url, federation_list):
+        return None, None
+
+    domain = get_full_domain(domain, port)
+
+    request_id = request_object_json['id']
+
+    stamp_id = url_text_to_number(request_object_json['object'])
+    stamp_url = \
+        http_prefix + '://' + domain + '/stamps/' + stamp_id
+
+    new_accept = {
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
+        'type': 'Accept',
+        'actor': local_actor_url(http_prefix, nickname, domain),
+        'to': [to_url],
+        'cc': [],
+        'object': request_id,
+        'result': stamp_url
+    }
+    if cc_url:
+        new_accept['cc'] = [cc_url]
+
+    _, published = get_status_number()
+    new_featured_item = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/fep/7aa9"
+        ],
+        "id": request_id,
+        "type": "FeaturedItem",
+        "object": request_object_json['object'],
+        "featureAuthorization": stamp_url,
+        "published": published
+    }
+
+    return new_accept, new_featured_item

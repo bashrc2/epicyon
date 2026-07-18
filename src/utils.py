@@ -58,6 +58,8 @@ INVALID_ACTOR_URL_CHARACTERS = (
     ';', '='
 )
 
+URL_TEXT_MAGIC_NUMBER = 7439
+
 
 def is_account_dir(dir_name: str) -> bool:
     """Is the given directory an account within /accounts ?
@@ -735,6 +737,31 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
                 'EX: unable to write ' + memorial_file)
 
 
+def save_json(json_object: {}, filename: str) -> bool:
+    """Saves json to a file
+    """
+    if not isinstance(json_object, dict):
+        if not isinstance(json_object, list):
+            print('EX: save_json object is not json ' + str(json_object))
+            return False
+
+    tries: int = 1
+    savestr = json.dumps(json_object)
+    while tries <= 5:
+        success, errno = \
+            save_with_err(savestr, filename,
+                          'EX: save_json ' + str(tries) + ' ' +
+                          str(filename) + ' [ex]')
+        if success:
+            return True
+        if errno == 36:
+            # filename too long
+            break
+        time.sleep(1)
+        tries += 1
+    return False
+
+
 def _create_config(base_dir: str) -> None:
     """Creates a configuration file
     """
@@ -743,6 +770,32 @@ def _create_config(base_dir: str) -> None:
         return
     config_json: dict = {}
     save_json(config_json, config_filename)
+
+
+def load_json(filename: str) -> {}:
+    """Makes a few attempts to load a json formatted file
+    """
+    if '/Actor@' in filename:
+        filename = filename.replace('/Actor@', '/inbox@')
+
+    json_object = None
+    data: str = load_string(filename,
+                            'EX: load_json exception ' +
+                            str(filename) + ' [ex]')
+    if data is None:
+        return json_object
+
+    # check that something was loaded
+    if not data:
+        print('EX: load_json no data ' + str(filename))
+        return json_object
+
+    # convert to json
+    try:
+        json_object = json.loads(data)
+    except BaseException as exc:
+        print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
+    return json_object
 
 
 def set_config_param(base_dir: str, variable_name: str,
@@ -906,57 +959,6 @@ def get_link_prefixes() -> []:
     return ('https://', 'http://', 'ftp://',
             'dat://', 'i2p://', 'gnunet://', 'payto://',
             'hyper://', 'gemini://', 'gopher://', 'briar:')
-
-
-def save_json(json_object: {}, filename: str) -> bool:
-    """Saves json to a file
-    """
-    if not isinstance(json_object, dict):
-        if not isinstance(json_object, list):
-            print('EX: save_json object is not json ' + str(json_object))
-            return False
-
-    tries: int = 1
-    savestr = json.dumps(json_object)
-    while tries <= 5:
-        success, errno = \
-            save_with_err(savestr, filename,
-                          'EX: save_json ' + str(tries) + ' ' +
-                          str(filename) + ' [ex]')
-        if success:
-            return True
-        if errno == 36:
-            # filename too long
-            break
-        time.sleep(1)
-        tries += 1
-    return False
-
-
-def load_json(filename: str) -> {}:
-    """Makes a few attempts to load a json formatted file
-    """
-    if '/Actor@' in filename:
-        filename = filename.replace('/Actor@', '/inbox@')
-
-    json_object = None
-    data: str = load_string(filename,
-                            'EX: load_json exception ' +
-                            str(filename) + ' [ex]')
-    if data is None:
-        return json_object
-
-    # check that something was loaded
-    if not data:
-        print('EX: load_json no data ' + str(filename))
-        return json_object
-
-    # convert to json
-    try:
-        json_object = json.loads(data)
-    except BaseException as exc:
-        print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
-    return json_object
 
 
 def load_json_onionify(filename: str, domain: str, onion_domain: str,
@@ -4374,3 +4376,19 @@ def get_preferred_username(actor: {}, system_language: str) -> str:
                 if isinstance(username, str):
                     return username
     return actor['preferredUsername']
+
+
+def url_text_to_number(url: str) -> str:
+    """converts url text or collection name to a number string used as an id
+    """
+    result = ''
+    for char in url:
+        num = ord(char)
+        if num > 99:
+            continue
+        if num > 9:
+            result = str(num) + result
+        else:
+            result = '0' + str(num) + result
+    num = (URL_TEXT_MAGIC_NUMBER + int(result)) % 9999999999999999999999999999
+    return str(num)

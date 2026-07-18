@@ -96,7 +96,8 @@ def html_confirm_delete(server,
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    mutuals_list: list[str] = \
+        get_mutuals_of_person(base_dir, nickname, domain)
     delete_post_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,

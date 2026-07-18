@@ -178,7 +178,8 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
         following_list = get_followers_list(base_dir, nickname, domain,
                                             'following.txt')
         # create a list containing all of the mutuals
-        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutuals_list: list[str] = \
+            get_mutuals_of_person(base_dir, nickname, domain)
 
     res: list[str] = []
     for root, _, fnames in os.walk(path):
