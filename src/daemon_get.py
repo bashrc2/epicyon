@@ -211,6 +211,7 @@ from src.daemon_get_post import show_conversation_thread
 from src.daemon_get_collections import get_featured_collection
 from src.daemon_get_collections import get_featured_tags_collection
 from src.daemon_get_collections import get_following_json
+from src.daemon_get_collections import get_feature_authorization
 from src.daemon_get_webfinger import get_webfinger
 from src.daemon_get_reactions import reaction_picker2
 from src.daemon_get_instance_actor import show_instance_actor
@@ -1870,6 +1871,25 @@ def daemon_http_get(self) -> None:
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 self.server.yggdrasil_domain)
+        return
+
+    if not html_getreq and \
+       users_in_path and '/stamps/' in self.path:
+        nickname = self.path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        # return the feature authorization stamp
+        # See verification section of
+        # https://codeberg.org/fediverse/fep/src/branch/main
+        # /fep/7aa9/fep-7aa9.md
+        get_feature_authorization(self, calling_domain, referer_domain,
+                                  self.server.base_dir,
+                                  self.server.http_prefix,
+                                  nickname, self.server.domain,
+                                  self.server.domain_full,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         return
 
     if not html_getreq and \

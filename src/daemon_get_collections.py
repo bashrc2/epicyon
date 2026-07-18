@@ -15,7 +15,69 @@ from src.httpheaders import set_headers
 from src.posts import json_pin_post
 from src.utils import convert_domains
 from src.utils import get_json_content_from_accept
+from src.utils import acct_dir
+from src.utils import load_json
 from src.follow import get_following_feed
+from src.data import is_a_file
+
+
+def get_feature_authorization(self, calling_domain: str,
+                              referer_domain: str,
+                              base_dir: str,
+                              http_prefix: str,
+                              nickname: str, domain: str,
+                              domain_full: str,
+                              onion_domain: str,
+                              i2p_domain: str,
+                              yggdrasil_domain: str) -> None:
+    """Returns the verification stamp for feature authorization
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
+    stamp_number = self.path.split('/stamps/')[1]
+    if '/' in stamp_number:
+        stamp_number = stamp_number.split('/')[0]
+    if not stamp_number:
+        return
+    if not stamp_number.isdigit():
+        return
+    # does the stamp exist?
+    account_dir = acct_dir(base_dir, nickname, domain)
+    stamp_filename = account_dir + '/stamps/' + stamp_number
+    if not is_a_file(stamp_filename):
+        return
+    # load the stamp from file
+    stamp_json = load_json(stamp_filename)
+    if not stamp_json:
+        return
+    if not stamp_json.get('id') or not stamp_json.get('object'):
+        return
+    # create the verification
+    stamp_url = \
+        http_prefix + '://' + domain_full + '/users/' + nickname + \
+        '/stamps/' + stamp_number
+    verification_json = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://gotosocial.org/ns",
+            "https://w3id.org/fep/7aa9"
+        ],
+        "id": stamp_url,
+        "type": "FeatureAuthorization",
+        "interactingObject": stamp_json['id'],
+        "interactionTarget": stamp_json['object']
+    }
+    # send the verification
+    msg_str = json.dumps(verification_json, ensure_ascii=False)
+    msg_str = convert_domains(calling_domain, referer_domain,
+                              msg_str, http_prefix,
+                              domain, onion_domain, i2p_domain,
+                              yggdrasil_domain)
+    msg = msg_str.encode('utf-8')
+    msglen = len(msg)
+    accept_str = self.headers['Accept']
+    protocol_str = get_json_content_from_accept(accept_str)
+    set_headers(self, protocol_str, msglen, None, calling_domain, False)
+    write2(self, msg)
 
 
 def get_featured_collection(self, calling_domain: str,
