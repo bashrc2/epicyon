@@ -1907,6 +1907,101 @@ def receive_bookmark(recent_posts_cache: {},
     return True
 
 
+def _receive_delete_feature_authorization(handle: str, base_dir: str,
+                                          http_prefix: str, domain: str,
+                                          message_json: {},
+                                          debug: bool) -> bool:
+    """Receives a Delete activity within the POST section of HTTPServer
+    See the revocation section of
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    """
+    if not has_object_dict(message_json):
+        return False
+    if not message_json.get('actor'):
+        return False
+    if not message_json['object'].get('id'):
+        return False
+    if not message_json['object'].get('type'):
+        return False
+    if not message_json['object'].get('interactionTarget'):
+        return False
+    if not isinstance(message_json['actor'], str):
+        return False
+    if not isinstance(message_json['object']['id'], str):
+        return False
+    if not isinstance(message_json['object']['type'], str):
+        return False
+    if not isinstance(message_json['object']['interactionTarget'], str):
+        return False
+    if message_json['object']['type'] != 'FeatureAuthorization':
+        return False
+    if message_json['object']['interactionTarget'] != message_json['actor']:
+        return False
+    if '/users/' not in message_json['object']['id']:
+        return False
+    if http_prefix + '://' + domain not in message_json['object']['id']:
+        return False
+    if '/stamps/' not in message_json['object']['id']:
+        return False
+    stamp_number = message_json['object']['id'].split('/stamps/')[1]
+    if '/' in stamp_number:
+        stamp_number = stamp_number.split('/')[0]
+    if not stamp_number.isdigit():
+        return False
+    handle_nickname = handle.split('@')[0]
+    handle_domain = handle.split('@')[1]
+    account_dir = acct_dir(base_dir, handle_nickname, handle_domain)
+    stamp_filename = account_dir + '/stamps/' + stamp_number
+    if not is_a_file(stamp_filename):
+        return False
+    stamp_json = load_json(stamp_filename)
+    if not stamp_json:
+        return False
+    # the featured url is typically an actor
+    featured_url = stamp_json['object']
+    if featured_url != message_json['object']['interactionTarget']:
+        return False
+    if erase_file(stamp_filename,
+                  "EX: unable to remove feature authorization " +
+                  stamp_filename):
+        if debug:
+            print('Revoked feature authorization ' + stamp_filename)
+    # remove link from featured collections
+    collection_filename: str = account_dir + '/featured_collections.txt'
+    collections_text = load_string(collection_filename,
+                                   'EX: unable to load ' +
+                                   'featured_collections.txt of ' +
+                                   handle_nickname)
+    if collections_text:
+        if not collections_text.endswith('\n'):
+            collections_text += '\n'
+        entries_removed = False
+        if featured_url + '\n' in collections_text:
+            collections_text = \
+                collections_text.replace(featured_url + '\n', '')
+            entries_removed = True
+        featured_nickname = get_nickname_from_actor(featured_url)
+        featured_domain, featured_port = get_domain_from_actor(featured_url)
+        if featured_nickname and featured_domain:
+            featured_domain_full = \
+                get_full_domain(featured_domain, featured_port)
+            featured_handle = featured_nickname + '@' + featured_domain_full
+            if featured_handle + '\n' in collections_text:
+                collections_text = \
+                    collections_text.replace(featured_handle + '\n', '')
+                entries_removed = True
+        if entries_removed:
+            save_string(collections_text, collection_filename,
+                        'EX: unable to save collections after removal of ' +
+                        featured_url)
+            if debug:
+                print('Unauthorized link removed from featured collections ' +
+                      featured_url + ' ' + collection_filename)
+    if debug:
+        print('feature authorization stamp removed ' + stamp_filename)
+    return True
+
+
 def receive_delete(handle: str, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    message_json: {},
@@ -1921,7 +2016,9 @@ def receive_delete(handle: str, base_dir: str,
     if debug:
         print('DEBUG: Delete activity arrived')
     if not has_object_string(message_json, debug):
-        return False
+        return _receive_delete_feature_authorization(handle, base_dir,
+                                                     http_prefix, domain,
+                                                     message_json, debug)
     domain_full = get_full_domain(domain, port)
     delete_prefix = http_prefix + '://' + domain_full + '/'
     actor_url = get_actor_from_post(message_json)
