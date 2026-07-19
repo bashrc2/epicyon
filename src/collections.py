@@ -286,14 +286,20 @@ def store_feature_authorization(base_dir: str, nickname: str, domain: str,
     """Stores a feature authorization after receiving a request for a
     particular actor or hashtag
     """
+    if not featured_item.get('object'):
+        return False
+    if not isinstance(featured_item['object'], str):
+        return False
     if not featured_item.get('featureAuthorization'):
         return False
     if not isinstance(featured_item['featureAuthorization'], str):
         return False
+    if '/stamps/' not in featured_item['featureAuthorization']:
+        return False
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir + '/stamps'):
         makedir(accounts_dir + '/stamps')
-    stamp_id = url_text_to_number(featured_item['featureAuthorization'])
+    stamp_id = featured_item['featureAuthorization'].split('/stamps/')[1]
     feature_authorization_filename = accounts_dir + '/stamps/' + stamp_id
     if not is_a_file(feature_authorization_filename):
         return False

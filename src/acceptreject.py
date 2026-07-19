@@ -545,7 +545,7 @@ def create_feature_accept(federation_list: [],
 
     request_id = request_object_json['id']
 
-    stamp_id = url_text_to_number(request_object_json['object'])
+    stamp_id = url_text_to_number(to_url + request_object_json['object'])
     stamp_url = \
         http_prefix + '://' + domain + '/stamps/' + stamp_id
 
