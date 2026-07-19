@@ -20,6 +20,7 @@ from src.utils import get_nickname_from_actor
 from src.utils import get_domain_from_actor
 from src.utils import url_text_to_number
 from src.utils import save_json
+from src.utils import resembles_url
 from src.data import is_a_file
 from src.data import load_list
 from src.data import is_a_dir
@@ -249,18 +250,19 @@ def get_featured_collections_feed(base_dir: str,
             continue
         if not collection_name:
             continue
-        # add a collection item
+        # add a collection item which is typically an actor or hashtag url
         item_url = ''
         text = remove_html(text)
-        if '/tags/' in text:
-            # hashtag url
-            item_url = text
-        else:
-            # check that this is an actor url
-            item_nickname = get_nickname_from_actor(text)
-            item_domain, _ = get_domain_from_actor(text)
-            if item_nickname and item_domain:
+        if resembles_url(text):
+            if '/tags/' in text:
+                # hashtag url
                 item_url = text
+            else:
+                # check that this is an actor url
+                item_nickname = get_nickname_from_actor(text)
+                item_domain, _ = get_domain_from_actor(text)
+                if item_nickname and item_domain:
+                    item_url = text
         if item_url:
             if authorizations.get(item_url):
                 collection_items.append(authorizations[item_url])
