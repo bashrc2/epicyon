@@ -33,6 +33,8 @@ def get_feature_authorization(self, calling_domain: str,
     """Returns the verification stamp for feature authorization
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
     """
+    if '/stamps/' not in self.path:
+        return
     stamp_number = self.path.split('/stamps/')[1]
     if '/' in stamp_number:
         stamp_number = stamp_number.split('/')[0]
