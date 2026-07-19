@@ -300,6 +300,8 @@ def store_feature_authorization(base_dir: str, nickname: str, domain: str,
     if not is_a_dir(accounts_dir + '/stamps'):
         makedir(accounts_dir + '/stamps')
     stamp_id = featured_item['featureAuthorization'].split('/stamps/')[1]
+    if '/' in stamp_id:
+        stamp_id = stamp_id.split('/')[0]
     feature_authorization_filename = accounts_dir + '/stamps/' + stamp_id
     if not is_a_file(feature_authorization_filename):
         return False
