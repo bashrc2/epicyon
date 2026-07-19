@@ -17,6 +17,7 @@ import datetime
 import json
 import locale
 import idna
+import base64
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from src.followingCalendar import add_person_to_calendar
@@ -57,8 +58,6 @@ INVALID_ACTOR_URL_CHARACTERS = (
     '?', '#', '!', '$', '&', "'", '(', ')', '*', '+', ',',
     ';', '='
 )
-
-URL_TEXT_MAGIC_NUMBER = 7439
 
 
 def is_account_dir(dir_name: str) -> bool:
@@ -4381,14 +4380,5 @@ def get_preferred_username(actor: {}, system_language: str) -> str:
 def url_text_to_number(url: str) -> str:
     """converts url text or collection name to a number string used as an id
     """
-    result = ''
-    for char in url:
-        num = ord(char)
-        if num > 99:
-            continue
-        if num > 9:
-            result = str(num) + result
-        else:
-            result = '0' + str(num) + result
-    num = (URL_TEXT_MAGIC_NUMBER + int(result)) % 9999999999999999999999999999
-    return str(num)
+    hash_result = get_sha_256(url)
+    return base64.b64encode(hash_result).decode('utf-8')

@@ -283,13 +283,18 @@ def get_featured_collections_feed(base_dir: str,
 
 def store_feature_authorization(base_dir: str, nickname: str, domain: str,
                                 featured_item: {}) -> bool:
-    """Stores a feature authorization
+    """Stores a feature authorization after receiving a request for a
+    particular actor or hashtag
     """
+    if not featured_item.get('featureAuthorization'):
+        return False
+    if not isinstance(featured_item['featureAuthorization'], str):
+        return False
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir + '/stamps'):
         makedir(accounts_dir + '/stamps')
-    stamp_id = featured_item['featureAuthorization'].split('/')[1]
-    feature_authorization_filename = accounts_dir + '/' + stamp_id
+    stamp_id = url_text_to_number(featured_item['featureAuthorization'])
+    feature_authorization_filename = accounts_dir + '/stamps/' + stamp_id
     if not is_a_file(feature_authorization_filename):
         return False
     return save_json(featured_item, feature_authorization_filename)
