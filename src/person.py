@@ -12,6 +12,7 @@ import os
 import subprocess
 import shutil
 import pyqrcode
+import src.collections
 from random import randint
 from pathlib import Path
 from cryptography.hazmat.backends import default_backend
@@ -513,6 +514,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
     full_domain = get_full_domain(domain, port)
     _, published = get_status_number()
+    featured_collections_url = \
+        person_id + src.collections.FEATURED_COLLECTIONS_ENDING
     new_person = {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
@@ -533,7 +536,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             'pendingFollowers': person_id + '/pendingFollowers'
         },
         'featured': person_id + '/collections/featured',
-        'featuredCollections': person_id + '/featured_collections',
+        'featuredCollections': featured_collections_url,
         'featuredTags': person_id + '/collections/tags',
         'followers': person_id + '/followers',
         'following': person_id + '/following',
@@ -948,7 +951,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
 
     if 'featuredCollections' not in person_json:
         person_json['featuredCollections']: str = \
-            person_json['id'] + '/featured_collections'
+            person_json['id'] + src.collections.FEATURED_COLLECTIONS_ENDING
         update_actor = True
 
     if 'webfinger' not in person_json:
