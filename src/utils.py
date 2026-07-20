@@ -2522,7 +2522,7 @@ def _get_reserved_words() -> str:
             'note', 'notes', 'offers', 'wanted', 'honk',
             'button', 'post', 'item', 'comment',
             'content', 'federation', 'elsewhere',
-            'article', 'activity')
+            'article', 'activity', 'featured', 'collections')
 
 
 def get_nickname_validation_pattern() -> str:
@@ -2545,7 +2545,7 @@ def _is_reserved_name(nickname: str) -> bool:
         'users', 'accounts', 'profile', 'statuses', 'packs', 'backend',
         'search', 'channel', 'config', 'settings', 'credentials', 'apis',
         'http', 'https', 'ipfs', 'ipns', 'laravel', 'root', 'webmail',
-        'mail', 'statistics'
+        'mail', 'statistics', 'featured', 'collections'
     )
     if nickname in reserved_names:
         return True
