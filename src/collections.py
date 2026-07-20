@@ -27,7 +27,6 @@ from src.data import is_a_dir
 from src.data import makedir
 
 FEATURED_COLLECTIONS_ENDING = '/featured_collections'
-AUTHORIZATIONS_ENDING = '/featured_authorizations'
 
 
 def _get_no_of_featured_collections(base_dir: str,
@@ -180,13 +179,7 @@ def get_featured_collections_feed(base_dir: str,
     if not lines:
         return collection
 
-    authorizations_filename = accounts_dir + AUTHORIZATIONS_ENDING + '.txt'
-    if not is_a_file(authorizations_filename):
-        return collection
     curr_page: int = 1
-    authorizations: dict = load_json(authorizations_filename)
-    if not authorizations:
-        return collection
 
     # get file creation date
     published = file_created_date(collection_filename)
@@ -264,8 +257,13 @@ def get_featured_collections_feed(base_dir: str,
                 if item_nickname and item_domain:
                     item_url = text
         if item_url:
-            if authorizations.get(item_url):
-                collection_items.append(authorizations[item_url])
+            feature_accept_filename = \
+                accounts_dir + '/stamps/accepted/' + \
+                item_url.replace('/', '#')
+            if is_a_file(feature_accept_filename):
+                accepted_item = load_json(feature_accept_filename)
+                if accepted_item:
+                    collection_items.append(accepted_item)
     # store the current collection
     _update_collections(collection_name, collection_items,
                         collection,

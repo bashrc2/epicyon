@@ -322,8 +322,21 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
             makedir(account_dir + '/stamps/accepted')
         accepted_filename = \
             account_dir + '/stamps/accepted' + actor.replace('/', '#')
+        # convert Accept into FeaturedItem
+        feature_number, published = get_status_number()
+        featured_item = {
+            "@context": [
+                "https://www.w3.org/ns/activitystreams",
+                "https://w3id.org/fep/7aa9"
+            ],
+            "id": message_json['to'] + "/featured/" + feature_number,
+            "type": "FeaturedItem",
+            "object": message_json['actor'],
+            "featureAuthorization": message_json['result'],
+            "published": published
+        }
         if not is_a_file(accepted_filename):
-            save_json(message_json, accepted_filename)
+            save_json(featured_item, accepted_filename)
 
 
 def _accept_follow(base_dir: str, message_json: {},
