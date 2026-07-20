@@ -1941,37 +1941,27 @@ def _receive_delete_feature_authorization(handle: str, base_dir: str,
         return False
     if http_prefix + '://' + domain not in message_json['object']['id']:
         return False
-    if '/stamps/' not in message_json['object']['id']:
-        return False
-    stamp_number = message_json['object']['id'].split('/stamps/')[1]
-    if '/' in stamp_number:
-        stamp_number = stamp_number.split('/')[0]
-    if not stamp_number.isdigit():
-        return False
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
     account_dir = acct_dir(base_dir, handle_nickname, handle_domain)
-    stamp_filename = account_dir + '/stamps/' + stamp_number
-    if not is_a_file(stamp_filename):
-        return False
-    stamp_json = load_json(stamp_filename)
-    if not stamp_json:
-        return False
     # the featured url is typically an actor
-    featured_url = stamp_json['object']
-    if featured_url != message_json['object']['interactionTarget']:
-        return False
-    if erase_file(stamp_filename,
-                  "EX: unable to remove feature authorization " +
-                  stamp_filename):
-        if debug:
-            print('Revoked feature authorization ' + stamp_filename)
+    featured_url = message_json['object']['interactionTarget']
+    granted_filename = \
+        account_dir + '/stamps/granted/' + featured_url.replace('/', '#')
+    if is_a_file(granted_filename):
+        if erase_file(granted_filename,
+                      "EX: unable to remove feature authorization " +
+                      granted_filename):
+            if debug:
+                print('Revoked feature authorization ' + granted_filename)
     # remove link from featured collections
     collection_filename: str = account_dir + '/featured_collections.txt'
-    collections_text = load_string(collection_filename,
-                                   'EX: unable to load ' +
-                                   'featured_collections.txt of ' +
-                                   handle_nickname)
+    collections_text = ''
+    if text_in_file(featured_url, collection_filename, True):
+        collections_text = load_string(collection_filename,
+                                       'EX: unable to load ' +
+                                       'featured_collections.txt of ' +
+                                       handle_nickname)
     if collections_text:
         if not collections_text.endswith('\n'):
             collections_text += '\n'
@@ -1997,8 +1987,6 @@ def _receive_delete_feature_authorization(handle: str, base_dir: str,
             if debug:
                 print('Unauthorized link removed from featured collections ' +
                       featured_url + ' ' + collection_filename)
-    if debug:
-        print('feature authorization stamp removed ' + stamp_filename)
     return True
 
 

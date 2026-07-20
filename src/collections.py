@@ -299,10 +299,13 @@ def store_feature_authorization(base_dir: str, nickname: str, domain: str,
     accounts_dir: str = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir + '/stamps'):
         makedir(accounts_dir + '/stamps')
+    if not is_a_dir(accounts_dir + '/stamps/granted'):
+        makedir(accounts_dir + '/stamps/granted')
     stamp_number = featured_item['featureAuthorization'].split('/stamps/')[1]
     if '/' in stamp_number:
         stamp_number = stamp_number.split('/')[0]
-    feature_authorization_filename = accounts_dir + '/stamps/' + stamp_number
+    feature_authorization_filename = \
+        accounts_dir + '/stamps/granted/' + stamp_number
     if not is_a_file(feature_authorization_filename):
         return False
     return save_json(featured_item, feature_authorization_filename)

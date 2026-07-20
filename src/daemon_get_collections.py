@@ -44,7 +44,7 @@ def get_feature_authorization(self, calling_domain: str,
         return
     # does the stamp exist?
     account_dir = acct_dir(base_dir, nickname, domain)
-    stamp_filename = account_dir + '/stamps/' + stamp_number
+    stamp_filename = account_dir + '/stamps/granted/' + stamp_number
     if not is_a_file(stamp_filename):
         return
     # load the stamp from file
