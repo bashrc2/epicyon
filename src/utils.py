@@ -4085,9 +4085,10 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     path_lower: str = path.lower()
 
     bad_strings: list[str] = [
-        '..', '/.', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-', '/statistics',
-        '/config/', 'settings.', 'credentials', '/packs/', '/backend/',
-        '/apis/', '/laravel/', '/js/', '/root/', '/webmail/', '/mail/'
+        '..', '/.', '/_', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-',
+        '/statistics', '/config/', 'settings.', 'credentials',
+        '/packs/', '/backend/', '/apis/', '/laravel/', '/js/',
+        '/root/', '/webmail/', '/mail/'
     ]
 
     # allow /.well-known/...

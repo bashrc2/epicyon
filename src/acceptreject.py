@@ -16,6 +16,7 @@ from src.status import get_status_number
 from src.utils import get_attributed_to
 from src.utils import get_user_paths
 from src.utils import text_in_file
+from src.utils import has_object_string
 from src.utils import has_object_string_object
 from src.utils import has_users_path
 from src.utils import get_full_domain
@@ -268,6 +269,38 @@ def _reject_quote_request(message_json: {}, domain_full: str,
     return False
 
 
+def _accept_feature_authorization(base_dir: str, message_json: {},
+                                  debug: bool,
+                                  curr_domain: str,
+                                  onion_domain: str, i2p_domain: str,
+                                  yggdrasil_domain: str) -> None:
+    """ Receiving an ActivityPub FeatureAuthorization Accept/Reject activity
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
+    Your request to feature an actor or hashtag was accepted
+    """
+    if not has_object_string(message_json, debug):
+        return
+    if not message_json.get('result'):
+        return
+    if not message_json.get('actor'):
+        return
+    if not message_json.get('to'):
+        return
+    if not message_json.get('object'):
+        return
+    if not isinstance(message_json['result'], str):
+        return
+    if not isinstance(message_json['object'], str):
+        return
+    if not isinstance(message_json['actor'], str):
+        return
+    actor = message_json['actor']
+    if message_json['type'] == 'Reject':
+        account_dir = acct_dir(base_dir, nickname, curr_domain)
+        stamp_filename = account_dir + '/stamps/' + stamp_number
+        
+
+
 def _accept_follow(base_dir: str, message_json: {},
                    federation_list: [], debug: bool,
                    curr_domain: str,
@@ -432,6 +465,16 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
             print('DEBUG: ' + message_json['type'] +
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
+    # is this a FeatureAccept?
+    if message_json.get('result'):
+        _accept_feature_authorization(base_dir, message_json, debug,
+                                      curr_domain, onion_domain,
+                                      i2p_domain, yggdrasil_domain)
+        if debug:
+            print('DEBUG: FeatureRequest ' + message_json['type'] +
+                  ' received')
+        return True
+
     # receive follow accept
     _accept_follow(base_dir, message_json, federation_list, debug,
                    curr_domain, onion_domain, i2p_domain, yggdrasil_domain)
