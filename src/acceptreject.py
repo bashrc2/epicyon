@@ -314,14 +314,14 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         if not is_a_dir(account_dir + '/stamps/rejected'):
             makedir(account_dir + '/stamps/rejected')
         rejected_filename = \
-            account_dir + '/stamps/rejected' + actor.replace('/', '#')
+            account_dir + '/stamps/rejected/' + actor.replace('/', '#')
         if not is_a_file(rejected_filename):
             save_json(message_json, rejected_filename)
     else:
         if not is_a_dir(account_dir + '/stamps/accepted'):
             makedir(account_dir + '/stamps/accepted')
         accepted_filename = \
-            account_dir + '/stamps/accepted' + actor.replace('/', '#')
+            account_dir + '/stamps/accepted/' + actor.replace('/', '#')
         # convert Accept into FeaturedItem
         feature_number, published = get_status_number()
         featured_item = {
