@@ -2503,6 +2503,11 @@ def daemon_http_get(self) -> None:
             msg = \
                 html_manual(self.server.base_dir, 'http',
                             self.server.i2p_domain,
+                            None, self.server.translate,
+                            self.server.system_language)
+        elif is_yggdrasil_address(calling_domain):
+            msg = \
+                html_manual(self.server.base_dir, 'http',
                             self.server.yggdrasil_domain,
                             None, self.server.translate,
                             self.server.system_language)
