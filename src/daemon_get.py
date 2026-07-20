@@ -2408,20 +2408,21 @@ def daemon_http_get(self) -> None:
         return
 
     if self.path in ('/specification', '/protocol', '/activitypub'):
-        if calling_domain.endswith('.onion'):
+        if calling_domain.endswith('.onion') and self.server.onion_domain:
             msg = \
                 html_specification(self.server.base_dir, 'http',
                                    self.server.onion_domain,
                                    None, self.server.translate,
                                    self.server.system_language)
-        elif calling_domain.endswith('.i2p'):
+        elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
             msg = \
                 html_specification(self.server.base_dir, 'http',
                                    self.server.i2p_domain,
                                    None,
                                    self.server.translate,
                                    self.server.system_language)
-        elif is_yggdrasil_address(calling_domain):
+        elif (is_yggdrasil_address(calling_domain) and
+              self.server.yggdrasil_domain):
             msg = \
                 html_specification(self.server.base_dir, 'http',
                                    self.server.yggdrasil_domain,
@@ -2450,7 +2451,7 @@ def daemon_http_get(self) -> None:
             http_403(self)
             return
 
-        if calling_domain.endswith('.onion'):
+        if calling_domain.endswith('.onion') and self.server.onion_domain:
             msg = \
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
@@ -2458,7 +2459,7 @@ def daemon_http_get(self) -> None:
                     self.server.system_language,
                     self.server.known_epicyon_instances,
                     self.server.translate)
-        elif calling_domain.endswith('.i2p'):
+        elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
             msg = \
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
@@ -2466,7 +2467,8 @@ def daemon_http_get(self) -> None:
                     self.server.system_language,
                     self.server.known_epicyon_instances,
                     self.server.translate)
-        elif is_yggdrasil_address(calling_domain):
+        elif (is_yggdrasil_address(calling_domain) and
+              self.server.yggdrasil_domain):
             msg = \
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
@@ -2493,19 +2495,20 @@ def daemon_http_get(self) -> None:
         return
 
     if self.path in ('/manual', '/usermanual', '/userguide'):
-        if calling_domain.endswith('.onion'):
+        if calling_domain.endswith('.onion') and self.server.onion_domain:
             msg = \
                 html_manual(self.server.base_dir, 'http',
                             self.server.onion_domain,
                             None, self.server.translate,
                             self.server.system_language)
-        elif calling_domain.endswith('.i2p'):
+        elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
             msg = \
                 html_manual(self.server.base_dir, 'http',
                             self.server.i2p_domain,
                             None, self.server.translate,
                             self.server.system_language)
-        elif is_yggdrasil_address(calling_domain):
+        elif (is_yggdrasil_address(calling_domain) and
+              self.server.yggdrasil_domain):
             msg = \
                 html_manual(self.server.base_dir, 'http',
                             self.server.yggdrasil_domain,
