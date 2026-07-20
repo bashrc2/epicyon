@@ -2388,7 +2388,7 @@ def daemon_http_get(self) -> None:
                 html_about(self.server.base_dir, 'http',
                            self.server.i2p_domain,
                            self.server.yggdrasil_domain,
-                           None, self.server.translate,
+                           self.server.translate,
                            self.server.system_language)
         else:
             msg = \
