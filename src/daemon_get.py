@@ -579,30 +579,29 @@ def daemon_http_get(self) -> None:
             write2(self, msg)
             self.server.followers_synchronization = False
             return
-        else:
-            # request was not signed
-            result_json = {
-                "error": "Request not signed"
-            }
-            msg_str = json.dumps(result_json, ensure_ascii=False)
-            msg_str = convert_domains(calling_domain, referer_domain,
-                                      msg_str,
-                                      self.server.http_prefix,
-                                      self.server.domain,
-                                      self.server.onion_domain,
-                                      self.server.i2p_domain,
-                                      self.server.yggdrasil_domain)
-            msg = msg_str.encode('utf-8')
-            msglen = len(msg)
-            accept_str = self.headers['Accept']
-            if 'json' in accept_str:
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                self.server.followers_synchronization = False
-                return
+        # request was not signed
+        result_json = {
+            "error": "Request not signed"
+        }
+        msg_str = json.dumps(result_json, ensure_ascii=False)
+        msg_str = convert_domains(calling_domain, referer_domain,
+                                  msg_str,
+                                  self.server.http_prefix,
+                                  self.server.domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
+        msg = msg_str.encode('utf-8')
+        msglen = len(msg)
+        accept_str = self.headers['Accept']
+        if 'json' in accept_str:
+            protocol_str = \
+                get_json_content_from_accept(accept_str)
+            set_headers(self, protocol_str, msglen,
+                        None, calling_domain, False)
+            write2(self, msg)
+            self.server.followers_synchronization = False
+            return
         http_404(self, 110)
         self.server.followers_synchronization = False
         return
