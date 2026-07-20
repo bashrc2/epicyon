@@ -715,8 +715,7 @@ def daemon_http_get(self) -> None:
                                              self.server.fitness,
                                              self.server.debug)
                 return
-            else:
-                self.path = '/'
+            self.path = '/'
 
     if '/browserconfig.xml' in self.path:
         if has_accept(self, calling_domain):
