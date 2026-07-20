@@ -318,6 +318,7 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
             account_dir + '/stamps/rejected/' + actor.replace('/', '#')
         if not is_a_file(rejected_filename):
             save_json(message_json, rejected_filename)
+        # remove any accepted FeaturedItem
         accepted_filename = \
             rejected_filename.replace('/rejected/', '/accepted/')
         if is_a_file(accepted_filename):
@@ -344,6 +345,7 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         }
         if not is_a_file(accepted_filename):
             save_json(featured_item, accepted_filename)
+        # remove any rejected FeaturedItem
         rejected_filename = \
             accepted_filename.replace('/accepted/', '/rejected/')
         if is_a_file(rejected_filename):
