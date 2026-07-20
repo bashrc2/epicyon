@@ -1750,7 +1750,6 @@ def daemon_http_get(self) -> None:
                 get_ssml_box(self.server.base_dir,
                              self.path, self.server.domain,
                              self.server.system_language,
-                             self.server.instanceTitle,
                              'inbox')
             if xml_str:
                 msg = xml_str.encode('utf-8')
