@@ -1884,7 +1884,6 @@ def daemon_http_get(self) -> None:
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      nickname, self.server.domain,
-                                     self.server.system_language,
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      self.server.yggdrasil_domain)
