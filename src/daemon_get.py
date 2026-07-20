@@ -2418,7 +2418,14 @@ def daemon_http_get(self) -> None:
             msg = \
                 html_specification(self.server.base_dir, 'http',
                                    self.server.i2p_domain,
+                                   None,
+                                   self.server.translate,
+                                   self.server.system_language)
+        elif is_yggdrasil_address(calling_domain):
+            msg = \
+                html_specification(self.server.base_dir, 'http',
                                    self.server.yggdrasil_domain,
+                                   None,
                                    self.server.translate,
                                    self.server.system_language)
         else:
@@ -2456,6 +2463,13 @@ def daemon_http_get(self) -> None:
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
                     self.server.i2p_domain,
+                    self.server.system_language,
+                    self.server.known_epicyon_instances,
+                    self.server.translate)
+        elif is_yggdrasil_address(calling_domain):
+            msg = \
+                html_known_epicyon_instances(
+                    self.server.base_dir, 'http',
                     self.server.yggdrasil_domain,
                     self.server.system_language,
                     self.server.known_epicyon_instances,
