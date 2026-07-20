@@ -36,6 +36,7 @@ from src.timeFunctions import get_current_time_int
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
+from src.data import erase_file
 
 
 def _create_quote_accept_reject(receiving_actor: str,
@@ -317,6 +318,12 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
             account_dir + '/stamps/rejected/' + actor.replace('/', '#')
         if not is_a_file(rejected_filename):
             save_json(message_json, rejected_filename)
+        accepted_filename = \
+            rejected_filename.replace('/rejected/', '/accepted/')
+        if is_a_file(accepted_filename):
+            erase_file(accepted_filename,
+                       'EX: unable to remove accepted FeaturedItem ' +
+                       accepted_filename)
     else:
         if not is_a_dir(account_dir + '/stamps/accepted'):
             makedir(account_dir + '/stamps/accepted')
@@ -337,6 +344,12 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         }
         if not is_a_file(accepted_filename):
             save_json(featured_item, accepted_filename)
+        rejected_filename = \
+            accepted_filename.replace('/accepted/', '/rejected/')
+        if is_a_file(rejected_filename):
+            erase_file(rejected_filename,
+                       'EX: unable to remove rejected FeaturedItem ' +
+                       rejected_filename)
 
 
 def _accept_follow(base_dir: str, message_json: {},
