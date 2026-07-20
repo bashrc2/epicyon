@@ -31,8 +31,11 @@ from src.utils import has_object_string_type
 from src.utils import get_actor_from_post
 from src.utils import is_yggdrasil_address
 from src.utils import url_text_to_number
+from src.utils import save_json
 from src.timeFunctions import get_current_time_int
 from src.data import is_a_file
+from src.data import is_a_dir
+from src.data import makedir
 
 
 def _create_quote_accept_reject(receiving_actor: str,
@@ -271,9 +274,8 @@ def _reject_quote_request(message_json: {}, domain_full: str,
 
 def _accept_feature_authorization(base_dir: str, message_json: {},
                                   debug: bool,
-                                  curr_domain: str,
-                                  onion_domain: str, i2p_domain: str,
-                                  yggdrasil_domain: str) -> None:
+                                  curr_nickname: str,
+                                  curr_domain: str) -> None:
     """ Receiving an ActivityPub FeatureAuthorization Accept/Reject activity
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7aa9/fep-7aa9.md
     Your request to feature an actor or hashtag was accepted
@@ -294,11 +296,34 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         return
     if not isinstance(message_json['actor'], str):
         return
+    if isinstance(message_json['to'], str):
+        to_actor = message_json['to']
+    elif isinstance(message_json['to'], list):
+        to_actor = message_json['to'][0]
+    else:
+        return
+    if '/users/' + curr_nickname + '/' not in to_actor:
+        return
     actor = message_json['actor']
+    account_dir = acct_dir(base_dir, curr_nickname, curr_domain)
+    if not is_a_dir(account_dir):
+        return
+    if not is_a_dir(account_dir + '/stamps'):
+        makedir(account_dir + '/stamps')
     if message_json['type'] == 'Reject':
-        account_dir = acct_dir(base_dir, nickname, curr_domain)
-        stamp_filename = account_dir + '/stamps/' + stamp_number
-        
+        if not is_a_dir(account_dir + '/stamps/rejected'):
+            makedir(account_dir + '/stamps/rejected')
+        rejected_filename = \
+            account_dir + '/stamps/rejected' + actor.replace('/', '#')
+        if not is_a_file(rejected_filename):
+            save_json(message_json, rejected_filename)
+    else:
+        if not is_a_dir(account_dir + '/stamps/accepted'):
+            makedir(account_dir + '/stamps/accepted')
+        accepted_filename = \
+            account_dir + '/stamps/accepted' + actor.replace('/', '#')
+        if not is_a_file(accepted_filename):
+            save_json(message_json, accepted_filename)
 
 
 def _accept_follow(base_dir: str, message_json: {},
@@ -437,7 +462,8 @@ def _accept_follow(base_dir: str, message_json: {},
 
 
 def receive_accept_reject(base_dir: str, domain: str, message_json: {},
-                          federation_list: [], debug: bool, curr_domain: str,
+                          federation_list: [], debug: bool,
+                          curr_nickname: str, curr_domain: str,
                           onion_domain: str, i2p_domain: str,
                           yggdrasil_domain: str) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
@@ -468,8 +494,7 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
     # is this a FeatureAccept?
     if message_json.get('result'):
         _accept_feature_authorization(base_dir, message_json, debug,
-                                      curr_domain, onion_domain,
-                                      i2p_domain, yggdrasil_domain)
+                                      curr_nickname, curr_domain)
         if debug:
             print('DEBUG: FeatureRequest ' + message_json['type'] +
                   ' received')
