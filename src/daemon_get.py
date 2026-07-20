@@ -1879,7 +1879,7 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        # return the featured posts collection
+        # return the featured posts collection item
         get_featured_collection_item(self, calling_domain, referer_domain,
                                      self.server.base_dir,
                                      self.server.http_prefix,
