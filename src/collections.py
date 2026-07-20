@@ -21,6 +21,7 @@ from src.utils import get_domain_from_actor
 from src.utils import url_text_to_number
 from src.utils import save_json
 from src.utils import resembles_url
+from src.utils import remove_eol
 from src.data import is_a_file
 from src.data import load_list
 from src.data import is_a_dir
@@ -230,6 +231,7 @@ def get_featured_collections_feed(base_dir: str,
     for text in lines:
         if not text:
             continue
+        text = remove_eol(text)
         if text.startswith('# '):
             # store the current collection
             _update_collections(collection_name, collection_items,

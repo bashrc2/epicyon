@@ -37,6 +37,9 @@ from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
 from src.data import erase_file
+from src.data import save_string
+from src.data import append_string
+from src.data import load_list
 
 
 def _create_quote_accept_reject(receiving_actor: str,
@@ -311,24 +314,43 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         return
     if not is_a_dir(account_dir + '/stamps'):
         makedir(account_dir + '/stamps')
+    feature_number_lookup_filename = \
+        account_dir + '/stamps/feature_number_lookup.txt'
     if message_json['type'] == 'Reject':
         if not is_a_dir(account_dir + '/stamps/rejected'):
             makedir(account_dir + '/stamps/rejected')
-        rejected_filename = \
+        rejected_filename: str = \
             account_dir + '/stamps/rejected/' + actor.replace('/', '#')
         if not is_a_file(rejected_filename):
             save_json(message_json, rejected_filename)
         # remove any accepted FeaturedItem
-        accepted_filename = \
+        accepted_filename: str = \
             rejected_filename.replace('/rejected/', '/accepted/')
         if is_a_file(accepted_filename):
             erase_file(accepted_filename,
                        'EX: unable to remove accepted FeaturedItem ' +
                        accepted_filename)
+        # remove any lookup file entry
+        if is_a_file(feature_number_lookup_filename):
+            if text_in_file(' ' + actor + '\n',
+                            feature_number_lookup_filename):
+                feature_numbers_lookup: list[str] = \
+                    load_list(feature_number_lookup_filename,
+                              'EX: unable to load list ' +
+                              feature_number_lookup_filename)
+                if feature_numbers_lookup:
+                    feature_numbers_lookup_str = ''
+                    for line_str in feature_numbers_lookup:
+                        if ' ' + actor + '\n' not in line_str:
+                            feature_numbers_lookup_str += line_str
+                    save_string(feature_numbers_lookup_str,
+                                feature_number_lookup_filename,
+                                'EX: unable to save ' +
+                                feature_number_lookup_filename)
     else:
         if not is_a_dir(account_dir + '/stamps/accepted'):
             makedir(account_dir + '/stamps/accepted')
-        accepted_filename = \
+        accepted_filename: str = \
             account_dir + '/stamps/accepted/' + actor.replace('/', '#')
         # convert Accept into FeaturedItem
         feature_number, published = get_status_number()
@@ -345,8 +367,19 @@ def _accept_feature_authorization(base_dir: str, message_json: {},
         }
         if not is_a_file(accepted_filename):
             save_json(featured_item, accepted_filename)
+            # save a lookup of the feature number
+            if is_a_file(feature_number_lookup_filename):
+                append_string(feature_number + ' ' + actor + '\n',
+                              feature_number_lookup_filename,
+                              'EX: unable to append to ' +
+                              feature_number_lookup_filename)
+            else:
+                save_string(feature_number + ' ' + actor + '\n',
+                            feature_number_lookup_filename,
+                            'EX: unable to save to ' +
+                            feature_number_lookup_filename)
         # remove any rejected FeaturedItem
-        rejected_filename = \
+        rejected_filename: str = \
             accepted_filename.replace('/accepted/', '/rejected/')
         if is_a_file(rejected_filename):
             erase_file(rejected_filename,

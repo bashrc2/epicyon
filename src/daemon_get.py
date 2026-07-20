@@ -209,6 +209,7 @@ from src.daemon_get_post import show_individual_at_post
 from src.daemon_get_post import show_new_post
 from src.daemon_get_post import show_conversation_thread
 from src.daemon_get_collections import get_featured_collection
+from src.daemon_get_collections import get_featured_collection_item
 from src.daemon_get_collections import get_featured_tags_collection
 from src.daemon_get_collections import get_following_json
 from src.daemon_get_collections import get_feature_authorization
@@ -1871,6 +1872,22 @@ def daemon_http_get(self) -> None:
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 self.server.yggdrasil_domain)
+        return
+
+    if not html_getreq and \
+       users_in_path and '/featured/' in self.path:
+        nickname = self.path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        # return the featured posts collection
+        get_featured_collection_item(self, calling_domain, referer_domain,
+                                     self.server.base_dir,
+                                     self.server.http_prefix,
+                                     nickname, self.server.domain,
+                                     self.server.system_language,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.yggdrasil_domain)
         return
 
     if not html_getreq and \
