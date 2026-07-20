@@ -491,7 +491,7 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
             print('DEBUG: ' + message_json['type'] +
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
-    # is this a FeatureAccept?
+    # is this a FeatureAuthorization Accept or Reject?
     if message_json.get('result'):
         _accept_feature_authorization(base_dir, message_json, debug,
                                       curr_nickname, curr_domain)
