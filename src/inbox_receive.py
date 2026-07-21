@@ -101,6 +101,7 @@ from src.acceptreject import create_feature_reject
 from src.acceptreject import create_feature_accept
 from src.posts import send_signed_json
 from src.collections import store_feature_authorization
+from src.collections import allow_lists
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -1214,12 +1215,12 @@ def receive_feature_request(session,
         return False
 
     handle_nickname = handle.split('@')[0]
-    handle_domain = handle.split('@')[0]
     mutuals: list[str] = \
-        get_mutuals_of_person(base_dir, handle_nickname, handle_domain)
+        get_mutuals_of_person(base_dir, handle_nickname, domain)
 
     new_featured_item = None
-    if sender_handle not in mutuals:
+    if allow_lists(base_dir, handle_nickname, domain) and \
+       sender_handle + '\n' not in mutuals:
         acceptreject_json = \
             create_feature_reject(federation_list,
                                   actor_nickname, actor_domain, actor_port,
@@ -1297,7 +1298,7 @@ def receive_feature_request(session,
                         system_language, mitm_servers) == 0:
         if new_featured_item:
             store_feature_authorization(base_dir,
-                                        handle_nickname, handle_domain,
+                                        handle_nickname, domain,
                                         new_featured_item)
     return True
 

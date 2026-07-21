@@ -309,3 +309,13 @@ def store_feature_authorization(base_dir: str, nickname: str, domain: str,
     if not is_a_file(feature_authorization_filename):
         return False
     return save_json(featured_item, feature_authorization_filename)
+
+
+def allow_lists(base_dir: str, nickname: str, domain: str) -> bool:
+    """Is the given account permitted to be added to lists
+    """
+    lists_permitted_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.allow_lists'
+    if is_a_file(lists_permitted_filename):
+        return True
+    return False
