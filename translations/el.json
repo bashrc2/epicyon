@@ -771,5 +771,6 @@
 	"minutes": "πρακτικά",
 	"Availability": "Διαθεσιμότητα",
     "Loops Instances": "Παρουσίες βρόχων",
-	"Disinformation Instances": "Περιπτώσεις παραπληροφόρησης"
+	"Disinformation Instances": "Περιπτώσεις παραπληροφόρησης",
+	"Allow this account to be added to lists": "Να επιτρέπεται η προσθήκη αυτού του λογαριασμού σε λίστες"
 }

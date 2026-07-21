@@ -771,5 +771,6 @@
 	"minutes": "minuts",
 	"Availability": "Disponibilitat",
     "Loops Instances": "Instàncies de bucles",
-	"Disinformation Instances": "Instàncies de desinformació"
+	"Disinformation Instances": "Instàncies de desinformació",
+	"Allow this account to be added to lists": "Permet que aquest compte s'afegeixi a les llistes"
 }

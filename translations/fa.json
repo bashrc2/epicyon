@@ -771,5 +771,6 @@
 	"minutes": "دقیقه",
 	"Availability": "در دسترس بودن",
     "Loops Instances": "نمونه‌های حلقه‌ها",
-	"Disinformation Instances": "موارد انتشار اطلاعات نادرست"
+	"Disinformation Instances": "موارد انتشار اطلاعات نادرست",
+	"Allow this account to be added to lists": "اجازه دهید این حساب به لیست‌ها اضافه شود"
 }

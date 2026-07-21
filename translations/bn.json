@@ -771,5 +771,6 @@
 	"minutes": "মিনিট",
 	"Availability": "প্রাপ্যতা",
     "Loops Instances": "লুপ ইনস্ট্যান্স",
-	"Disinformation Instances": "ভুল তথ্যের উদাহরণ"
+	"Disinformation Instances": "ভুল তথ্যের উদাহরণ",
+	"Allow this account to be added to lists": "এই অ্যাকাউন্টটিকে তালিকায় যুক্ত করার অনুমতি দিন"
 }

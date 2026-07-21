@@ -771,5 +771,6 @@
 	"minutes": "protokół",
 	"Availability": "Dostępność",
     "Loops Instances": "Instancje pętli",
-	"Disinformation Instances": "Przypadki dezinformacji"
+	"Disinformation Instances": "Przypadki dezinformacji",
+	"Allow this account to be added to lists": "Zezwól na dodawanie tego konta do list"
 }

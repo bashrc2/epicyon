@@ -771,5 +771,6 @@
 	"minutes": "nóiméad",
 	"Availability": "Infhaighteacht",
     "Loops Instances": "Cásanna Lúb",
-	"Disinformation Instances": "Cásanna Mífhaisnéise"
+	"Disinformation Instances": "Cásanna Mífhaisnéise",
+	"Allow this account to be added to lists": "Ceadaigh an cuntas seo a chur le liostaí"
 }

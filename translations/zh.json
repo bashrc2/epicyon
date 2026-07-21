@@ -771,5 +771,6 @@
 	"minutes": "分钟",
 	"Availability": "可用性",
     "Loops Instances": "循环实例",
-	"Disinformation Instances": "虚假信息实例"
+	"Disinformation Instances": "虚假信息实例",
+	"Allow this account to be added to lists": "允许将此帐户添加到列表中"
 }

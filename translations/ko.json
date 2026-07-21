@@ -771,5 +771,6 @@
 	"minutes": "분",
 	"Availability": "유효성",
     "Loops Instances": "루프 인스턴스",
-	"Disinformation Instances": "허위 정보 사례"
+	"Disinformation Instances": "허위 정보 사례",
+	"Allow this account to be added to lists": "이 계정을 목록에 추가할 수 있도록 허용"
 }

@@ -771,5 +771,6 @@
 	"minutes": "minuten",
 	"Availability": "Verfügbarkeit",
     "Loops Instances": "Schleifeninstanzen",
-	"Disinformation Instances": "Fälle von Desinformation"
+	"Disinformation Instances": "Fälle von Desinformation",
+	"Allow this account to be added to lists": "Erlauben, dass dieses Konto zu Listen hinzugefügt wird"
 }

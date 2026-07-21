@@ -771,5 +771,6 @@
 	"minutes": "minuuttia",
 	"Availability": "Saatavuus",
     "Loops Instances": "Silmukat-instanssit",
-	"Disinformation Instances": "Disinformaatiotapaukset"
+	"Disinformation Instances": "Disinformaatiotapaukset",
+	"Allow this account to be added to lists": "Salli tämän tilin lisääminen listoihin"
 }

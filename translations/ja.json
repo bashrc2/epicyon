@@ -771,5 +771,6 @@
 	"minutes": "分",
 	"Availability": "可用性",
     "Loops Instances": "ループインスタンス",
-	"Disinformation Instances": "偽情報事例"
+	"Disinformation Instances": "偽情報事例",
+	"Allow this account to be added to lists": "このアカウントをリストに追加できるようにする"
 }

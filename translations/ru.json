@@ -771,5 +771,6 @@
 	"minutes": "минут",
 	"Availability": "Доступность",
     "Loops Instances": "Экземпляры циклов",
-	"Disinformation Instances": "Случаи дезинформации"
+	"Disinformation Instances": "Случаи дезинформации",
+	"Allow this account to be added to lists": "Разрешить добавление этого аккаунта в списки"
 }

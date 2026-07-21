@@ -771,5 +771,6 @@
 	"minutes": "хвилин",
 	"Availability": "Наявність",
     "Loops Instances": "Екземпляри циклів",
-	"Disinformation Instances": "Випадки дезінформації"
+	"Disinformation Instances": "Випадки дезінформації",
+	"Allow this account to be added to lists": "Дозволити додавання цього облікового запису до списків"
 }

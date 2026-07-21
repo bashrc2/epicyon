@@ -771,5 +771,6 @@
 	"minutes": "دقائق",
 	"Availability": "التوافر",
     "Loops Instances": "حلقات التكرار",
-	"Disinformation Instances": "أمثلة على التضليل الإعلامي"
+	"Disinformation Instances": "أمثلة على التضليل الإعلامي",
+	"Allow this account to be added to lists": "السماح بإضافة هذا الحساب إلى القوائم"
 }
