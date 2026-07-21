@@ -3371,7 +3371,8 @@ def _html_edit_profile_options(is_admin: bool,
                                hide_recent_posts: bool,
                                premium: bool,
                                no_seen_posts: bool,
-                               watermark_enabled: bool) -> str:
+                               watermark_enabled: bool,
+                               allow_on_lists: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form: str = '    <div class="container">\n'
@@ -3386,6 +3387,9 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(translate['Reject spam accounts'],
                        'rejectSpamActors', reject_spam_actors)
+    edit_profile_form += \
+        edit_check_box(translate['Allow this account to be added to lists'],
+                       'allowLists', allow_on_lists)
     edit_profile_form += \
         edit_check_box(translate['This is a bot account'],
                        'isBot', is_bot)
@@ -3933,6 +3937,12 @@ def html_edit_profile(server, translate: {},
     if is_a_file(watermark_enabled_filename):
         watermark_enabled = True
 
+    # are other accounts permitted to add this one to lists?
+    allow_on_lists_filename: str = account_dir + '/.allow_lists'
+    allow_on_lists: bool = False
+    if is_a_file(allow_on_lists_filename):
+        allow_on_lists = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3945,7 +3955,8 @@ def html_edit_profile(server, translate: {},
                                    reverse_sequence, show_quote_toots,
                                    show_vote_posts, hide_follows,
                                    hide_recent_posts, premium,
-                                   no_seen_posts, watermark_enabled)
+                                   no_seen_posts, watermark_enabled,
+                                   allow_on_lists)
 
     # reply controls
     edit_profile_form += \

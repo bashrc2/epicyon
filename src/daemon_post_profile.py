@@ -1340,6 +1340,29 @@ def _profile_post_reject_spam_actors(base_dir: str,
                        'EX: unable to remove reject spam actors')
 
 
+def _profile_post_allow_on_lists(base_dir: str,
+                                 nickname: str, domain: str,
+                                 fields: {}) -> None:
+    """ HTTP POST allow lists
+    """
+    allow_on_lists: bool = False
+    if fields.get('allowLists'):
+        if fields['allowLists'] == 'on':
+            allow_on_lists = True
+    curr_allow_on_lists: bool = False
+    allow_on_lists_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.allow_lists'
+    if is_a_file(allow_on_lists_filename):
+        curr_allow_on_lists = True
+    if allow_on_lists != curr_allow_on_lists:
+        if allow_on_lists:
+            save_flag_file(allow_on_lists_filename,
+                           'EX: unable to write allow on lists')
+        else:
+            erase_file(allow_on_lists_filename,
+                       'EX: unable to remove allow on lists')
+
+
 def _profile_post_approve_followers(on_final_welcome_screen: bool,
                                     actor_json: {}, fields: {},
                                     actor_changed: bool,
@@ -3237,6 +3260,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 _profile_post_reject_spam_actors(base_dir,
                                                  nickname, domain, fields)
+                _profile_post_allow_on_lists(base_dir, nickname, domain,
+                                             fields)
 
                 actor_changed = \
                     _profile_post_keep_dms(base_dir,
