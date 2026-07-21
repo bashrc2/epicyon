@@ -1220,17 +1220,7 @@ def receive_feature_request(session,
 
     new_featured_item = None
     if allow_lists(base_dir, handle_nickname, domain) and \
-       sender_handle + '\n' not in mutuals:
-        acceptreject_json = \
-            create_feature_reject(federation_list,
-                                  actor_nickname, actor_domain, actor_port,
-                                  sender_url, '', http_prefix, message_json)
-        if debug:
-            pprint(acceptreject_json)
-            print('REJECT: sending FeatureRequest Reject from ' +
-                  actor_nickname + '@' + actor_domain_full +
-                  ' to ' + sender_nickname + '@' + sender_domain_full)
-    else:
+       sender_handle + '\n' in mutuals:
         acceptreject_json, new_featured_item = \
             create_feature_accept(federation_list,
                                   actor_nickname, actor_domain, actor_port,
@@ -1238,6 +1228,16 @@ def receive_feature_request(session,
         if debug:
             pprint(acceptreject_json)
             print('ACCEPT: sending FeatureRequest Accept from ' +
+                  actor_nickname + '@' + actor_domain_full +
+                  ' to ' + sender_nickname + '@' + sender_domain_full)
+    else:
+        acceptreject_json = \
+            create_feature_reject(federation_list,
+                                  actor_nickname, actor_domain, actor_port,
+                                  sender_url, '', http_prefix, message_json)
+        if debug:
+            pprint(acceptreject_json)
+            print('REJECT: sending FeatureRequest Reject from ' +
                   actor_nickname + '@' + actor_domain_full +
                   ' to ' + sender_nickname + '@' + sender_domain_full)
 
