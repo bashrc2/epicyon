@@ -1906,7 +1906,7 @@ def daemon_http_get(self) -> None:
         return
 
     if not html_getreq and \
-       users_in_path and self.path.endswith('/collections/featuredTags'):
+       users_in_path and self.path.endswith('/collections/tags'):
         get_featured_tags_collection(self, calling_domain, referer_domain,
                                      self.path,
                                      self.server.http_prefix,

@@ -188,6 +188,7 @@ def get_featured_tags_collection(self, calling_domain: str,
                                  yggdrasil_domain: str) -> None:
     """Returns the featured tags collections in
     actor/collections/featuredTags
+    This is currently always an empty set
     """
     post_context = get_individual_post_context()
     featured_tags_collection = {
