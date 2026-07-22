@@ -21,7 +21,9 @@ from src.utils import load_json
 from src.utils import remove_eol
 from src.follow import get_following_feed
 from src.data import is_a_file
+from src.data import is_a_dir
 from src.data import load_list
+from src.data import load_string
 
 
 def get_feature_authorization(self, calling_domain: str,
@@ -182,22 +184,53 @@ def get_featured_collection(self, calling_domain: str,
 
 def get_featured_tags_collection(self, calling_domain: str,
                                  referer_domain: str,
-                                 path: str, http_prefix: str,
+                                 path: str, base_dir: str,
+                                 http_prefix: str,
                                  domain_full: str, domain: str,
                                  onion_domain: str, i2p_domain: str,
                                  yggdrasil_domain: str) -> None:
     """Returns the featured tags collections in
     actor/collections/featuredTags
-    This is currently always an empty set
     """
+    nickname: str = path.split('/users/')[1]
+    if '/' in nickname:
+        nickname = nickname.split('/')[0]
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+
     post_context = get_individual_post_context()
     featured_tags_collection = {
         '@context': post_context,
         'id': http_prefix + '://' + domain_full + path,
-        'orderedItems': [],
+        'items': [],
         'totalItems': 0,
-        'type': 'OrderedCollection'
+        'type': 'Collection'
     }
+    if is_a_dir(account_dir):
+        featured_tags_filename: str = \
+            account_dir + '/featured_hashtags.txt'
+        if is_a_file(featured_tags_filename):
+            hashtags_str: str = \
+                load_string(featured_tags_filename,
+                            'EX: unable to load featured hashtags ' +
+                            featured_tags_filename)
+            if hashtags_str:
+                separator = ' '
+                if ',' in hashtags_str:
+                    separator = ','
+                hashtags_list: list[str] = hashtags_str.split(separator)
+                for tag in hashtags_list:
+                    tag = tag.strip().replace('#', '')
+                    if not tag:
+                        continue
+                    url = http_prefix + '://' + domain_full + '/tagged/' + tag
+                    tag_dict = {
+                        'href': url,
+                        'name': '#' + tag,
+                        'type': 'Hashtag'
+                    }
+                    featured_tags_collection['items'].append(tag_dict)
+                    featured_tags_collection['totalItems'] = \
+                        featured_tags_collection['totalItems'] + 1
     msg_str = json.dumps(featured_tags_collection,
                          ensure_ascii=False)
     msg_str = convert_domains(calling_domain,
