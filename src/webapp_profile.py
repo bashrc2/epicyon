@@ -61,6 +61,7 @@ from src.languages import get_actor_languages
 from src.skills import get_skills
 from src.theme import get_themes_list
 from src.person import get_featured_hashtags_as_html
+from src.person import get_featured_hashtags_as_html_remote
 from src.person import get_featured_hashtags
 from src.person import person_box_json
 from src.person import get_actor_json
@@ -444,8 +445,27 @@ def html_profile_after_search(authorized: bool,
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
-    featured_hashtags: str = \
-        get_featured_hashtags_as_html(profile_json, profile_description)
+    domain_full: str = get_full_domain(domain, port)
+    featured_hashtags: str = ''
+    if profile_json.get('featuredTags'):
+        if isinstance(profile_json['featuredTags'], str):
+            if search_domain == domain:
+                # account on this instance
+                featured_hashtags = \
+                    get_featured_hashtags_as_html(base_dir,
+                                                  search_nickname, domain,
+                                                  http_prefix, domain_full)
+            else:
+                # account on remote instance
+                tags_url: str = profile_json['featuredTags']
+                featured_hashtags = \
+                    get_featured_hashtags_as_html_remote(signing_priv_key_pem,
+                                                         session, tags_url,
+                                                         as_header,
+                                                         http_prefix,
+                                                         mitm_servers,
+                                                         domain,
+                                                         debug)
     outbox_url: str = None
     if not profile_json.get('outbox'):
         if debug:
@@ -549,8 +569,6 @@ def html_profile_after_search(authorized: bool,
                                          discord, music_site_url,
                                          art_site_url,
                                          donate_url)
-
-    domain_full: str = get_full_domain(domain, port)
 
     follow_is_permitted: bool = True
     if not profile_json.get('followers'):
@@ -1302,7 +1320,8 @@ def html_profile(signing_priv_key_pem: str,
     if profile_description:
         profile_description = standardize_text(profile_description)
     featured_hashtags: str = \
-        get_featured_hashtags_as_html(profile_json, profile_description)
+        get_featured_hashtags_as_html(base_dir, nickname, domain,
+                                      http_prefix, domain_full)
     posts_button: str = 'button'
     following_button: str = 'button'
     moved_button: str = 'button'
@@ -3717,7 +3736,7 @@ def html_edit_profile(server, translate: {},
         elif actor_json.get('copiedTo'):
             if isinstance(actor_json['copiedTo'], str):
                 moved_to = remove_html(actor_json['copiedTo'])
-        featured_hashtags = get_featured_hashtags(actor_json)
+        featured_hashtags = get_featured_hashtags(base_dir, nickname, domain)
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)
         gemini_link = get_gemini_link(actor_json)

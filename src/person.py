@@ -41,6 +41,7 @@ from src.media import process_meta_data
 from src.flags import is_image_file
 from src.timeFunctions import date_utcnow
 from src.timeFunctions import get_current_time_int
+from src.utils import resembles_url
 from src.utils import get_preferred_username
 from src.utils import string_starts_with
 from src.utils import is_yggdrasil_address
@@ -612,6 +613,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         if new_person.get('roles'):
             del new_person['roles']
         del new_person['tag']
+        del new_person['featuredCollections']
+        del new_person['featuredTags']
         del new_person['availability']
         del new_person['followers']
         del new_person['following']
@@ -2292,86 +2295,90 @@ def valid_sending_actor(session, base_dir: str,
     return True
 
 
-def get_featured_hashtags(actor_json: {}) -> str:
+def get_featured_hashtags(base_dir: str, nickname: str, domain: str) -> str:
     """returns a string containing featured hashtags
     """
-    result: str = ''
-    if not actor_json.get('tag'):
-        return result
-    if not isinstance(actor_json['tag'], list):
-        return result
-    ctr: int = 0
-    for tag_dict in actor_json['tag']:
-        if not tag_dict.get('type'):
-            continue
-        if not isinstance(tag_dict['type'], str):
-            continue
-        if not tag_dict['type'].endswith('Hashtag'):
-            continue
-        if not tag_dict.get('name'):
-            continue
-        if not isinstance(tag_dict['name'], str):
-            continue
-        if not tag_dict.get('href'):
-            continue
-        if not isinstance(tag_dict['href'], str):
-            continue
-        tag_name = tag_dict['name']
-        if not tag_name:
-            continue
-        if tag_name.startswith('#'):
-            tag_name = tag_name[1:]
-        if not tag_name:
-            continue
-        tag_url = remove_html(tag_dict['href'])
-        if '://' not in tag_url:
-            continue
-        if not valid_hash_tag(tag_name):
-            continue
-        result += '#' + tag_name + ' '
-        ctr += 1
-        if ctr >= 10:
-            break
-    return result.strip()
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+    featured_tags_filename: str = account_dir + '/featured_hashtags.txt'
+    if is_a_file(featured_tags_filename):
+        hashtags_str: str = \
+            load_string(featured_tags_filename,
+                        'EX: unable to load featured hashtags ' +
+                        featured_tags_filename)
+        if hashtags_str:
+            return hashtags_str.strip()
+    return ''
 
 
-def get_featured_hashtags_as_html(actor_json: {},
-                                  profile_description: str) -> str:
+def get_featured_hashtags_as_html_remote(signing_priv_key_pem: str,
+                                         session, tags_url: str,
+                                         as_header: {},
+                                         http_prefix: str,
+                                         mitm_servers: [],
+                                         host_domain: str,
+                                         debug: bool) -> str:
     """returns a html string containing featured hashtags
+    on remote instance
     """
     result: str = ''
-    if not actor_json.get('tag'):
-        return result
-    if not isinstance(actor_json['tag'], list):
-        return result
     ctr: int = 0
-    for tag_dict in actor_json['tag']:
-        if not tag_dict.get('type'):
-            continue
-        if not isinstance(tag_dict['type'], str):
-            continue
-        if not tag_dict['type'].endswith('Hashtag'):
-            continue
-        if not tag_dict.get('name'):
-            continue
-        if not isinstance(tag_dict['name'], str):
-            continue
-        if not tag_dict.get('href'):
-            continue
-        if not isinstance(tag_dict['href'], str):
-            continue
-        tag_name = tag_dict['name']
+    quiet: bool = True
+    featured_hashtags_json = \
+        get_json(signing_priv_key_pem, session, tags_url, as_header,
+                 None, debug, mitm_servers, __version__, http_prefix,
+                 host_domain, 20, quiet)
+    if get_json_valid(featured_hashtags_json):
+        if 'items' not in featured_hashtags_json:
+            return ''
+        if not isinstance(featured_hashtags_json['items'], list):
+            return ''
+        for tag_dict in featured_hashtags_json['items']:
+            if 'type' not in tag_dict:
+                continue
+            if 'name' not in tag_dict:
+                continue
+            if 'href' not in tag_dict:
+                continue
+            if not isinstance(tag_dict['type'], str):
+                continue
+            if not isinstance(tag_dict['name'], str):
+                continue
+            if not isinstance(tag_dict['href'], str):
+                continue
+            tag_url = remove_html(tag_dict['href'])
+            if not resembles_url(tag_url):
+                continue
+            tag_name = remove_html(tag_dict['name'])
+            tag_name = tag_name.replace('#', '')
+            if not tag_name or not tag_url:
+                continue
+            result += \
+                '<a href="' + tag_url + '" ' + \
+                'class="mention hashtag" rel="tag" ' + \
+                'tabindex="10">#' + tag_name + '</a> '
+            ctr += 1
+            if ctr >= 10:
+                break
+    return result
+
+
+def get_featured_hashtags_as_html(base_dir: str, nickname: str, domain: str,
+                                  http_prefix: str, domain_full: str) -> str:
+    """returns a html string containing featured hashtags
+    """
+    hashtags_str = get_featured_hashtags(base_dir, nickname, domain)
+    separator = ' '
+    if ',' in hashtags_str:
+        separator = ','
+    hashtags_list: list[str] = hashtags_str.split(separator)
+
+    result: str = ''
+    ctr: int = 0
+    for tag in hashtags_list:
+        tag_name = tag.strip().replace('#', '')
         if not tag_name:
             continue
-        if tag_name.startswith('#'):
-            tag_name = tag_name[1:]
-        if not tag_name:
-            continue
-        if '/tags/' + tag_name + '"' in profile_description:
-            continue
-        if ' #' + tag_name in profile_description:
-            continue
-        tag_url = remove_html(tag_dict['href'])
+        tag_url = http_prefix + '://' + domain_full + '/tags/' + tag_name
         if '://' not in tag_url:
             continue
         if not valid_hash_tag(tag_name):
@@ -2389,53 +2396,17 @@ def get_featured_hashtags_as_html(actor_json: {},
     return result
 
 
-def set_featured_hashtags(actor_json: {}, hashtags: str,
-                          append: bool = False) -> None:
+def set_featured_hashtags(base_dir: str, nickname: str, domain: str,
+                          hashtags: str) -> None:
     """sets featured hashtags
     """
-    separator_str = ' '
-    separators = (',', ' ')
-    for separator_str in separators:
-        if separator_str in hashtags:
-            break
-    tag_list = hashtags.split(separator_str)
-    result: list[str] = []
-    tags_used: list[str] = []
-    actor_id = actor_json['id']
-    actor_domain = actor_id.split('://')[1]
-    if '/' in actor_domain:
-        actor_domain = actor_domain.split('/')[0]
-    actor_url = \
-        actor_id.split('://')[0] + '://' + actor_domain
-    for tag_str in tag_list:
-        if not tag_str:
-            continue
-        if not tag_str.startswith('#'):
-            tag_str = '#' + tag_str
-        if tag_str in tags_used:
-            continue
-        url = actor_url + '/tags/' + tag_str.replace('#', '')
-        result.append({
-            "name": tag_str,
-            "type": "Hashtag",
-            "href": url
-        })
-        tags_used.append(tag_str)
-        if len(result) >= 10:
-            break
-    # add any non-hashtags to the result
-    if actor_json.get('tag'):
-        for tag_dict in actor_json['tag']:
-            if not tag_dict.get('type'):
-                continue
-            if not isinstance(tag_dict['type'], str):
-                continue
-            if tag_dict['type'] != 'Hashtag':
-                result.append(tag_dict)
-    if not append:
-        actor_json['tag'] = result
-    else:
-        actor_json['tag'] += result
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+    if not is_a_dir(account_dir):
+        return
+    featured_tags_filename: str = account_dir + '/featured_hashtags.txt'
+    save_string(hashtags, featured_tags_filename,
+                'EX: set_featured_hashtags unabel to save ' +
+                featured_tags_filename)
 
 
 def update_memorial_flags(base_dir: str, person_cache: {}) -> None:

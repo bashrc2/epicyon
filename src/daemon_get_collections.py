@@ -13,6 +13,7 @@ from src.httpcodes import write2
 from src.httpcodes import http_404
 from src.httpheaders import set_headers
 from src.posts import json_pin_post
+from src.utils import remove_html
 from src.utils import text_in_file
 from src.utils import convert_domains
 from src.utils import get_json_content_from_accept
@@ -21,7 +22,6 @@ from src.utils import load_json
 from src.utils import remove_eol
 from src.follow import get_following_feed
 from src.data import is_a_file
-from src.data import is_a_dir
 from src.data import load_list
 from src.data import load_string
 
@@ -207,7 +207,7 @@ def get_featured_tags_collection(self, calling_domain: str,
     }
     featured_tags_filename: str = \
         account_dir + '/featured_hashtags.txt'
-    if is_a_dir(account_dir) and is_a_file(featured_tags_filename):
+    if is_a_file(featured_tags_filename):
         hashtags_str: str = \
             load_string(featured_tags_filename,
                         'EX: unable to load featured hashtags ' +
@@ -221,7 +221,10 @@ def get_featured_tags_collection(self, calling_domain: str,
                 tag = tag.strip().replace('#', '')
                 if not tag:
                     continue
-                url = http_prefix + '://' + domain_full + '/tagged/' + tag
+                tag = remove_html(tag)
+                if not tag:
+                    continue
+                url = http_prefix + '://' + domain_full + '/tags/' + tag
                 tag_dict = {
                     'href': url,
                     'name': '#' + tag,

@@ -1503,7 +1503,6 @@ def _profile_post_bio(actor_json: {}, fields: {},
                       check_name_and_bio: bool) -> bool:
     """ HTTP POST change user bio
     """
-    featured_tags = get_featured_hashtags(actor_json) + ' '
     actor_json['tag']: list[dict] = []
     if fields.get('bio'):
         if fields['bio'] != actor_json['summary']:
@@ -1519,11 +1518,6 @@ def _profile_post_bio(actor_json: {}, fields: {},
                                   domain_full,
                                   bio_str, [], actor_tags,
                                   translate)
-                if actor_tags:
-                    for _, tag in actor_tags.items():
-                        if tag['name'] + ' ' in featured_tags:
-                            continue
-                        actor_json['tag'].append(tag)
                 actor_changed = True
             else:
                 if check_name_and_bio:
@@ -1531,7 +1525,6 @@ def _profile_post_bio(actor_json: {}, fields: {},
     else:
         if check_name_and_bio:
             redirect_path = '/welcome_profile'
-    set_featured_hashtags(actor_json, featured_tags, True)
     return actor_changed, redirect_path
 
 
@@ -1575,22 +1568,20 @@ def _profile_post_alsoknownas(actor_json: {}, fields: {},
     return actor_changed
 
 
-def _profile_post_featured_hashtags(actor_json: {}, fields: {},
-                                    actor_changed: bool) -> bool:
+def _profile_post_featured_hashtags(base_dir: str, nickname: str, domain: str,
+                                    fields: {}) -> None:
     """ HTTP POST featured hashtags on edit profile screen
     """
-    featured_hashtags = get_featured_hashtags(actor_json)
+    featured_hashtags = get_featured_hashtags(base_dir, nickname, domain)
     if fields.get('featuredHashtags'):
         fields['featuredHashtags'] = remove_html(fields['featuredHashtags'])
         if featured_hashtags != fields['featuredHashtags']:
-            set_featured_hashtags(actor_json,
+            set_featured_hashtags(base_dir, nickname, domain,
                                   fields['featuredHashtags'])
-            actor_changed = True
     else:
         if featured_hashtags:
-            set_featured_hashtags(actor_json, '')
-            actor_changed = True
-    return actor_changed
+            set_featured_hashtags(base_dir, nickname, domain, '')
+    return
 
 
 def _profile_post_occupation(actor_json: {}, fields: {},
@@ -3184,9 +3175,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_occupation(actor_json, fields,
                                              actor_changed)
 
-                actor_changed = \
-                    _profile_post_featured_hashtags(actor_json, fields,
-                                                    actor_changed)
+                _profile_post_featured_hashtags(base_dir, nickname, domain,
+                                                fields)
 
                 actor_changed = \
                     _profile_post_alsoknownas(actor_json, fields,

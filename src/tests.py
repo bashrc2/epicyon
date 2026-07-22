@@ -124,8 +124,6 @@ from src.follow import add_follower_of_person
 from src.follow import unfollow_account
 from src.follow import unfollower_of_account
 from src.follow import send_follow_request
-from src.person import set_featured_hashtags
-from src.person import get_featured_hashtags
 from src.person import create_person
 from src.person import create_group
 from src.person import set_display_nickname
@@ -8885,23 +8883,6 @@ def _test_xor_hashes():
     assert result == expected
 
 
-def _test_featured_tags() -> None:
-    print('featured_tags')
-    actor_json = {
-        "id": "https://somesite/users/somenick"
-    }
-    featured_tags = '#dog #cat'
-    set_featured_hashtags(actor_json, featured_tags)
-    assert actor_json.get('tag')
-    assert len(actor_json['tag']) == 2
-    result = get_featured_hashtags(actor_json)
-    if result != featured_tags:
-        pprint(actor_json)
-        print('result:   ' + result)
-        print('expected: ' + featured_tags)
-    assert result == featured_tags
-
-
 def _test_remove_tag() -> None:
     print('remove_tag')
     test_html = 'This is a test'
@@ -9945,7 +9926,6 @@ def run_all_tests():
     _test_is_right_to_left()
     _test_format_mixed_rtl()
     _test_remove_tag()
-    _test_featured_tags()
     _test_xor_hashes()
     _test_convert_markdown()
     _test_remove_style()
