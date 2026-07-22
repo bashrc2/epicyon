@@ -205,32 +205,31 @@ def get_featured_tags_collection(self, calling_domain: str,
         'totalItems': 0,
         'type': 'Collection'
     }
-    if is_a_dir(account_dir):
-        featured_tags_filename: str = \
-            account_dir + '/featured_hashtags.txt'
-        if is_a_file(featured_tags_filename):
-            hashtags_str: str = \
-                load_string(featured_tags_filename,
-                            'EX: unable to load featured hashtags ' +
-                            featured_tags_filename)
-            if hashtags_str:
-                separator = ' '
-                if ',' in hashtags_str:
-                    separator = ','
-                hashtags_list: list[str] = hashtags_str.split(separator)
-                for tag in hashtags_list:
-                    tag = tag.strip().replace('#', '')
-                    if not tag:
-                        continue
-                    url = http_prefix + '://' + domain_full + '/tagged/' + tag
-                    tag_dict = {
-                        'href': url,
-                        'name': '#' + tag,
-                        'type': 'Hashtag'
-                    }
-                    featured_tags_collection['items'].append(tag_dict)
-                    featured_tags_collection['totalItems'] = \
-                        featured_tags_collection['totalItems'] + 1
+    featured_tags_filename: str = \
+        account_dir + '/featured_hashtags.txt'
+    if is_a_dir(account_dir) and is_a_file(featured_tags_filename):
+        hashtags_str: str = \
+            load_string(featured_tags_filename,
+                        'EX: unable to load featured hashtags ' +
+                        featured_tags_filename)
+        if hashtags_str:
+            separator = ' '
+            if ',' in hashtags_str:
+                separator = ','
+            hashtags_list: list[str] = hashtags_str.split(separator)
+            for tag in hashtags_list:
+                tag = tag.strip().replace('#', '')
+                if not tag:
+                    continue
+                url = http_prefix + '://' + domain_full + '/tagged/' + tag
+                tag_dict = {
+                    'href': url,
+                    'name': '#' + tag,
+                    'type': 'Hashtag'
+                }
+                featured_tags_collection['items'].append(tag_dict)
+                featured_tags_collection['totalItems'] = \
+                    featured_tags_collection['totalItems'] + 1
     msg_str = json.dumps(featured_tags_collection,
                          ensure_ascii=False)
     msg_str = convert_domains(calling_domain,
