@@ -449,6 +449,8 @@ Attachments can use a variety of formats.
 
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 
+When attaching an image you may also choose to use [dithering](https://en.wikipedia.org/wiki/Dither). This produces a halftone effect similar to old newspaper photos which were printed as a pattern of small dots. Dithering may be used to add some artistic effect, and it may also be a useful mitigation against having your images scraped and used by generative AI systems since the dot pattern will make the data considerably less useful to them.
+
 ![Image watermarking](manual-watermark-ai.png)
 
 When attaching an image it is possible to overlay a watermark image in order to mess with generative AI scrapers trying to grift upon your photos. Epicyon will do it's best to bounce AI scraper bots, or pollute them by giving random responses to pollute their training sets, but since those systems are fundamentally unethical they cannot be relied upon to follow user agent conventions. A watermark image can be uploaded from the **Edit Profile** screen under the **Background Images** section. You may need to experiment with the watermark image width, position and opacity, which can be set as command options on the daemon. See [README_commandline.md](https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md) for details.
