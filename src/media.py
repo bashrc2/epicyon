@@ -482,17 +482,32 @@ def get_music_metadata(filename: str) -> {}:
 def convert_image_to_low_bandwidth(image_filename: str) -> None:
     """Converts an image to a low bandwidth version
     """
-    low_bandwidth_filename = image_filename + '.low'
+    low_bandwidth_filename = safe_system_string(image_filename + '.low')
     if is_a_file(low_bandwidth_filename):
         erase_file(low_bandwidth_filename,
                    'EX: convert_image_to_low_bandwidth unable to delete ' +
                    low_bandwidth_filename)
 
+    # cmd = \
+    #     '/usr/bin/convert +noise Multiplicative ' + \
+    #     '-evaluate median 10% -dither Floyd-Steinberg ' + \
+    #     '-monochrome  ' + safe_system_string(image_filename) + \
+    #     ' ' + low_bandwidth_filename
+
     cmd = \
-        '/usr/bin/convert +noise Multiplicative ' + \
-        '-evaluate median 10% -dither Floyd-Steinberg ' + \
-        '-monochrome  ' + safe_system_string(image_filename) + \
-        ' ' + safe_system_string(low_bandwidth_filename)
+        "convert \"" + safe_system_string(image_filename) + "\" " + \
+        "-resize 800 -set option:distort:viewport '%wx%h+0+0' " + \
+        '-colorspace CMYK -separate null:  \\( -size 2x2 xc: ' + \
+        '\\( +clone -negate \\) +append \\( +clone -negate \\) ' + \
+        '-append \\) -virtual-pixel tile -filter gaussian ' + \
+        '\\( +clone -distort SRT 2,0 \\) ' + \
+        '+swap \\( +clone -distort SRT 2,15 \\) ' + \
+        '+swap \\( +clone -distort SRT 2,45 \\) ' + \
+        '+swap \\( +clone -distort SRT 2,75  \\) ' + \
+        '+swap +delete -compose Overlay -layers composite ' + \
+        '-colors 2 -set colorspace CMYK -combine "' + \
+        low_bandwidth_filename + '"'
+
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
