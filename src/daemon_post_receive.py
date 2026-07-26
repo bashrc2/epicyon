@@ -1922,11 +1922,15 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         else:
             print('DEBUG: no media filename in POST')
 
+    fields = \
+        extract_text_fields_in_post(post_bytes, boundary, debug, None)
+
     exif_json: list[dict] = []
     if filename:
         if is_image_file(filename):
-            dither_filename = account_dir + '/.ditherImage'
-            apply_dithering = is_a_file(dither_filename)
+            apply_dithering: bool = False
+            if 'ditherImage' in fields:
+                apply_dithering = fields['ditherImage']
             # convert to low bandwidth if needed
             if low_bandwidth or apply_dithering:
                 print('Converting to low bandwidth ' + filename)
@@ -1997,8 +2001,6 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                              filename + ' -> ' + new_filename):
                     filename = new_filename
 
-    fields = \
-        extract_text_fields_in_post(post_bytes, boundary, debug, None)
     if debug:
         if fields:
             print('DEBUG: text field extracted from POST ' +
