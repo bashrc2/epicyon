@@ -14,6 +14,9 @@ import subprocess
 import random
 from random import randint
 from hashlib import sha1
+from shutil import copyfile
+from shutil import rmtree
+from shutil import move
 from src.auth import create_password
 from src.timeFunctions import date_utcnow
 from src.timeFunctions import date_epoch
@@ -27,9 +30,6 @@ from src.formats import get_media_extensions
 from src.formats import get_image_extensions
 from src.formats import get_audio_extensions
 from src.formats import get_video_extensions
-from shutil import copyfile
-from shutil import rmtree
-from shutil import move
 from src.city import spoof_geolocation
 from src.data import load_binary
 from src.data import save_string
