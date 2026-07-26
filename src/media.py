@@ -496,7 +496,7 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
 
     cmd = \
         "convert \"" + safe_system_string(image_filename) + "\" " + \
-        "-resize 800 -set option:distort:viewport '%wx%h+0+0' " + \
+        "-resize 1000 -set option:distort:viewport '%wx%h+0+0' " + \
         '-colorspace CMYK -separate null:  \\( -size 2x2 xc: ' + \
         '\\( +clone -negate \\) +append \\( +clone -negate \\) ' + \
         '-append \\) -virtual-pixel tile -filter gaussian ' + \

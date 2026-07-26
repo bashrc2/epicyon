@@ -1911,8 +1911,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
 
     # Note: a .temp extension is used here so that at no time is
     # an image with metadata publicly exposed, even for a few mS
-    filename_base = \
-        acct_dir(base_dir, nickname, domain) + '/upload.temp'
+    account_dir = acct_dir(base_dir, nickname, domain)
+    filename_base = account_dir + '/upload.temp'
 
     filename, attachment_media_type = \
         save_media_in_form_post(media_bytes, debug, filename_base)
@@ -1925,8 +1925,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     exif_json: list[dict] = []
     if filename:
         if is_image_file(filename):
+            dither_filename = account_dir + '/.ditherImage'
+            apply_dithering = is_a_file(dither_filename)
             # convert to low bandwidth if needed
-            if low_bandwidth:
+            if low_bandwidth or apply_dithering:
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
             backup_filename = filename + '.backup'

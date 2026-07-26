@@ -352,8 +352,8 @@ def add_share(base_dir: str,
                             system_language):
         print('Shared item was filtered due to content')
         return
-    shares_filename = \
-        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    account_dir = acct_dir(base_dir, nickname, domain)
+    shares_filename = account_dir + '/' + shares_file_type + '.json'
     shares_json = {}
     if is_a_file(shares_filename):
         shares_json = load_json(shares_filename)
@@ -393,10 +393,12 @@ def add_share(base_dir: str,
                 makedir(base_dir + '/sharefiles/' + nickname)
             item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
             formats = get_image_extensions()
+            dither_filename = account_dir + '/.ditherImage'
+            apply_dithering = is_a_file(dither_filename)
             for ext in formats:
                 if not image_filename.endswith('.' + ext):
                     continue
-                if low_bandwidth:
+                if low_bandwidth or apply_dithering:
                     convert_image_to_low_bandwidth(image_filename)
                 exif_json: list[dict] = []
                 process_meta_data(base_dir, nickname, domain,
