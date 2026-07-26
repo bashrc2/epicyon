@@ -2139,10 +2139,20 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         comments_enabled: bool = False
     else:
         comments_enabled: bool = True
+
+    # update the image dithering flag
+    dither_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.ditherImage'
     if not fields.get('ditherImage'):
         apply_dithering: bool = False
+        if is_a_file(dither_filename):
+            erase_file(dither_filename,
+                       'EX: unable to delete dither flag ' + dither_filename)
     else:
         apply_dithering: bool = True
+        if not is_a_file(dither_filename):
+            save_string('.', dither_filename,
+                        'EX: unable to save dither flag ' + dither_filename)
 
     buy_url: str = ''
     if fields.get('buyUrl'):

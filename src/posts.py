@@ -2057,19 +2057,6 @@ def create_post_base(base_dir: str,
                              automatic_quote_approval,
                              session, debug)
 
-    # update the image dithering flag
-    dither_filename = \
-        acct_dir(base_dir, nickname, domain) + '/.ditherImage'
-    if apply_dithering:
-        if not is_a_file(dither_filename):
-            save_string('.', dither_filename,
-                        'EX: unable to save ditherImage flag ' +
-                        dither_filename)
-    else:
-        if is_a_file(dither_filename):
-            erase_file(dither_filename,
-                       'EX: unable to delete ' + dither_filename)
-
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
     _create_post_mod_report(base_dir, is_moderation_report,
