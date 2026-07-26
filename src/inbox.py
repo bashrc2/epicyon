@@ -1444,6 +1444,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     save_to_file: bool = False
     client_to_server: bool = False
     comments_enabled: bool = False
+    apply_dithering: bool = False
     attach_image_filename = None
     media_type = None
     image_description: str = ''
@@ -1468,6 +1469,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    http_prefix, content,
                                    save_to_file, client_to_server,
                                    comments_enabled,
+                                   apply_dithering,
                                    attach_image_filename, media_type,
                                    image_description, video_transcript, city,
                                    in_reply_to, in_reply_to_atom_uri,

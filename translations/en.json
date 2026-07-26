@@ -772,5 +772,6 @@
 	"Availability": "Availability",
     "Loops Instances": "Loops Instances",
 	"Disinformation Instances": "Disinformation Instances",
-	"Allow this account to be added to lists": "Allow this account to be added to lists"
+	"Allow this account to be added to lists": "Allow this account to be added to lists",
+	"Apply dithering to images.": "Apply dithering to images."
 }

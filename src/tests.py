@@ -832,9 +832,10 @@ def create_server_alice(path: str, domain: str, port: int,
         add_follower_of_person(path, nickname, domain, 'bob', bob_address,
                                federation_list, False, False)
     if has_posts:
-        test_save_to_file = True
+        test_save_to_file: bool = True
         client_to_server: bool = False
-        test_comments_enabled = True
+        test_comments_enabled: bool = True
+        test_apply_dithering: bool = False
         test_attach_image_filename = None
         test_media_type = None
         test_image_description = None
@@ -869,6 +870,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -889,6 +891,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -910,6 +913,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -1041,6 +1045,7 @@ def create_server_bob(path: str, domain: str, port: int,
     if has_posts:
         test_save_to_file: bool = True
         test_comments_enabled: bool = True
+        test_apply_dithering: bool = False
         test_attach_image_filename = None
         test_image_description = None
         test_media_type = None
@@ -1075,6 +1080,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -1096,6 +1102,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -1116,6 +1123,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_save_to_file,
                            client_to_server,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type,
                            test_image_description, test_video_transcript,
@@ -1550,13 +1558,16 @@ def test_post_message_between_servers(base_dir: str) -> None:
     auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url, http_prefix,
                   'Why is a mouse when it spins? ' +
                   'यह एक परीक्षण है #sillyquestion',
-                  save_to_file, client_to_server, True,
+                  save_to_file, client_to_server, comments_enabled,
+                  apply_dithering,
                   attached_image_filename, media_type,
                   attached_image_description, video_transcript,
                   city, federation_list,
@@ -1955,13 +1966,20 @@ def test_follow_between_servers(base_dir: str) -> None:
     auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
+    comments_enabled: bool = True
+    apply_dithering: bool = False
+    attached_image_filename: str = None
+    media_type: str = None
+    attached_image_description: str = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
                   http_prefix, 'Alice message', save_to_file,
-                  client_to_server, True,
-                  None, None, None, video_transcript, city, federation_list,
+                  client_to_server, comments_enabled, apply_dithering,
+                  attached_image_filename, media_type,
+                  attached_image_description, video_transcript,
+                  city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -2375,13 +2393,20 @@ def test_shared_items_federation(base_dir: str) -> None:
     auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
+    comments_enabled: bool = True
+    apply_dithering: bool = False
+    attached_image_filename: str = None
+    media_type: str = None
+    attached_image_description: str = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'bob', bob_domain, bob_port, cc_url,
                   http_prefix, 'Alice message', save_to_file,
-                  client_to_server, True,
-                  None, None, None, video_transcript, city, federation_list,
+                  client_to_server, comments_enabled, apply_dithering,
+                  attached_image_filename, media_type,
+                  attached_image_description,
+                  video_transcript, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -2829,13 +2854,20 @@ def test_group_follow(base_dir: str) -> None:
     auto_cw_cache = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
+    comments_enabled: bool = True
+    apply_dithering: bool = False
+    attached_image_filename: str = None
+    media_type: str = None
+    attached_image_description: str = None
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
                   'testgroup', testgroup_domain, testgroupPort, cc_url,
                   http_prefix, "Alice group message",
-                  save_to_file, client_to_server, True,
-                  None, None, None, video_transcript, city, federation_list,
+                  save_to_file, client_to_server, comments_enabled,
+                  apply_dithering, attached_image_filename,
+                  media_type, attached_image_description,
+                  video_transcript, city, federation_list,
                   alice_send_threads, alice_post_log, alice_cached_webfingers,
                   alice_person_cache, is_article, system_language,
                   languages_understood,
@@ -3217,9 +3249,10 @@ def _test_create_person_account(base_dir: str):
     test_event_end_time = None
     test_event_category: str = ''
     test_location = None
-    test_is_article = False
-    save_to_file = True
-    comments_enabled = True
+    test_is_article: bool = False
+    save_to_file: bool = True
+    comments_enabled: bool = True
+    test_apply_dithering: bool = True
     attach_image_filename = None
     media_type = None
     conversation_id = None
@@ -3246,7 +3279,8 @@ def _test_create_person_account(base_dir: str):
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server,
-                           comments_enabled, attach_image_filename, media_type,
+                           comments_enabled, test_apply_dithering,
+                           attach_image_filename, media_type,
                            'Not suitable for Vogons', '', 'London, England',
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
@@ -3276,7 +3310,8 @@ def _test_create_person_account(base_dir: str):
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server,
-                           comments_enabled, attach_image_filename, media_type,
+                           comments_enabled, test_apply_dithering,
+                           attach_image_filename, media_type,
                            'Not suitable for Vogons', '', 'London, England',
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
@@ -3498,6 +3533,8 @@ def test_client_to_server(base_dir: str):
     buy_url = ''
     chat_url = ''
     video_transcript = None
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     auto_cw_cache = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
@@ -3507,7 +3544,8 @@ def test_client_to_server(base_dir: str):
                              alice_domain, alice_port,
                              'bob', bob_domain, bob_port, None,
                              http_prefix, 'Sent from my ActivityPub client',
-                             True, attached_image_filename, media_type,
+                             comments_enabled, apply_dithering,
+                             attached_image_filename, media_type,
                              attached_image_description,
                              video_transcript, city,
                              cached_webfingers, person_cache, is_article,
@@ -5345,6 +5383,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     save_to_file: bool = False
     client_to_server: bool = False
     comments_enabled: bool = True
+    test_apply_dithering: bool = False
     attach_image_filename = None
     media_type = None
     image_description: str = 'Some description'
@@ -5352,13 +5391,13 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     test_in_reply_to = post_id
     test_in_reply_to_atom_uri = None
     test_subject = None
-    test_schedule_post = False
+    test_schedule_post: bool = False
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
     test_event_category = ''
     test_location = None
-    test_is_article = False
+    test_is_article: bool = False
     conversation_id = None
     convthread_id = None
     low_bandwidth: bool = True
@@ -5379,6 +5418,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
+                           test_apply_dithering,
                            attach_image_filename, media_type,
                            image_description, video_transcript,
                            city, test_in_reply_to,
@@ -6458,6 +6498,7 @@ def _test_links_within_post(base_dir: str) -> None:
     save_to_file: bool = False
     client_to_server: bool = False
     comments_enabled: bool = True
+    test_apply_dithering: bool = False
     attach_image_filename = None
     media_type = None
     image_description = None
@@ -6493,6 +6534,7 @@ def _test_links_within_post(base_dir: str) -> None:
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
+                           test_apply_dithering,
                            attach_image_filename, media_type,
                            image_description, video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
@@ -6536,13 +6578,23 @@ def _test_links_within_post(base_dir: str) -> None:
         "<p><a href=\"https://whocodedthis.huh/tags/" + \
         "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
         "target=\"_blank\">#<span>taggedthing</span></a></p>"
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = True
+    apply_dithering: bool = False
+    attach_image_filename: str = None
+    media_type: str = None
+    image_description: str = ''
+    video_transcript: str = ''
+    city: str = ''
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content,
-                           False,
-                           False, True,
-                           None, None,
-                           '', '', None,
+                           content, save_to_file,
+                           client_to_server, comments_enabled,
+                           apply_dithering,
+                           attach_image_filename, media_type,
+                           image_description,
+                           video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -6564,11 +6616,12 @@ def _test_links_within_post(base_dir: str) -> None:
         "<code>gerbils</code> and that is all she wrote.</p>"
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
-                           content,
-                           False,
-                           False, True,
-                           None, None,
-                           '', '', None,
+                           content, save_to_file,
+                           client_to_server, comments_enabled,
+                           apply_dithering,
+                           attach_image_filename, media_type,
+                           image_description,
+                           video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
@@ -7657,6 +7710,7 @@ def _test_can_replyto(base_dir: str) -> None:
     save_to_file: bool = False
     client_to_server: bool = False
     comments_enabled: bool = True
+    test_apply_dithering: bool = False
     attach_image_filename = None
     media_type = None
     image_description = None
@@ -7692,6 +7746,7 @@ def _test_can_replyto(base_dir: str) -> None:
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
                            client_to_server, comments_enabled,
+                           test_apply_dithering,
                            attach_image_filename, media_type,
                            image_description, video_transcript, city,
                            test_in_reply_to, test_in_reply_to_atom_uri,

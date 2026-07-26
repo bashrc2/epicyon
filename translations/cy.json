@@ -772,5 +772,6 @@
 	"Availability": "Argaeledd",
     "Loops Instances": "Achosion Dolenni",
 	"Disinformation Instances": "Achosion o Ddadwybodaeth",
-	"Allow this account to be added to lists": "Caniatáu i'r cyfrif hwn gael ei ychwanegu at restrau"
+	"Allow this account to be added to lists": "Caniatáu i'r cyfrif hwn gael ei ychwanegu at restrau",
+	"Apply dithering to images.": "Cymhwyso dithering i ddelweddau."
 }

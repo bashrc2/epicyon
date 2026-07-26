@@ -514,6 +514,11 @@ def _command_options() -> None:
                         type=str2bool, nargs='?',
                         const=True, default=True,
                         help="Enable replies to a post")
+    parser.add_argument("--ditherImage", "--dither",
+                        dest='ditherImage',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Whether to dither the attached image")
     parser.add_argument("--dav",
                         dest='dav',
                         type=str2bool, nargs='?',
@@ -2093,7 +2098,9 @@ def _command_options() -> None:
                              domain, port,
                              to_nickname, to_domain, to_port, cc_url,
                              http_prefix, send_message,
-                             argb.commentsEnabled, attach, media_type,
+                             argb.commentsEnabled,
+                             argb.ditherImage,
+                             attach, media_type,
                              attached_image_description,
                              video_transcript, city,
                              cached_webfingers, person_cache, is_article,
@@ -3949,9 +3956,10 @@ def _command_options() -> None:
         delete_all_posts(base_dir, nickname, domain, 'inbox')
         delete_all_posts(base_dir, nickname, domain, 'outbox')
 
-        test_save_to_file = True
+        test_save_to_file: bool = True
         test_c2s: bool = False
-        test_comments_enabled = True
+        test_comments_enabled: bool = True
+        test_apply_dithering: bool = False
         test_attach_image_filename = None
         test_media_type = None
         test_image_description = None
@@ -3983,6 +3991,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4002,6 +4011,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4021,6 +4031,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4040,6 +4051,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4060,6 +4072,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            'img/logo.png', 'image/png',
                            'Description of image',
                            test_video_transcript, test_city,
@@ -4079,6 +4092,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4098,6 +4112,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,
@@ -4117,6 +4132,7 @@ def _command_options() -> None:
                            test_save_to_file,
                            test_c2s,
                            test_comments_enabled,
+                           test_apply_dithering,
                            test_attach_image_filename,
                            test_media_type, test_image_description,
                            test_video_transcript, test_city,

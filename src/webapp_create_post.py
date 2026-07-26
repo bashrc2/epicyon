@@ -647,6 +647,12 @@ def html_new_post(edit_post_params: {},
         '    <textarea id="imageDescription" name="imageDescription" ' + \
         'style="' + image_description_style + \
         '" spellcheck="true" autocomplete="on"></textarea>\n'
+    # dithering
+    dither_filename = acct_dir(base_dir, nickname, domain) + '/.ditherImage'
+    apply_dithering = is_a_file(dither_filename)
+    new_post_image_section += \
+        edit_check_box(translate['Apply dithering to images.'],
+                       'ditherImage', apply_dithering)
     media_creator_str = translate['Media creator']
     new_post_image_section += \
         edit_text_field(media_creator_str, 'mediaCreator', '', '')

@@ -772,5 +772,6 @@
 	"Availability": "Disponibilidad",
     "Loops Instances": "Instancias de bucles",
 	"Disinformation Instances": "Casos de desinformación",
-	"Allow this account to be added to lists": "Permitir que esta cuenta se añada a listas"
+	"Allow this account to be added to lists": "Permitir que esta cuenta se añada a listas",
+	"Apply dithering to images.": "Aplica tramado a las imágenes."
 }

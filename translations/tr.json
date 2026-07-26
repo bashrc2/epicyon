@@ -772,5 +772,6 @@
 	"Availability": "Müsaitlik",
     "Loops Instances": "Döngü Örnekleri",
 	"Disinformation Instances": "Dezenformasyon Vakaları",
-	"Allow this account to be added to lists": "Bu hesabın listelere eklenmesine izin ver"
+	"Allow this account to be added to lists": "Bu hesabın listelere eklenmesine izin ver",
+	"Apply dithering to images.": "Görüntülere dithering uygulayın."
 }

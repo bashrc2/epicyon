@@ -772,5 +772,6 @@
 	"Availability": "Saatavuus",
     "Loops Instances": "Silmukat-instanssit",
 	"Disinformation Instances": "Disinformaatiotapaukset",
-	"Allow this account to be added to lists": "Salli tämän tilin lisääminen listoihin"
+	"Allow this account to be added to lists": "Salli tämän tilin lisääminen listoihin",
+	"Apply dithering to images.": "Käytä kuviin rasterointia."
 }

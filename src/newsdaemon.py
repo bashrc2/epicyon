@@ -637,6 +637,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         # consistent (it's based on the current time, not the
         # published time), so we change that later
         save_to_file: bool = False
+        apply_dithering: bool = False
         attach_image_filename = None
         media_type = None
         image_description = None
@@ -650,7 +651,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         blog = create_news_post(base_dir,
                                 domain, port, http_prefix,
                                 rss_description,
-                                save_to_file,
+                                save_to_file, apply_dithering,
                                 attach_image_filename, media_type,
                                 image_description, video_transcript,
                                 city, rss_title, system_language,

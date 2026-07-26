@@ -686,7 +686,8 @@ def attach_media(base_dir: str, http_prefix: str,
                  content_license_url: str,
                  creator: str,
                  system_language: str,
-                 debug: bool) -> {}:
+                 debug: bool,
+                 apply_dithering: bool) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -766,7 +767,7 @@ def attach_media(base_dir: str, http_prefix: str,
 
     if base_dir:
         if media_type.startswith('image/'):
-            if low_bandwidth:
+            if low_bandwidth or apply_dithering:
                 convert_image_to_low_bandwidth(image_filename)
             exif_json: list[dict] = []
             file_size_original: int = os.path.getsize(image_filename)

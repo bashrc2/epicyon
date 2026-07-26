@@ -557,7 +557,8 @@ def _desktop_reply_to_post(session, post_id: str,
     attached_image_description = None
     is_article: bool = False
     subject = None
-    comments_enabled = True
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     city = 'London, England'
     say_str = 'Sending reply'
     event_date = None
@@ -577,7 +578,8 @@ def _desktop_reply_to_post(session, post_id: str,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
                             http_prefix, reply_message,
-                            comments_enabled, attach, media_type,
+                            comments_enabled, apply_dithering,
+                            attach, media_type,
                             attached_image_description, video_transcript,
                             city, cached_webfingers,
                             person_cache, is_article,
@@ -646,7 +648,8 @@ def _desktop_new_post(session,
     city = 'London, England'
     is_article: bool = False
     subject = None
-    comments_enabled = True
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     subject = None
     say_str = 'Sending'
     event_date = None
@@ -666,7 +669,8 @@ def _desktop_new_post(session,
                             domain, port,
                             None, '#Public', port, cc_url,
                             http_prefix, new_message,
-                            comments_enabled, attach, media_type,
+                            comments_enabled, apply_dithering,
+                            attach, media_type,
                             attached_image_description, video_transcript, city,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,
@@ -1450,7 +1454,8 @@ def _desktop_new_dm_base(session, to_handle: str,
     city: str = 'London, England'
     is_article: bool = False
     subject = None
-    comments_enabled = True
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     subject = None
 
     # if there is a local PGP key then attempt to encrypt the DM
@@ -1510,7 +1515,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                             domain, port,
                             to_nickname, to_domain, to_port, cc_url,
                             http_prefix, new_message,
-                            comments_enabled, attach, media_type,
+                            comments_enabled, apply_dithering,
+                            attach, media_type,
                             attached_image_description, video_transcript, city,
                             cached_webfingers, person_cache, is_article,
                             system_language, languages_understood,

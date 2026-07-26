@@ -214,7 +214,8 @@ def _send_reply_to_question(self, base_dir: str,
 
     print('Voting on message ' + message_id)
     print('Vote for: ' + answer)
-    comments_enabled = True
+    comments_enabled: bool = True
+    apply_dithering: bool = False
     attach_image_filename = None
     media_type = None
     image_description = None
@@ -251,6 +252,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        mentions_str + ' ' + answer,
                                        False, False,
                                        comments_enabled,
+                                       apply_dithering,
                                        attach_image_filename,
                                        media_type, image_description,
                                        video_transcript, city,

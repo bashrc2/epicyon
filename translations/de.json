@@ -772,5 +772,6 @@
 	"Availability": "Verfügbarkeit",
     "Loops Instances": "Schleifeninstanzen",
 	"Disinformation Instances": "Fälle von Desinformation",
-	"Allow this account to be added to lists": "Erlauben, dass dieses Konto zu Listen hinzugefügt wird"
+	"Allow this account to be added to lists": "Erlauben, dass dieses Konto zu Listen hinzugefügt wird",
+	"Apply dithering to images.": "Wenden Sie Dithering auf Bilder an."
 }
