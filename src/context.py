@@ -10,8 +10,10 @@ __module_group__ = "Security"
 
 VALID_CONTEXTS = (
     "https://www.w3.org/ns/activitystreams",
+    "https://www.w3.org/ns/cid/v1",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
+    "https://purl.archive.org/socialweb/webfinger",
     "*/apschema/v1.9",
     "*/apschema/v1.10",
     "*/apschema/v1.21",
