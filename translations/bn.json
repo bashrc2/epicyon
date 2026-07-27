@@ -773,5 +773,6 @@
     "Loops Instances": "লুপ ইনস্ট্যান্স",
 	"Disinformation Instances": "ভুল তথ্যের উদাহরণ",
 	"Allow this account to be added to lists": "এই অ্যাকাউন্টটিকে তালিকায় যুক্ত করার অনুমতি দিন",
-	"Apply dithering to images.": "ছবিতে ডিদারিং প্রয়োগ করুন।"
+	"Apply dithering to images.": "ছবিতে ডিদারিং প্রয়োগ করুন।",
+	"Replace dashes with em dashes": "ড্যাশগুলোকে এম-ড্যাশ (em dashes) দিয়ে প্রতিস্থাপন করুন।"
 }

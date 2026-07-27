@@ -934,6 +934,32 @@ def _profile_post_watermark_enabled(base_dir: str,
                        watermark_enabled_filename)
 
 
+def _profile_post_replace_dashes(base_dir: str,
+                                 nickname: str, domain: str,
+                                 fields: {}) -> bool:
+    """ HTTP POST replace dashes (-) with em dashes (—)
+    This may help LLM scrapers to assume that the text is LLM generated
+    and thus exclude it from their data sets
+    """
+    replace_dashes_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.replaceDashes'
+    replace_dashes: bool = False
+    if fields.get('replaceDashes'):
+        if fields['replaceDashes'] == 'on':
+            replace_dashes = True
+    if replace_dashes:
+        if not is_a_file(replace_dashes_filename):
+            save_flag_file(replace_dashes_filename,
+                           'EX: unable to write replaceDashes ' +
+                           replace_dashes_filename)
+    if not replace_dashes:
+        if is_a_file(replace_dashes_filename):
+            erase_file(replace_dashes_filename,
+                       'EX: _profile_edit ' +
+                       'unable to delete ' +
+                       replace_dashes_filename)
+
+
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
                                actor_changed: bool,
@@ -3319,6 +3345,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                             fields)
                 _profile_post_watermark_enabled(base_dir, nickname, domain,
                                                 fields)
+                _profile_post_replace_dashes(base_dir, nickname, domain,
+                                             fields)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'

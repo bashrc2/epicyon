@@ -773,5 +773,6 @@
     "Loops Instances": "Döngü Örnekleri",
 	"Disinformation Instances": "Dezenformasyon Vakaları",
 	"Allow this account to be added to lists": "Bu hesabın listelere eklenmesine izin ver",
-	"Apply dithering to images.": "Görüntülere dithering uygulayın."
+	"Apply dithering to images.": "Görüntülere dithering uygulayın.",
+	"Replace dashes with em dashes": "Kısa çizgileri uzun çizgilerle (em dash) değiştirin."
 }

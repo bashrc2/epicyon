@@ -773,5 +773,6 @@
     "Loops Instances": "ループインスタンス",
 	"Disinformation Instances": "偽情報事例",
 	"Allow this account to be added to lists": "このアカウントをリストに追加できるようにする",
-	"Apply dithering to images.": "画像にディザリングを適用します。"
+	"Apply dithering to images.": "画像にディザリングを適用します。",
+	"Replace dashes with em dashes": "ダッシュをemダッシュに置き換えてください"
 }

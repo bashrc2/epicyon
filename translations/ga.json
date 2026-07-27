@@ -773,5 +773,6 @@
     "Loops Instances": "Cásanna Lúb",
 	"Disinformation Instances": "Cásanna Mífhaisnéise",
 	"Allow this account to be added to lists": "Ceadaigh an cuntas seo a chur le liostaí",
-	"Apply dithering to images.": "Cuir díodrú i bhfeidhm ar íomhánna."
+	"Apply dithering to images.": "Cuir díodrú i bhfeidhm ar íomhánna.",
+	"Replace dashes with em dashes": "Cuir fleascáin em in ionad fleascáin"
 }

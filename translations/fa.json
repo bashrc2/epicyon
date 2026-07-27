@@ -773,5 +773,6 @@
     "Loops Instances": "نمونه‌های حلقه‌ها",
 	"Disinformation Instances": "موارد انتشار اطلاعات نادرست",
 	"Allow this account to be added to lists": "اجازه دهید این حساب به لیست‌ها اضافه شود",
-	"Apply dithering to images.": "اعمال لرزش (dithering) روی تصاویر"
+	"Apply dithering to images.": "اعمال لرزش (dithering) روی تصاویر",
+	"Replace dashes with em dashes": "خط تیره را با خط تیره em جایگزین کنید"
 }

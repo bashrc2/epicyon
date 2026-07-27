@@ -3391,7 +3391,8 @@ def _html_edit_profile_options(is_admin: bool,
                                premium: bool,
                                no_seen_posts: bool,
                                watermark_enabled: bool,
-                               allow_on_lists: bool) -> str:
+                               allow_on_lists: bool,
+                               replace_dashes: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form: str = '    <div class="container">\n'
@@ -3478,6 +3479,10 @@ def _html_edit_profile_options(is_admin: bool,
     watermark_str: str = translate["Apply a watermark to uploaded images"]
     edit_profile_form += \
         edit_check_box(watermark_str, 'watermarkEnabled', watermark_enabled)
+
+    replacedashes_str: str = translate["Replace dashes with em dashes"]
+    edit_profile_form += \
+        edit_check_box(replacedashes_str, 'replaceDashes', replace_dashes)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -3962,6 +3967,14 @@ def html_edit_profile(server, translate: {},
     if is_a_file(allow_on_lists_filename):
         allow_on_lists = True
 
+    # replace dashes (-) with em dashes (—)
+    # This may help LLM scrapers to assume that the text is LLM generated
+    # and thus exclude it from their data sets
+    replace_dashes_filename: str = account_dir + '/.replaceDashes'
+    replace_dashes: bool = False
+    if is_a_file(replace_dashes_filename):
+        replace_dashes = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3975,7 +3988,7 @@ def html_edit_profile(server, translate: {},
                                    show_vote_posts, hide_follows,
                                    hide_recent_posts, premium,
                                    no_seen_posts, watermark_enabled,
-                                   allow_on_lists)
+                                   allow_on_lists, replace_dashes)
 
     # reply controls
     edit_profile_form += \

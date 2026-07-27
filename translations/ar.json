@@ -773,5 +773,6 @@
     "Loops Instances": "حلقات التكرار",
 	"Disinformation Instances": "أمثلة على التضليل الإعلامي",
 	"Allow this account to be added to lists": "السماح بإضافة هذا الحساب إلى القوائم",
-	"Apply dithering to images.": "طبّق تقنية التدرج النقطي (dithering) على الصور."
+	"Apply dithering to images.": "طبّق تقنية التدرج النقطي (dithering) على الصور.",
+	"Replace dashes with em dashes": "استبدل الشرطات (-) بشرطات طويلة (—)"
 }

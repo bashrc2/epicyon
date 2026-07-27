@@ -773,5 +773,6 @@
     "Loops Instances": "Instàncies de bucles",
 	"Disinformation Instances": "Instàncies de desinformació",
 	"Allow this account to be added to lists": "Permet que aquest compte s'afegeixi a les llistes",
-	"Apply dithering to images.": "Aplica el dithering a les imatges."
+	"Apply dithering to images.": "Aplica el dithering a les imatges.",
+	"Replace dashes with em dashes": "Substitueix els guions per guions circulars"
 }

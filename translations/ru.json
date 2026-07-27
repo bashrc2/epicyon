@@ -773,5 +773,6 @@
     "Loops Instances": "Экземпляры циклов",
 	"Disinformation Instances": "Случаи дезинформации",
 	"Allow this account to be added to lists": "Разрешить добавление этого аккаунта в списки",
-	"Apply dithering to images.": "Примените дизеринг к изображениям."
+	"Apply dithering to images.": "Примените дизеринг к изображениям.",
+	"Replace dashes with em dashes": "Замените дефисы на тире."
 }
