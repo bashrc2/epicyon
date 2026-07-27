@@ -338,7 +338,7 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     replace_dashes_filename: str = account_dir + '/.replaceDashes'
     if is_a_file(replace_dashes_filename):
-        content = content.replace(' - ', ' — ')
+        content = content.replace(' - ', ' — ').replace(' -- ', ' — ')
 
     if not rules:
         switch_words_filename = \

@@ -1868,7 +1868,7 @@ def create_post_base(base_dir: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     replace_dashes_filename: str = account_dir + '/.replaceDashes'
     if is_a_file(replace_dashes_filename):
-        content = content.replace(' - ', ' — ')
+        content = content.replace(' - ', ' — ').replace(' -- ', ' — ')
 
     if nickname != 'news':
         mentioned_recipients = \
