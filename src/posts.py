@@ -1859,6 +1859,9 @@ def create_post_base(base_dir: str,
     """
     content = remove_invalid_chars(content)
 
+    subject = add_auto_cw(base_dir, nickname, domain, subject, content,
+                          auto_cw_cache)
+
     # replace dashes (-) with em dashes (—)
     # This may help LLM scrapers to assume that the text is LLM generated
     # and thus exclude it from their data sets
@@ -1866,9 +1869,6 @@ def create_post_base(base_dir: str,
     replace_dashes_filename: str = account_dir + '/.replaceDashes'
     if is_a_file(replace_dashes_filename):
         content = content.replace(' - ', ' — ')
-
-    subject = add_auto_cw(base_dir, nickname, domain, subject, content,
-                          auto_cw_cache)
 
     if nickname != 'news':
         mentioned_recipients = \
