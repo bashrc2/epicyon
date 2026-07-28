@@ -70,6 +70,7 @@ from src.data import save_string
 from src.data import erase_file
 from src.data import move_file
 from src.data import is_a_file
+from src.data import save_flag_file
 
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
@@ -2153,8 +2154,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     else:
         apply_dithering: bool = True
         if not is_a_file(dither_filename):
-            save_string('.', dither_filename,
-                        'EX: unable to save dither flag ' + dither_filename)
+            save_flag_file(dither_filename,
+                           'EX: unable to write ditherImage ' +
+                           dither_filename)
 
     buy_url: str = ''
     if fields.get('buyUrl'):
