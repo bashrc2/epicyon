@@ -2633,7 +2633,7 @@ class JsonLdProcessor(object):
                           'Invalid JSON-LD syntax; ' +
                           'language map values must be strings. ' +
                           str(language_map))
-                    return {}
+                    return []
                 rval.append({'@value': item, '@language': key.lower()})
         return rval
 
@@ -2956,7 +2956,7 @@ class JsonLdProcessor(object):
                           'Invalid JSON-LD syntax; ' +
                           'conflicting @index property detected. ' +
                           str(subject))
-                    return {}
+                    return
                 subject[property2] = input_[property2]
                 continue
 
