@@ -381,12 +381,10 @@ def load_document(url):
             pieces.scheme not in ['http', 'https', 'hyper', 'ipfs', 'ipns'] or
             set(pieces.netloc) > set(
                 string.ascii_letters + string.digits + '-.:')):
-            raise JsonLdError(
-                'URL could not be dereferenced; only http/https/dat '
-                'URLs are supported.',
-                'jsonld.InvalidUrl', {'url': url},
-                code='loading document failed')
-
+            print('EX: pyjsonld/load_document ' +
+                  'URL could not be dereferenced; only http/https/dat ' +
+                  'URLs are supported. ' + str(url))
+            return {}
         if url == 'https://w3id.org/identity/v1':
             doc = {
                 'contextUrl': None,
@@ -483,12 +481,11 @@ def load_document(url):
             return doc
         return None
     except JsonLdError as ex:
-        raise ex
+        print('EX: Could not retrieve a JSON-LD document from the URL. ' +
+              str(url) + ' ' + str(ex))
     except BaseException as cause:
-        raise JsonLdError(
-            'Could not retrieve a JSON-LD document from the URL.',
-            'jsonld.LoadDocumentError', code='loading document failed',
-            cause=cause)
+        print('EX: Could not retrieve a JSON-LD document from the URL. ' +
+              str(url) + ' ' + str(cause))
 
 
 def register_rdf_parser(content_type, parser):
@@ -710,9 +707,8 @@ class JsonLdProcessor(object):
         :return: the compacted JSON-LD output.
         """
         if ctx is None:
-            raise JsonLdError(
-                'The compaction context must not be null.',
-                'jsonld.CompactError', code='invalid local context')
+            print('EX: The compaction context must not be null.')
+            return None
 
         # nothing to compact
         if input_ is None:
@@ -739,18 +735,20 @@ class JsonLdProcessor(object):
             try:
                 expanded = self.expand(input_, options)
             except JsonLdError as cause:
-                raise JsonLdError(
-                    'Could not expand input before compaction.',
-                    'jsonld.CompactError', cause=cause)
+                print('EX: ' +
+                      'Could not expand input before compaction. ' +
+                      str(cause))
+                return None
 
         # process context
         active_ctx = self._get_initial_context(options)
         try:
             active_ctx = self.process_context(active_ctx, ctx, options)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not process context before compaction.',
-                'jsonld.CompactError', cause=cause)
+            print('EX: ' +
+                  'Could not process context before compaction. ' +
+                  str(cause))
+            return None
 
         # do compaction
         compacted = self._compact(active_ctx, None, expanded, options)
@@ -834,17 +832,16 @@ class JsonLdProcessor(object):
 
         try:
             if remote_doc['document'] is None:
-                raise JsonLdError(
-                    'No remote document found at the given URL.',
-                    'jsonld.NullRemoteDocument')
+                print('EX: ' +
+                      'No remote document found at the given URL.')
+                return None
             if _is_string(remote_doc['document']):
                 remote_doc['document'] = json.loads(remote_doc['document'])
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not retrieve a JSON-LD document from the URL.',
-                'jsonld.LoadDocumentError',
-                {'remoteDoc': remote_doc}, code='loading document failed',
-                cause=cause)
+            print('EX: ' +
+                  'Could not retrieve a JSON-LD document from the URL. ' +
+                  str(cause))
+            return None
 
         # set default base
         options.setdefault('base', remote_doc['documentUrl'] or '')
@@ -865,9 +862,9 @@ class JsonLdProcessor(object):
             self._retrieve_context_urls(
                 input_, {}, options['documentLoader'], options['base'])
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not perform JSON-LD expansion.',
-                'jsonld.ExpandError', cause=cause)
+            print('EX: ' +
+                  'Could not perform JSON-LD expansion. ' + str(cause))
+            return None
 
         active_ctx = self._get_initial_context(options)
         document = input_['document']
@@ -914,9 +911,9 @@ class JsonLdProcessor(object):
             # expand input
             expanded = self.expand(input_, options)
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not expand input before flattening.',
-                'jsonld.FlattenError', cause=cause)
+            print('EX: Could not expand input before flattening. ' +
+                  str(cause))
+            return {}
 
         # do flattening
         flattened = self._flatten(expanded)
@@ -930,9 +927,9 @@ class JsonLdProcessor(object):
         try:
             compacted = self.compact(flattened, ctx, options)
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not compact flattened output.',
-                'jsonld.FlattenError', cause=cause)
+            print('EX: ' +
+                  'Could not compact flattened output. ' + str(cause))
+            return {}
 
         return compacted
 
@@ -977,17 +974,16 @@ class JsonLdProcessor(object):
 
         try:
             if remote_frame['document'] is None:
-                raise JsonLdError(
-                    'No remote document found at the given URL.',
-                    'jsonld.NullRemoteDocument')
+                print('EX: ' +
+                      'No remote document found at the given URL.')
+                return {}
             if _is_string(remote_frame['document']):
                 remote_frame['document'] = json.loads(remote_frame['document'])
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not retrieve a JSON-LD document from the URL.',
-                'jsonld.LoadDocumentError',
-                {'remoteDoc': remote_frame}, code='loading document failed',
-                cause=cause)
+            print('EX: ' +
+                  'Could not retrieve a JSON-LD document from the URL. ' +
+                  str(cause))
+            return {}
 
         # preserve frame context
         frame = remote_frame['document']
@@ -1005,19 +1001,18 @@ class JsonLdProcessor(object):
             # expand input
             expanded = self.expand(input_, options)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not expand input before framing.',
-                'jsonld.FrameError', cause=cause)
-
+            print('EX: ' +
+                  'Could not expand input before framing. ' + str(cause))
+            return {}
         try:
             # expand frame
             opts = copy.deepcopy(options)
             opts['keepFreeFloatingNodes'] = True
             expanded_frame = self.expand(frame, opts)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not expand frame before framing.',
-                'jsonld.FrameError', cause=cause)
+            print('EX: ' +
+                  'Could not expand frame before framing. ' + str(cause))
+            return {}
 
         # do framing
         framed = self._frame(expanded, expanded_frame, options)
@@ -1031,9 +1026,9 @@ class JsonLdProcessor(object):
             options['activeCtx'] = True
             result = self.compact(framed, ctx, options)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not compact framed output.',
-                'jsonld.FrameError', cause=cause)
+            print('EX: ' +
+                  'Could not compact framed output. ' + str(cause))
+            return {}
 
         compacted = result['compacted']
         active_ctx = result['activeCtx']
@@ -1072,9 +1067,10 @@ class JsonLdProcessor(object):
             opts['produceGeneralizedRdf'] = False
             dataset = self.to_rdf(input_, opts)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not convert input to RDF dataset before normalization.',
-                'jsonld.NormalizeError', cause=cause)
+            print('EX: ' +
+                  'Could not convert input to RDF dataset ' +
+                  'before normalization. ' + str(cause))
+            return {}
 
         # do normalization
         return self._normalize(dataset, options)
@@ -1112,9 +1108,9 @@ class JsonLdProcessor(object):
                  not options['format'] in self.rdf_parsers) or
                 (self.rdf_parsers is None and
                  not options['format'] in _rdf_parsers)):
-                raise JsonLdError(
-                    'Unknown input format.',
-                    'jsonld.UnknownFormat', {'format': options['format']})
+                print('EX: ' +
+                      'Unknown input format. ' + str(options['format']))
+                return {}
 
             if self.rdf_parsers is not None:
                 parser = self.rdf_parsers[options['format']]
@@ -1151,9 +1147,10 @@ class JsonLdProcessor(object):
             # expand input
             expanded = self.expand(input_, options)
         except JsonLdError as cause:
-            raise JsonLdError(
-                'Could not expand input before serialization to '
-                'RDF.', 'jsonld.RdfError', cause=cause)
+            print('EX: ' +
+                  'Could not expand input before serialization to RDF ' +
+                  str(cause))
+            return {}
 
         # create node map for default graph (and any named graphs)
         namer = UniqueNamer('_:b')
@@ -1171,9 +1168,9 @@ class JsonLdProcessor(object):
         if 'format' in options:
             if options['format'] == 'application/nquads':
                 return self.to_nquads(dataset)
-            raise JsonLdError(
-                'Unknown output format.',
-                'jsonld.UnknownFormat', {'format': options['format']})
+            print('EX: ' +
+                  'Unknown output format. ' + str(options['format']))
+            return {}
         return dataset
 
     def process_context(self, active_ctx, local_ctx, options):
@@ -1207,9 +1204,9 @@ class JsonLdProcessor(object):
             self._retrieve_context_urls(
                 local_ctx, {}, options['documentLoader'], options['base'])
         except BaseException as cause:
-            raise JsonLdError(
-                'Could not process JSON-LD context.',
-                'jsonld.ContextError', cause=cause)
+            print('EX: ' +
+                  'Could not process JSON-LD context. ' + str(cause))
+            return {}
 
         # process context
         return self._process_context(active_ctx, local_ctx, options)
@@ -1508,9 +1505,10 @@ class JsonLdProcessor(object):
             # parse quad
             ldmatch = re.search(quad, line)
             if ldmatch is None:
-                raise JsonLdError(
-                    'Error while parsing N-Quads invalid quad.',
-                    'jsonld.ParseError', {'line': line_number})
+                print('EX: ' +
+                      'Error while parsing N-Quads invalid quad. ' +
+                      str(line_number))
+                continue
             ldmatch = ldmatch.groups()
 
             # create RDF triple
@@ -1865,14 +1863,14 @@ class JsonLdProcessor(object):
                                     expanded_item['@index'])
                         # can't use @list container for more than 1 list
                         elif item_active_property in rval:
-                            raise JsonLdError(
-                                'JSON-LD compact error; property has a '
-                                '"@list" @container rule but there is more '
-                                'than a single @list that matches the '
-                                'compacted term in the document. Compaction '
-                                'might mix unwanted items into the list.',
-                                'jsonld.SyntaxError',
-                                code='compaction to list of lists')
+                            print('EX: ' +
+                                  'JSON-LD compact error; property has a ' +
+                                  '"@list" @container rule but there is ' +
+                                  'more than a single @list that matches ' +
+                                  'the compacted term in the document. ' +
+                                  'Compaction might mix unwanted items ' +
+                                  'into the list.')
+                            return {}
 
                     # handle language and index maps
                     if container == '@language' or container == '@index':
@@ -1942,10 +1940,10 @@ class JsonLdProcessor(object):
                     active_ctx, active_property, e, options, inside_list)
                 if inside_list and (_is_array(e) or _is_list(e)):
                     # lists of lists are illegal
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; lists of lists are not '
-                        'permitted.', 'jsonld.SyntaxError',
-                        code='list of lists')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; lists of lists are not ' +
+                          'permitted.')
+                    return {}
                 # drop None values
                 if e is not None:
                     if _is_array(e):
@@ -1988,23 +1986,24 @@ class JsonLdProcessor(object):
 
             if _is_keyword(expanded_property):
                 if expanded_property in rval:
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; colliding keywords detected.',
-                        'jsonld.SyntaxError', {'keyword': expanded_property},
-                        code='colliding keywords')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'colliding keywords detected.' +
+                          str(expanded_property))
+                    return {}
 
             # syntax error if @id is not a string
             if expanded_property == '@id' and not _is_string(value):
                 if not options.get('isFrame'):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; "@id" value must a string.',
-                        'jsonld.SyntaxError', {'value': value},
-                        code='invalid @id value')
+                    print('EX: Invalid JSON-LD syntax; ' +
+                          '"@id" value must a string. ' +
+                          str(value))
+                    return {}
                 if not _is_object(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; "@id" value must be a '
-                        'string or an object.', 'jsonld.SyntaxError',
-                        {'value': value}, code='invalid @id value')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; "@id" value must be a ' +
+                          'string or an object. ' + str(value))
+                    return {}
 
             if expanded_property == '@type':
                 _validate_type_value(value)
@@ -2012,10 +2011,10 @@ class JsonLdProcessor(object):
             # @value must not be an object or an array
             if (expanded_property == '@value' and
                     (_is_object(value) or _is_array(value))):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; "@value" value must not be an '
-                    'object or an array.', 'jsonld.SyntaxError',
-                    {'value': value}, code='invalid value object value')
+                print('EX: Invalid JSON-LD syntax; ' +
+                      '"@value" value must not be an ' +
+                      'object or an array. ' + str(value))
+                return {}
 
             # @language must be a string
             if expanded_property == '@language':
@@ -2024,19 +2023,18 @@ class JsonLdProcessor(object):
                     # didn't exist
                     continue
                 if not _is_string(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; "@language" value must be '
-                        'a string.', 'jsonld.SyntaxError', {'value': value},
-                        code='invalid language-tagged string')
+                    print('EX: Invalid JSON-LD syntax; ' +
+                          '"@language" value must be a string. ' + str(value))
+                    return {}
                 # ensure language value is lowercase
                 value = value.lower()
 
             # @index must be a string
             if expanded_property == '@index' and not _is_string(value):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; "@index" value must be '
-                    'a string.', 'jsonld.SyntaxError', {'value': value},
-                    code='invalid @index value')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; "@index" value must be ' +
+                      'a string. ' + str(value))
+                return {}
 
             container = JsonLdProcessor.get_context_value(
                 active_ctx, key, '@container')
@@ -2067,10 +2065,10 @@ class JsonLdProcessor(object):
                         active_ctx, next_active_property, value, options,
                         is_list)
                     if is_list and _is_list(expanded_value):
-                        raise JsonLdError(
-                            'Invalid JSON-LD syntax; lists of lists are '
-                            'not permitted.', 'jsonld.SyntaxError',
-                            code='list of lists')
+                        print('EX: ' +
+                              'Invalid JSON-LD syntax; lists of lists are ' +
+                              'not permitted.')
+                        return {}
                 else:
                     # recursively expand value w/key as new active property
                     expanded_value = self._expand(
@@ -2102,11 +2100,11 @@ class JsonLdProcessor(object):
         if '@value' in rval:
             # @value must only have @language or @type
             if '@type' in rval and '@language' in rval:
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; an element containing '
-                    '"@value" may not contain both "@type" and "@language".',
-                    'jsonld.SyntaxError', {'element': rval},
-                    code='invalid value object')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; an element containing ' +
+                      '"@value" may not contain both ' +
+                      '"@type" and "@language". ' + str(rval))
+                return {}
             valid_count = count - 1
             if '@type' in rval:
                 valid_count -= 1
@@ -2115,40 +2113,42 @@ class JsonLdProcessor(object):
             if '@language' in rval:
                 valid_count -= 1
             if valid_count != 0:
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; an element containing "@value" '
-                    'may only have an "@index" property and at most one other '
-                    'property which can be "@type" or "@language".',
-                    'jsonld.SyntaxError', {'element': rval},
-                    code='invalid value object')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; ' +
+                      'an element containing "@value" '
+                      'may only have an "@index" ' +
+                      'property and at most one other '
+                      'property which can be "@type" or "@language". ' +
+                      str(rval))
+                return {}
             # drop None @values
             if rval['@value'] is None:
                 rval = None
             # if @language is present, @value must be a string
             elif '@language' in rval and not _is_string(rval['@value']):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; only strings may be '
-                    'language-tagged.', 'jsonld.SyntaxError',
-                    {'element': rval}, code='invalid language-tagged value')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; only strings may be '
+                      'language-tagged. ' + str(rval))
+                return {}
             elif ('@type' in rval and (not _is_absolute_iri(rval['@type']) or
                                        rval['@type'].startswith('_:'))):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; an element containing "@value" '
-                    'and "@type" must have an absolute IRI for the value '
-                    'of "@type".', 'jsonld.SyntaxError', {'element': rval},
-                    code='invalid typed value')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; ' +
+                      'an element containing "@value" ' +
+                      'and "@type" must have an absolute IRI for the value ' +
+                      'of "@type". ' + str(rval))
+                return {}
         # convert @type to an array
         elif '@type' in rval and not _is_array(rval['@type']):
             rval['@type'] = [rval['@type']]
         # handle @set and @list
         elif '@set' in rval or '@list' in rval:
             if count > 1 and not (count == 2 and '@index' in rval):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; if an element has the '
-                    'property "@set" or "@list", then it can have at most '
-                    'one other property, which is "@index".',
-                    'jsonld.SyntaxError', {'element': rval},
-                    code='invalid set or list object')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; if an element has the ' +
+                      'property "@set" or "@list", then it can have at most ' +
+                      'one other property, which is "@index". ' + str(rval))
+                return {}
             # optimize away @set
             if '@set' in rval:
                 rval = rval['@set']
@@ -2340,9 +2340,9 @@ class JsonLdProcessor(object):
         if 'format' in options:
             if options['format'] == 'application/nquads':
                 return ''.join(normalized)
-            raise JsonLdError(
-                'Unknown output format.',
-                'jsonld.UnknownFormat', {'format': options['format']})
+            print('EX: ' +
+                  'Unknown output format. ' + str(options['format']))
+            return {}
 
         # return parsed RDF dataset
         return JsonLdProcessor.parse_nquads(''.join(normalized))
@@ -2525,10 +2525,10 @@ class JsonLdProcessor(object):
 
             # context must be an object now, all URLs retrieved prior to call
             if not _is_object(ctx):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context must be an object.',
-                    'jsonld.SyntaxError', {'context': ctx},
-                    code='invalid local context')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; @context must be an object. ' +
+                      str(ctx))
+                return {}
 
             # get context from src.cache if available
             if _cache.get('activeCtx') is not None:
@@ -2550,17 +2550,18 @@ class JsonLdProcessor(object):
                 if base is None:
                     base = None
                 elif not _is_string(base):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; the value of "@base" in a '
-                        '@context must be a string or null.',
-                        'jsonld.SyntaxError', {'context': ctx},
-                        code='invalid base IRI')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; the value of ' +
+                          '"@base" in a @context must be a string or null. ' +
+                          str(ctx))
+                    return {}
                 elif base != '' and not _is_absolute_iri(base):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; the value of "@base" in a '
-                        '@context must be an absolute IRI or the empty '
-                        'string.', 'jsonld.SyntaxError', {'context': ctx},
-                        code='invalid base IRI')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'the value of "@base" in a ' +
+                          '@context must be an absolute IRI or the empty ' +
+                          'string. ' + str(ctx))
+                    return {}
                 rval['@base'] = base
                 defined['@base'] = True
 
@@ -2570,17 +2571,18 @@ class JsonLdProcessor(object):
                 if value is None:
                     del rval['@vocab']
                 elif not _is_string(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; the value of "@vocab" in a '
-                        '@context must be a string or null.',
-                        'jsonld.SyntaxError', {'context': ctx},
-                        code='invalid vocab mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'the value of "@vocab" in a ' +
+                          '@context must be a string or null. ' + str(ctx))
+                    return {}
                 elif not _is_absolute_iri(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; the value of "@vocab" in a '
-                        '@context must be an absolute IRI.',
-                        'jsonld.SyntaxError', {'context': ctx},
-                        code='invalid vocab mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'the value of "@vocab" in a '
+                          '@context must be an absolute IRI. ' +
+                          str(ctx))
+                    return {}
                 else:
                     rval['@vocab'] = value
                 defined['@vocab'] = True
@@ -2591,11 +2593,12 @@ class JsonLdProcessor(object):
                 if value is None:
                     del rval['@language']
                 elif not _is_string(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; the value of "@language" in '
-                        'a @context must be a string or null.',
-                        'jsonld.SyntaxError', {'context': ctx},
-                        code='invalid default language')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'the value of "@language" in ' +
+                          'a @context must be a string or null. ' +
+                          str(ctx))
+                    return {}
                 else:
                     rval['@language'] = value.lower()
                 defined['@language'] = True
@@ -2623,11 +2626,11 @@ class JsonLdProcessor(object):
             values = JsonLdProcessor.arrayify(values)
             for item in values:
                 if not _is_string(item):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; language map values must be '
-                        'strings.', 'jsonld.SyntaxError',
-                        {'languageMap': language_map},
-                        code='invalid language map value')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'language map values must be strings. ' +
+                          str(language_map))
+                    return {}
                 rval.append({'@value': item, '@language': key.lower()})
         return rval
 
@@ -2946,10 +2949,11 @@ class JsonLdProcessor(object):
                 if property == '@index' and '@index' in subject \
                     and (input_['@index'] != subject['@index'] or
                          input_['@index']['@id'] != subject['@index']['@id']):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; conflicting @index property '
-                        ' detected.', 'jsonld.SyntaxError',
-                        {'subject': subject}, code='conflicting indexes')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'conflicting @index property detected. ' +
+                          str(subject))
+                    return {}
                 subject[property] = input_[property]
                 continue
 
@@ -3205,9 +3209,11 @@ class JsonLdProcessor(object):
         """
         if (not _is_array(frame) or len(frame) != 1 or
                 not _is_object(frame[0])):
-            raise JsonLdError(
-                'Invalid JSON-LD syntax; a JSON-LD frame must be a single '
-                'object.', 'jsonld.SyntaxError', {'frame': frame})
+            print('EX: ' +
+                  'Invalid JSON-LD syntax; ' +
+                  'a JSON-LD frame must be a single object. ' +
+                  str(frame))
+            return {}
 
     def _filter_subjects(self, state, subjects, frame, flags):
         """
@@ -3867,27 +3873,26 @@ class JsonLdProcessor(object):
             if defined[term]:
                 return
             # cycle detected
-            raise JsonLdError(
-                'Cyclical context definition detected.',
-                'jsonld.CyclicalContext', {
-                    'context': local_ctx,
-                    'term': term
-                }, code='cyclic IRI mapping')
+            print('EX: Cyclical context definition detected. ' +
+                  'context: ' + str(local_ctx) + ' ' +
+                  'term: ' + str(term))
+            return {}
 
         # now defining term
         defined[term] = False
 
         if _is_keyword(term):
-            raise JsonLdError(
-                'Invalid JSON-LD syntax; keywords cannot be overridden.',
-                'jsonld.SyntaxError', {'context': local_ctx, 'term': term},
-                code='keyword redefinition')
+            print('EX: ' +
+                  'Invalid JSON-LD syntax; keywords cannot be overridden. ' +
+                  'context: ' + str(local_ctx) + ' ' +
+                  'term: ' + str(term))
+            return {}
 
         if term == '':
-            raise JsonLdError(
-                'Invalid JSON-LD syntax; a term cannot be an empty string.',
-                'jsonld.SyntaxError', {'context': local_ctx},
-                code='invalid term definition')
+            print('EX: Invalid JSON-LD syntax; ' +
+                  'a term cannot be an empty string. ' +
+                  'context: ' + str(local_ctx))
+            return {}
 
         # remove old mapping
         if term in active_ctx['mappings']:
@@ -3908,10 +3913,12 @@ class JsonLdProcessor(object):
             value = {'@id': value}
 
         if not _is_object(value):
-            raise JsonLdError(
-                'Invalid JSON-LD syntax; @context property values must be '
-                'strings or objects.', 'jsonld.SyntaxError',
-                {'context': local_ctx}, code='invalid term definition')
+            print('EX: ' +
+                  'Invalid JSON-LD syntax; ' +
+                  '@context property values must be ' +
+                  'strings or objects. context: ' +
+                  str(local_ctx))
+            return
 
         # create new mapping
         mapping = active_ctx['mappings'][term] = {'reverse': False}
@@ -3919,21 +3926,22 @@ class JsonLdProcessor(object):
         if '@id' in value:
             id_ = value['@id']
             if not _is_string(id_):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @id value must be a '
-                    'string.', 'jsonld.SyntaxError',
-                    {'context': local_ctx}, code='invalid IRI mapping')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; @context @id value must be a ' +
+                      'string. context: ' + str(local_ctx))
+                return
             if id_ != term:
                 # add @id to mapping
                 id_ = self._expand_iri(
                     active_ctx, id_, vocab=True, base=False,
                     local_ctx=local_ctx, defined=defined)
                 if not _is_absolute_iri(id_) and not _is_keyword(id_):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; @context @id value must be '
-                        'an absolute IRI, a blank node identifier, or a '
-                        'keyword.', 'jsonld.SyntaxError',
-                        {'context': local_ctx}, code='invalid IRI mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          '@context @id value must be an absolute IRI, ' +
+                          'a blank node identifier, or a keyword. ' +
+                          'context: ' + str(local_ctx))
+                    return
                 mapping['@id'] = id_
         if '@id' not in mapping:
             # see if the term has a prefix
@@ -3956,12 +3964,13 @@ class JsonLdProcessor(object):
             else:
                 # non-IRIs MUST define @ids if @vocab not available
                 if '@vocab' not in active_ctx:
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; @context terms must define '
-                        'an @id.', 'jsonld.SyntaxError', {
-                            'context': local_ctx,
-                            'term': term
-                        }, code='invalid IRI mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          '@context terms must define ' +
+                          'an @id.', 'jsonld.SyntaxError. ' +
+                          'context: ' + str(local_ctx) + ' ' +
+                          'term: ' + str(term))
+                    return
                 # prepend vocab to term
                 mapping['@id'] = active_ctx['@vocab'] + term
 
@@ -3971,37 +3980,39 @@ class JsonLdProcessor(object):
         if '@type' in value:
             type_ = value['@type']
             if not _is_string(type_):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @type value must be '
-                    'a string.', 'jsonld.SyntaxError',
-                    {'context': local_ctx}, code='invalid type mapping')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; @context @type value must be ' +
+                      'a string. context: ' + str(local_ctx))
+                return
             if type_ != '@id' and type_ != '@vocab':
                 # expand @type to full IRI
                 type_ = self._expand_iri(
                     active_ctx, type_, vocab=True,
                     local_ctx=local_ctx, defined=defined)
                 if not _is_absolute_iri(type_):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; an @context @type value must '
-                        'be an absolute IRI.', 'jsonld.SyntaxError',
-                        {'context': local_ctx}, code='invalid type mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; ' +
+                          'an @context @type value must ' +
+                          'be an absolute IRI. context: ' + str(local_ctx))
+                    return
                 if type_.startswith('_:'):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; an @context @type values '
-                        'must be an IRI, not a blank node identifier.',
-                        'jsonld.SyntaxError', {'context': local_ctx},
-                        code='invalid type mapping')
+                    print('EX: ' +
+                          'Invalid JSON-LD syntax; an @context @type values ' +
+                          'must be an IRI, not a blank node identifier. ' +
+                          'context: ' + str(local_ctx))
+                    return
             # add @type to mapping
             mapping['@type'] = type_
 
         if '@container' in value:
             container = value['@container']
             if container not in ['@list', '@set', '@index', '@language']:
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @container value '
-                    'must be one of the following: @list, @set, @index, or '
-                    '@language.', 'jsonld.SyntaxError',
-                    {'context': local_ctx}, code='invalid container mapping')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; @context @container value ' +
+                      'must be one of the following: ' +
+                      '@list, @set, @index, or @language. context: ' +
+                      str(local_ctx))
+                return
 
             # add @container to mapping
             mapping['@container'] = container
@@ -4009,10 +4020,11 @@ class JsonLdProcessor(object):
         if '@language' in value and '@type' not in value:
             language = value['@language']
             if not (language is None or _is_string(language)):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @language value must be '
-                    'a string or null.', 'jsonld.SyntaxError',
-                    {'context': local_ctx}, code='invalid language mapping')
+                print('EX: ' +
+                      'Invalid JSON-LD syntax; ' +
+                      '@context @language value must be a string or null. ' +
+                      'context: ' + str(local_ctx))
+                return
             # add @language to mapping
             if language is not None:
                 language = language.lower()
@@ -4021,10 +4033,11 @@ class JsonLdProcessor(object):
         # disallow aliasing @context and @preserve
         id_ = mapping['@id']
         if id_ == '@context' or id_ == '@preserve':
-            raise JsonLdError(
-                'Invalid JSON-LD syntax; @context and @preserve '
-                'cannot be aliased.', 'jsonld.SyntaxError',
-                {'context': local_ctx}, code='invalid keyword alias')
+            print('EX: ' +
+                  'Invalid JSON-LD syntax; @context and @preserve ' +
+                  'cannot be aliased. context: ' +
+                  str(local_ctx))
+            return
 
     def _expand_iri(
             self, active_ctx, value, base=False, vocab=False,
@@ -4160,10 +4173,10 @@ class JsonLdProcessor(object):
         :return: the result.
         """
         if len(cycles) > MAX_CONTEXT_URLS:
-            raise JsonLdError(
-                'Maximum number of @context URLs exceeded.',
-                'jsonld.ContextUrlError', {'max': MAX_CONTEXT_URLS},
-                code='loading remote context failed')
+            print('EX: ' +
+                  'Maximum number of @context URLs exceeded. ' +
+                  str(MAX_CONTEXT_URLS))
+            return {}
 
         # for tracking URLs to retrieve
         urls = {}
@@ -4181,10 +4194,8 @@ class JsonLdProcessor(object):
         for url in queue:
             # check for context URL cycle
             if url in cycles:
-                raise JsonLdError(
-                    'Cyclical @context URLs detected.',
-                    'jsonld.ContextUrlError', {'url': url},
-                    code='recursive context inclusion')
+                print('EX: Cyclical @context URLs detected. ' + str(url))
+                return {}
             cycles_ = copy.deepcopy(cycles)
             cycles_[url] = True
 
@@ -4193,29 +4204,25 @@ class JsonLdProcessor(object):
                 remote_doc = load_document(url)
                 ctx = remote_doc['document']
             except BaseException as cause:
-                raise JsonLdError(
-                    'Dereferencing a URL did not result in a valid JSON-LD '
-                    'context.',
-                    'jsonld.ContextUrlError',  {'url': url},
-                    code='loading remote context failed', cause=cause)
+                print('EX: Dereferencing a URL did not result ' +
+                      'in a valid JSON-LD context. ' + str(url) + ' ' +
+                      str(cause))
+                return {}
 
             # parse string context as JSON
             if _is_string(ctx):
                 try:
                     ctx = json.loads(ctx)
                 except BaseException as cause:
-                    raise JsonLdError(
-                        'Could not parse JSON from URL.',
-                        'jsonld.ParseError', {'url': url},
-                        code='loading remote context failed', cause=cause)
+                    print('EX: Could not parse JSON from URL. ' + str(url) +
+                          ' ' + str(cause))
+                    return {}
 
             # ensure ctx is an object
             if not _is_object(ctx):
-                raise JsonLdError(
-                    'Dereferencing a URL did not result in a valid JSON-LD '
-                    'object.',
-                    'jsonld.InvalidUrl', {'url': url},
-                    code='invalid remote context')
+                print('EX: Dereferencing a URL did not result ' +
+                      'in a valid JSON-LD object. ' + str(url))
+                return {}
 
             # use empty context if no @context key is present
             if '@context' not in ctx:
@@ -4446,7 +4453,8 @@ def permutations(elements):
 
         # no more permutations
         if k is None:
-            raise StopIteration
+            print('EX: permutations StopIteration')
+            break
 
         # swap k and the element it is looking at
         swap = pos - 1 if left[k] else pos + 1
@@ -4551,10 +4559,11 @@ def _validate_type_value(v):
                 break
 
     if not is_valid:
-        raise JsonLdError(
-            'Invalid JSON-LD syntax; "@type" value must a string, an array of '
-            'strings, or an empty object.',
-            'jsonld.SyntaxError', {'value': v}, code='invalid type value')
+        print('EX: ' +
+              'Invalid JSON-LD syntax; ' +
+              '"@type" value must a string, an array of '
+              'strings, or an empty object. ' + str(v))
+        return
 
 
 def _is_bool(v):
