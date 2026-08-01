@@ -837,14 +837,14 @@ class JsonLdProcessor(object):
             if remote_doc['document'] is None:
                 print('EX: ' +
                       'No remote document found at the given URL.')
-                return None
+                return []
             if _is_string(remote_doc['document']):
                 remote_doc['document'] = json.loads(remote_doc['document'])
         except BaseException as cause:
             print('EX: ' +
                   'Could not retrieve a JSON-LD document from the URL. ' +
                   str(cause))
-            return None
+            return []
 
         # set default base
         options.setdefault('base', remote_doc['documentUrl'] or '')
@@ -867,7 +867,7 @@ class JsonLdProcessor(object):
         except BaseException as cause:
             print('EX: ' +
                   'Could not perform JSON-LD expansion. ' + str(cause))
-            return None
+            return []
 
         active_ctx = self._get_initial_context(options)
         document = input_['document']
