@@ -916,7 +916,7 @@ class JsonLdProcessor(object):
         except BaseException as cause:
             print('EX: Could not expand input before flattening. ' +
                   str(cause))
-            return {}
+            return []
 
         # do flattening
         flattened = self._flatten(expanded)
@@ -932,7 +932,7 @@ class JsonLdProcessor(object):
         except BaseException as cause:
             print('EX: ' +
                   'Could not compact flattened output. ' + str(cause))
-            return {}
+            return []
 
         return compacted
 
