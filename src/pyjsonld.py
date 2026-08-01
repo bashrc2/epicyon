@@ -3216,7 +3216,7 @@ class JsonLdProcessor(object):
                   'Invalid JSON-LD syntax; ' +
                   'a JSON-LD frame must be a single object. ' +
                   str(frame2))
-            return {}
+            return
 
     def _filter_subjects(self, state, subjects, frame2, flags):
         """
