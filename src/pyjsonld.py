@@ -4111,7 +4111,7 @@ class JsonLdProcessor(object):
 
         return rval
 
-    def _find_context_urls(self, input_, urls, replace, base):
+    def _find_context_urls(self, input_, urls: {}, replace, base) -> None:
         """
         Finds all @context URLs in the given JSON-LD input.
 
@@ -4162,7 +4162,7 @@ class JsonLdProcessor(object):
                         urls[v] = False
 
     def _retrieve_context_urls(self, input_, cycles, load_document2,
-                               base: str = ''):
+                               base: str = '') -> None:
         """
         Retrieves external @context URLs using the given document loader. Each
         instance of @context in the input that refers to a URL will be
@@ -4179,7 +4179,7 @@ class JsonLdProcessor(object):
             print('EX: ' +
                   'Maximum number of @context URLs exceeded. ' +
                   str(MAX_CONTEXT_URLS))
-            return {}
+            return
 
         # for tracking URLs to retrieve
         urls = {}
@@ -4198,7 +4198,7 @@ class JsonLdProcessor(object):
             # check for context URL cycle
             if url in cycles:
                 print('EX: Cyclical @context URLs detected. ' + str(url))
-                return {}
+                return
             cycles_ = copy.deepcopy(cycles)
             cycles_[url] = True
 
@@ -4210,7 +4210,7 @@ class JsonLdProcessor(object):
                 print('EX: Dereferencing a URL did not result ' +
                       'in a valid JSON-LD context. ' + str(url) + ' ' +
                       str(cause))
-                return {}
+                return
 
             # parse string context as JSON
             if _is_string(ctx):
@@ -4219,13 +4219,13 @@ class JsonLdProcessor(object):
                 except BaseException as cause:
                     print('EX: Could not parse JSON from URL. ' + str(url) +
                           ' ' + str(cause))
-                    return {}
+                    return
 
             # ensure ctx is an object
             if not _is_object(ctx):
                 print('EX: Dereferencing a URL did not result ' +
                       'in a valid JSON-LD object. ' + str(url))
-                return {}
+                return
 
             # use empty context if no @context key is present
             if '@context' not in ctx:
