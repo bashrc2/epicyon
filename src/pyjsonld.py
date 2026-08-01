@@ -3879,7 +3879,7 @@ class JsonLdProcessor(object):
             print('EX: Cyclical context definition detected. ' +
                   'context: ' + str(local_ctx) + ' ' +
                   'term: ' + str(term))
-            return {}
+            return
 
         # now defining term
         defined[term] = False
@@ -3889,13 +3889,13 @@ class JsonLdProcessor(object):
                   'Invalid JSON-LD syntax; keywords cannot be overridden. ' +
                   'context: ' + str(local_ctx) + ' ' +
                   'term: ' + str(term))
-            return {}
+            return
 
         if term == '':
             print('EX: Invalid JSON-LD syntax; ' +
                   'a term cannot be an empty string. ' +
                   'context: ' + str(local_ctx))
-            return {}
+            return
 
         # remove old mapping
         if term in active_ctx['mappings']:
