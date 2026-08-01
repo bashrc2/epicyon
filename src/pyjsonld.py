@@ -94,7 +94,7 @@ if sys.version_info[0] >= 3:
     from urllib.request import HTTPSHandler
     import urllib.parse as urllib_parse
     from http.client import HTTPSConnection
-    basestring = str
+    BaseString = str
 
     def cmp(a, b):
         return (a > b) - (a < b)
@@ -198,7 +198,7 @@ def flatten(input_, ctx=None, options=None):
     return JsonLdProcessor().flatten(input_, ctx, options)
 
 
-def frame(input_, frame, options=None):
+def frame(input_, frame2, options=None):
     """
     Performs JSON-LD framing.
 
@@ -216,7 +216,7 @@ def frame(input_, frame, options=None):
 
     :return: the framed JSON-LD output.
     """
-    return JsonLdProcessor().frame(input_, frame, options)
+    return JsonLdProcessor().frame(input_, frame2, options)
 
 
 def link(input_, ctx, options=None):
@@ -237,11 +237,11 @@ def link(input_, ctx, options=None):
     """
     # API matches running frame with a wildcard frame and embed: '@link'
     # get arguments
-    frame = {'@embed': '@link'}
+    frame2 = {'@embed': '@link'}
     if ctx:
-        frame['@context'] = ctx
-    frame['@embed'] = '@link'
-    return frame(input, frame, options)
+        frame2['@context'] = ctx
+    frame2['@embed'] = '@link'
+    return frame(input, frame2, options)
 
 
 def normalize(input_: {}, options=None):
@@ -298,14 +298,14 @@ def to_rdf(input_, options=None):
     return JsonLdProcessor().to_rdf(input_, options)
 
 
-def set_document_loader(load_document):
+def set_document_loader(load_document2):
     """
     Sets the default JSON-LD document loader.
 
-    :param load_document(url): the document loader to use.
+    :param load_document2(url): the document loader to use.
     """
     global _default_document_loader
-    _default_document_loader = load_document
+    _default_document_loader = load_document2
 
 
 def get_document_loader():
@@ -366,7 +366,7 @@ def parse_link_header(header):
     return rval
 
 
-def load_document(url):
+def load_document(url: str) -> {}:
     """
     Retrieves JSON-LD at the given URL.
 
@@ -399,80 +399,80 @@ def load_document(url):
                 'document': get_v1security_schema()
             }
             return doc
-        elif url == 'https://www.w3.org/ns/activitystreams':
+        if url == 'https://www.w3.org/ns/activitystreams':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_activitystreams_schema()
             }
             return doc
-        elif url.endswith('/apschema/v1.9'):
+        if url.endswith('/apschema/v1.9'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_9()
             }
             return doc
-        elif url.endswith('/apschema/v1.10'):
+        if url.endswith('/apschema/v1.10'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_10()
             }
             return doc
-        elif url.endswith('/apschema/v1.20'):
+        if url.endswith('/apschema/v1.20'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_20()
             }
             return doc
-        elif url.endswith('/apschema/v1.21'):
+        if url.endswith('/apschema/v1.21'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getApschemaV1_21()
             }
             return doc
-        elif url.endswith('/litepub-0.1.jsonld'):
+        if url.endswith('/litepub-0.1.jsonld'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getLitepubV0_1()
             }
             return doc
-        elif (url.endswith('/socialweb/webfinger') or
-              url.endswith('/socialweb/webfinger.jsonld')):
+        if url.endswith('/socialweb/webfinger') or \
+           url.endswith('/socialweb/webfinger.jsonld'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_webfinger_schema()
             }
             return doc
-        elif (url == "https://w3id.org/security/multikey/v1" or
-              url.endswith("/vc-data-integrity/contexts/multikey/v1.jsonld")):
+        if url == "https://w3id.org/security/multikey/v1" or \
+           url.endswith("/vc-data-integrity/contexts/multikey/v1.jsonld"):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_multikey_v1_schema()
             }
             return doc
-        elif (url == "https://w3id.org/security/data-integrity/v1" or
-              url.endswith("/contexts/data-integrity/v1.jsonld")):
+        if url == "https://w3id.org/security/data-integrity/v1" or \
+           url.endswith("/contexts/data-integrity/v1.jsonld"):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_data_integrity_v1_schema()
             }
             return doc
-        elif url == 'https://litepub.social/litepub/context.jsonld':
+        if url == 'https://litepub.social/litepub/context.jsonld':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_litepub_social()
             }
             return doc
-        elif url == 'https://www.w3.org/ns/did/v1':
+        if url == 'https://www.w3.org/ns/did/v1':
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
@@ -642,7 +642,9 @@ ParsedUrl = namedtuple(
     'ParsedUrl', ['scheme', 'authority', 'path', 'query', 'fragment'])
 
 
-def parse_url(url):
+def parse_url(url: str) -> str:
+    """ parse_url
+    """
     # regex from RFC 3986
     p = r'^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?'
     m = re.match(p, url)
@@ -650,9 +652,11 @@ def parse_url(url):
 
 
 def unparse_url(parsed):
+    """ unparse_url
+    """
     if isinstance(parsed, dict):
         parsed = ParsedUrl(**parsed)
-    elif isinstance(parsed, list) or isinstance(parsed, tuple):
+    elif isinstance(parsed, (list, tuple)):
         parsed = ParsedUrl(*parsed)
     rval = ''
     if parsed.scheme:
@@ -782,7 +786,7 @@ class JsonLdProcessor(object):
 
         # remove array if only one context
         ctx_length = len(ctx)
-        has_context = (ctx_length > 0)
+        has_context = ctx_length > 0
         if ctx_length == 1:
             ctx = ctx[0]
 
@@ -797,8 +801,7 @@ class JsonLdProcessor(object):
 
         if options['activeCtx']:
             return {'compacted': compacted, 'activeCtx': active_ctx}
-        else:
-            return compacted
+        return compacted
 
     def expand(self, input_, options):
         """
@@ -933,7 +936,7 @@ class JsonLdProcessor(object):
 
         return compacted
 
-    def frame(self, input_, frame, options):
+    def frame(self, input_, frame2, options):
         """
         Performs JSON-LD framing.
 
@@ -963,13 +966,13 @@ class JsonLdProcessor(object):
         options.setdefault('documentLoader', _default_document_loader)
 
         # if frame is a string, attempt to dereference remote document
-        if _is_string(frame):
-            remote_frame = options['documentLoader'](frame)
+        if _is_string(frame2):
+            remote_frame = options['documentLoader'](frame2)
         else:
             remote_frame = {
                 'contextUrl': None,
                 'documentUrl': None,
-                'document': frame
+                'document': frame2
             }
 
         try:
@@ -986,16 +989,16 @@ class JsonLdProcessor(object):
             return {}
 
         # preserve frame context
-        frame = remote_frame['document']
-        if frame is not None:
-            ctx = frame.get('@context', {})
+        frame2 = remote_frame['document']
+        if frame2 is not None:
+            ctx = frame2.get('@context', {})
             if remote_frame['contextUrl'] is not None:
                 if ctx is not None:
                     ctx = remote_frame['contextUrl']
                 else:
                     ctx = JsonLdProcessor.arrayify(ctx)
                     ctx.append(remote_frame['contextUrl'])
-                frame['@context'] = ctx
+                frame2['@context'] = ctx
 
         try:
             # expand input
@@ -1239,33 +1242,33 @@ class JsonLdProcessor(object):
                 self.rdf_parsers = None
 
     @staticmethod
-    def has_property(subject, property):
+    def has_property(subject, property2):
         """
         Returns True if the given subject has the given property.
 
         :param subject: the subject to check.
-        :param property: the property to look for.
+        :param property2: the property to look for.
 
         :return: True if the subject has the given property, False if not.
         """
-        if property in subject:
-            value = subject[property]
+        if property2 in subject:
+            value = subject[property2]
             return not _is_array(value) or value
         return False
 
     @staticmethod
-    def has_value(subject, property, value):
+    def has_value(subject, property2, value) -> bool:
         """
          Determines if the given value is a property of the given subject.
 
         :param subject: the subject to check.
-        :param property: the property to check.
+        :param property2: the property to check.
         :param value: the value to check.
 
         :return: True if the value exists, False if not.
         """
-        if JsonLdProcessor.has_property(subject, property):
-            val = subject[property]
+        if JsonLdProcessor.has_property(subject, property2):
+            val = subject[property2]
             is_list = _is_list(val)
             if _is_array(val) or is_list:
                 if is_list:
@@ -1279,13 +1282,13 @@ class JsonLdProcessor(object):
         return False
 
     @staticmethod
-    def add_value(subject, property, value, options={}):
+    def add_value(subject, property2, value, options={}):
         """
         Adds a value to a subject. If the value is an array, all values in the
         array will be added.
 
         :param subject: the subject to add the value to.
-        :param property: the property that relates the value to the subject.
+        :param property2: the property that relates the value to the subject.
         :param value: the value to add.
         :param [options]: the options to use:
           [propertyIsArray] True if the property is always
@@ -1299,58 +1302,58 @@ class JsonLdProcessor(object):
 
         if _is_array(value):
             if (len(value) == 0 and options['propertyIsArray'] and
-                    property not in subject):
-                subject[property] = []
+                    property2 not in subject):
+                subject[property2] = []
             for v in value:
-                JsonLdProcessor.add_value(subject, property, v, options)
+                JsonLdProcessor.add_value(subject, property2, v, options)
         elif property in subject:
             # check if subject already has value if duplicates not allowed
             has_value = \
                 (not options['allowDuplicate'] and
-                 JsonLdProcessor.has_value(subject, property, value))
+                 JsonLdProcessor.has_value(subject, property2, value))
 
             # make property an array if value not present or always an array
-            if (not _is_array(subject[property]) and
+            if (not _is_array(subject[property2]) and
                     (not has_value or options['propertyIsArray'])):
-                subject[property] = [subject[property]]
+                subject[property2] = [subject[property2]]
 
             # add new value
             if not has_value:
-                subject[property].append(value)
+                subject[property2].append(value)
         else:
             # add new value as set or single value
-            subject[property] = (
+            subject[property2] = (
                 [value] if options['propertyIsArray'] else value)
 
     @staticmethod
-    def get_values(subject, property):
+    def get_values(subject, property2):
         """
         Gets all of the values for a subject's property as an array.
 
         :param subject: the subject.
-        :param property: the property.
+        :param property2: the property.
 
         :return: all of the values for a subject's property as an array.
         """
-        return JsonLdProcessor.arrayify(subject.get(property) or [])
+        return JsonLdProcessor.arrayify(subject.get(property2) or [])
 
     @staticmethod
-    def remove_property(subject, property):
+    def remove_property(subject, property2):
         """
-        Removes a property from a subject.
+        Removes a property2 from a subject.
 
         :param subject: the subject.
-        :param property: the property.
+        :param property2: the property.
         """
-        del subject[property]
+        del subject[property2]
 
     @staticmethod
-    def remove_value(subject, property, value, options={}):
+    def remove_value(subject, property2, value, options={}):
         """
         Removes a value from a subject.
 
         :param subject: the subject.
-        :param property: the property that relates the value to the subject.
+        :param property2: the property that relates the value to the subject.
         :param value: the value to remove.
         :param [options]: the options to use:
           [propertyIsArray]: True if the property is always an array,
@@ -1361,15 +1364,15 @@ class JsonLdProcessor(object):
         # filter out value
         def filter_value(e):
             return not JsonLdProcessor.compare_values(e, value)
-        values = JsonLdProcessor.get_values(subject, property)
+        values = JsonLdProcessor.get_values(subject, property2)
         values = list(filter(filter_value, values))
 
         if len(values) == 0:
-            JsonLdProcessor.remove_property(subject, property)
+            JsonLdProcessor.remove_property(subject, property2)
         elif len(values) == 1 and not options['propertyIsArray']:
-            subject[property] = values[0]
+            subject[property2] = values[0]
         else:
-            subject[property] = values
+            subject[property2] = values
 
     @staticmethod
     def compare_values(v1, v2):
@@ -1391,7 +1394,7 @@ class JsonLdProcessor(object):
         if not _is_object(v1) and not _is_object(v2) and v1 == v2:
             type1 = type(v1)
             type2 = type(v2)
-            if type1 == bool or type2 == bool:
+            if bool in (type1, type2):
                 return type1 == type2
             return True
 
@@ -1403,7 +1406,7 @@ class JsonLdProcessor(object):
                 v1.get('@index') == v2.get('@index')):
             type1 = type(v1['@value'])
             type2 = type(v2['@value'])
-            if type1 == bool or type2 == bool:
+            if bool in (type1, type2):
                 return type1 == type2
             return True
 
@@ -1475,8 +1478,8 @@ class JsonLdProcessor(object):
 
         # define quad part regexes
         subject = '(?:' + iri + '|' + bnode + ')' + ws
-        property = iri + ws
-        object = '(?:' + iri + '|' + bnode + '|' + literal + ')' + wso
+        property2 = iri + ws
+        object2 = '(?:' + iri + '|' + bnode + '|' + literal + ')' + wso
         graph = '(?:\\.|(?:(?:' + iri + '|' + bnode + ')' + wso + '\\.))'
 
         # Note: Notice that the graph position does not include literals
@@ -1487,7 +1490,7 @@ class JsonLdProcessor(object):
         # See: https://github.com/digitalbazaar/pyld/pull/19
 
         # full quad regex
-        quad = r'^' + wso + subject + property + object + graph + wso + '$'
+        quad = r'^' + wso + subject + property2 + object2 + graph + wso + '$'
 
         # build RDF dataset
         dataset = {}
@@ -1637,7 +1640,7 @@ class JsonLdProcessor(object):
         # object is IRI, bnode, or literal
         if o['type'] == 'IRI':
             quad += '<' + o['value'] + '>'
-        elif (o['type'] == 'blank node'):
+        elif o['type'] == 'blank node':
             # normalization mode
             if bnode is not None:
                 quad += '_:a' if o['value'] == bnode else '_:z'
@@ -1743,9 +1746,9 @@ class JsonLdProcessor(object):
                element['@id'] in options['link']:
                 # check for a linked element to reuse
                 linked = options['link'][element['@id']]
-                for link in linked:
-                    if link['expanded'] == element:
-                        return link['compacted']
+                for link2 in linked:
+                    if link2['expanded'] == element:
+                        return link2['compacted']
 
             # do value compaction on @values and subject references
             if _is_value(element) or _is_subject_reference(element):
@@ -1767,12 +1770,12 @@ class JsonLdProcessor(object):
             # recursively process element keys in order
             for expanded_property, expanded_value in sorted(element.items()):
                 # compact @id and @type(s)
-                if expanded_property == '@id' or expanded_property == '@type':
+                if expanded_property in ('@id', '@type'):
                     # compact single @id
                     if _is_string(expanded_value):
                         compacted_value = self._compact_iri(
                             active_ctx, expanded_value,
-                            vocab=(expanded_property == '@type'))
+                            vocab=expanded_property == '@type')
                     # expanded value must be a @type array
                     else:
                         compacted_value = []
@@ -1873,7 +1876,7 @@ class JsonLdProcessor(object):
                             return {}
 
                     # handle language and index maps
-                    if container == '@language' or container == '@index':
+                    if container in ('@language', '@index'):
                         # get or create the map object
                         map_object = rval.setdefault(item_active_property, {})
 
@@ -2058,7 +2061,7 @@ class JsonLdProcessor(object):
                 expanded_value = expand_index_map(key)
             else:
                 # recurse into @list or @set
-                is_list = (expanded_property == '@list')
+                is_list = expanded_property == '@list'
                 if is_list or expanded_property == '@set':
                     next_active_property = active_property
                     expanded_value = self._expand(
@@ -2170,18 +2173,18 @@ class JsonLdProcessor(object):
 
         return rval
 
-    def _flatten(self, input):
+    def _flatten(self, input2):
         """
         Performs JSON-LD flattening.
 
-        :param input_: the expanded JSON-LD to flatten.
+        :param input2_: the expanded JSON-LD to flatten.
 
         :return: the flattened JSON-LD output.
         """
         # produce a map of all subjects and name each bnode
         namer = UniqueNamer('_:b')
         graphs = {'@default': {}}
-        self._create_node_map(input, graphs, '@default', namer)
+        self._create_node_map(input2, graphs, '@default', namer)
 
         # add all non-default graphs to default graph
         default_graph = graphs['@default']
@@ -2190,12 +2193,12 @@ class JsonLdProcessor(object):
         return [value for key, value in sorted(default_graph.items())
                 if not _is_subject_reference(value)]
 
-    def _frame(self, input_, frame, options):
+    def _frame(self, input_, frame2, options):
         """
         Performs JSON-LD framing.
 
         :param input_: the expanded JSON-LD to frame.
-        :param frame: the expanded JSON-LD frame to use.
+        :param frame2: the expanded JSON-LD frame to use.
         :param options: the framing options.
 
         :return: the framed output.
@@ -2217,7 +2220,7 @@ class JsonLdProcessor(object):
         # frame the subjects
         framed = []
         self._match_frame(
-            state, sorted(state['subjects'].keys()), frame, framed, None)
+            state, sorted(state['subjects'].keys()), frame2, framed, None)
         return framed
 
     def _normalize(self, dataset, options):
@@ -2265,22 +2268,22 @@ class JsonLdProcessor(object):
             unique = {}
             for bnode in unnamed:
                 # hash quads for each unnamed bnode
-                hash = self._hash_quads(bnode, bnodes)
+                hash2 = self._hash_quads(bnode, bnodes)
 
                 # store hash as unique or a duplicate
-                if hash in duplicates:
-                    duplicates[hash].append(bnode)
+                if hash2 in duplicates:
+                    duplicates[hash2].append(bnode)
                     next_unnamed.append(bnode)
-                elif hash in unique:
-                    duplicates[hash] = [unique[hash], bnode]
-                    next_unnamed.append(unique[hash])
+                elif hash2 in unique:
+                    duplicates[hash2] = [unique[hash2], bnode]
+                    next_unnamed.append(unique[hash2])
                     next_unnamed.append(bnode)
-                    del unique[hash]
+                    del unique[hash2]
                 else:
-                    unique[hash] = bnode
+                    unique[hash2] = bnode
 
             # name unique bnodes in sorted hash order
-            for hash, bnode in sorted(unique.items()):
+            for _, bnode in sorted(unique.items()):
                 namer.get_name(bnode)
 
             # done when no more bnodes named
@@ -2288,7 +2291,7 @@ class JsonLdProcessor(object):
                 break
 
         # enumerate duplicate hash groups in sorted order
-        for hash, group in sorted(duplicates.items()):
+        for _, group in sorted(duplicates.items()):
             # process group
             results = []
             for bnode in group:
@@ -2393,10 +2396,10 @@ class JsonLdProcessor(object):
                 if object_is_id:
                     # track rdf:nil uniquely per graph
                     if o['value'] == RDF_NIL:
-                        object = node_map[o['value']]
-                        if 'usages' not in object:
-                            object['usages'] = []
-                        object['usages'].append({
+                        object2 = node_map[o['value']]
+                        if 'usages' not in object2:
+                            object2['usages'] = []
+                        object2['usages'].append({
                             'node': node,
                             'property': p,
                             'value': value
@@ -2482,7 +2485,7 @@ class JsonLdProcessor(object):
             nil.pop('usages', None)
 
         result = []
-        for subject, node in sorted(default_graph.items()):
+        for _, node in sorted(default_graph.items()):
             # only add full subjects to top-level
             if not _is_subject_reference(node):
                 result.append(node)
@@ -2604,7 +2607,7 @@ class JsonLdProcessor(object):
                 defined['@language'] = True
 
             # process all other keys
-            for k, v in ctx.items():
+            for k, _ in ctx.items():
                 self._create_term_definition(rval, ctx, k, defined)
 
             # cache result
@@ -2654,7 +2657,7 @@ class JsonLdProcessor(object):
             active_ctx, active_property, vocab=True)
         if expanded_property == '@id':
             return self._expand_iri(active_ctx, value, base=True)
-        elif expanded_property == '@type':
+        if expanded_property == '@type':
             return self._expand_iri(active_ctx, value, vocab=True, base=True)
 
         # get type definition from context
@@ -2700,16 +2703,16 @@ class JsonLdProcessor(object):
         """
         rval = []
         for id_, node in sorted(graph.items()):
-            for property, items in sorted(node.items()):
-                if property == '@type':
-                    property = RDF_TYPE
-                elif _is_keyword(property):
+            for property2, items in sorted(node.items()):
+                if property2 == '@type':
+                    property2 = RDF_TYPE
+                elif _is_keyword(property2):
                     continue
 
                 for item in items:
                     # skip relative IRI subjects and predicates
                     if not (_is_absolute_iri(id_) and
-                            _is_absolute_iri(property)):
+                            _is_absolute_iri(property2)):
                         continue
 
                     # RDF subject
@@ -2722,7 +2725,7 @@ class JsonLdProcessor(object):
 
                     # RDF predicate
                     predicate = {}
-                    if property.startswith('_:'):
+                    if property2.startswith('_:'):
                         # skip bnode predicates unless producing
                         # generalized RDF
                         if not options['produceGeneralizedRdf']:
@@ -2730,7 +2733,7 @@ class JsonLdProcessor(object):
                         predicate['type'] = 'blank node'
                     else:
                         predicate['type'] = 'IRI'
-                    predicate['value'] = property
+                    predicate['value'] = property2
 
                     # convert @list to triples
                     if _is_list(item):
@@ -2738,22 +2741,22 @@ class JsonLdProcessor(object):
                             item['@list'], namer, subject, predicate, rval)
                     # convert value or node object to triple
                     else:
-                        object = self._object_to_rdf(item)
+                        object2 = self._object_to_rdf(item)
                         # skip None objects (they are relative IRIs)
-                        if object is not None:
+                        if object2 is not None:
                             rval.append({
                                 'subject': subject,
                                 'predicate': predicate,
-                                'object': object
+                                'object': object2
                             })
         return rval
 
-    def _list_to_rdf(self, list, namer, subject, predicate, triples):
+    def _list_to_rdf(self, list2, namer, subject, predicate, triples):
         """
         Converts a @list value into a linked list of blank node RDF triples
         (and RDF collection).
 
-        :param list: the @list value.
+        :param list2: the @list value.
         :param namer: the UniqueNamer for assigning blank node names.
         :param subject: the subject for the head of the list.
         :param predicate: the predicate for the head of the list.
@@ -2763,7 +2766,7 @@ class JsonLdProcessor(object):
         rest = {'type': 'IRI', 'value': RDF_REST}
         nil = {'type': 'IRI', 'value': RDF_NIL}
 
-        for item in list:
+        for item in list2:
             blank_node = {'type': 'blank node', 'value': namer.get_name()}
             triples.append({
                 'subject': subject,
@@ -2773,13 +2776,13 @@ class JsonLdProcessor(object):
 
             subject = blank_node
             predicate = first
-            object = self._object_to_rdf(item)
+            object2 = self._object_to_rdf(item)
             # skip None objects (they are relative IRIs)
-            if object is not None:
+            if object2 is not None:
                 triples.append({
                     'subject': subject,
                     'predicate': predicate,
-                    'object': object
+                    'object': object2
                 })
 
             predicate = rest
@@ -2799,46 +2802,46 @@ class JsonLdProcessor(object):
 
         :return: the RDF literal or RDF resource.
         """
-        object = {}
+        object2 = {}
 
         if _is_value(item):
-            object['type'] = 'literal'
+            object2['type'] = 'literal'
             value = item['@value']
             datatype = item.get('@type')
 
             # convert to XSD datatypes as appropriate
             if _is_bool(value):
-                object['value'] = 'true' if value else 'false'
-                object['datatype'] = datatype or XSD_BOOLEAN
+                object2['value'] = 'true' if value else 'false'
+                object2['datatype'] = datatype or XSD_BOOLEAN
             elif _is_double(value) or datatype == XSD_DOUBLE:
                 # canonical double representation
-                object['value'] = re.sub(r'(\d)0*E\+?0*(\d)', r'\1E\2',
-                                         ('%1.15E' % value))
-                object['datatype'] = datatype or XSD_DOUBLE
+                object2['value'] = re.sub(r'(\d)0*E\+?0*(\d)', r'\1E\2',
+                                          ('%1.15E' % value))
+                object2['datatype'] = datatype or XSD_DOUBLE
             elif _is_integer(value):
-                object['value'] = str(value)
-                object['datatype'] = datatype or XSD_INTEGER
+                object2['value'] = str(value)
+                object2['datatype'] = datatype or XSD_INTEGER
             elif '@language' in item:
-                object['value'] = value
-                object['datatype'] = datatype or RDF_LANGSTRING
-                object['language'] = item['@language']
+                object2['value'] = value
+                object2['datatype'] = datatype or RDF_LANGSTRING
+                object2['language'] = item['@language']
             else:
-                object['value'] = value
-                object['datatype'] = datatype or XSD_STRING
+                object2['value'] = value
+                object2['datatype'] = datatype or XSD_STRING
         # convert string/node object to RDF
         else:
             id_ = item['@id'] if _is_object(item) else item
             if id_.startswith('_:'):
-                object['type'] = 'blank node'
+                object2['type'] = 'blank node'
             else:
-                object['type'] = 'IRI'
-            object['value'] = id_
+                object2['type'] = 'IRI'
+            object2['value'] = id_
 
         # skip relative IRIs
-        if object['type'] == 'IRI' and not _is_absolute_iri(object['value']):
+        if object2['type'] == 'IRI' and not _is_absolute_iri(object2['value']):
             return None
 
-        return object
+        return object2
 
     def _rdf_to_object(self, o, use_native_types):
         """
@@ -2939,14 +2942,14 @@ class JsonLdProcessor(object):
 
         # create new subject or merge into existing one
         subject = graphs.setdefault(graph, {}).setdefault(name, {'@id': name})
-        for property, objects in sorted(input_.items()):
+        for property2, objects in sorted(input_.items()):
             # skip @id
-            if property == '@id':
+            if property2 == '@id':
                 continue
 
             # copy non-@type keywords
-            if property != '@type' and _is_keyword(property):
-                if property == '@index' and '@index' in subject \
+            if property2 != '@type' and _is_keyword(property2):
+                if property2 == '@index' and '@index' in subject \
                     and (input_['@index'] != subject['@index'] or
                          input_['@index']['@id'] != subject['@index']['@id']):
                     print('EX: ' +
@@ -2954,21 +2957,21 @@ class JsonLdProcessor(object):
                           'conflicting @index property detected. ' +
                           str(subject))
                     return {}
-                subject[property] = input_[property]
+                subject[property2] = input_[property2]
                 continue
 
             # if property is a bnode, assign it a new id
-            if property.startswith('_:'):
-                property = namer.get_name(property)
+            if property2.startswith('_:'):
+                property2 = namer.get_name(property2)
 
             # ensure property is added for empty arrays
             if len(objects) == 0:
                 JsonLdProcessor.add_value(
-                    subject, property, [], {'propertyIsArray': True})
+                    subject, property2, [], {'propertyIsArray': True})
                 continue
 
             for o in objects:
-                if property == '@type':
+                if property2 == '@type':
                     # rename @type blank nodes
                     o = namer.get_name(o) if o.startswith('_:') else o
 
@@ -2981,7 +2984,7 @@ class JsonLdProcessor(object):
 
                     # add reference and recurse
                     JsonLdProcessor.add_value(
-                        subject, property, {'@id': id_},
+                        subject, property2, {'@id': id_},
                         {'propertyIsArray': True, 'allowDuplicate': False})
                     self._create_node_map(o, graphs, graph, namer, id_)
                 # handle @list
@@ -2991,28 +2994,28 @@ class JsonLdProcessor(object):
                         o['@list'], graphs, graph, namer, name, olist)
                     o = {'@list': olist}
                     JsonLdProcessor.add_value(
-                        subject, property, o,
+                        subject, property2, o,
                         {'propertyIsArray': True, 'allowDuplicate': False})
                 # handle @value
                 else:
                     self._create_node_map(o, graphs, graph, namer, name)
                     JsonLdProcessor.add_value(
-                        subject, property, o,
+                        subject, property2, o,
                         {'propertyIsArray': True, 'allowDuplicate': False})
 
-    def _match_frame(self, state, subjects, frame, parent, property):
+    def _match_frame(self, state, subjects, frame2, parent, property2):
         """
         Frames subjects according to the given frame.
 
         :param state: the current framing state.
         :param subjects: the subjects to filter.
-        :param frame: the frame.
+        :param frame2: the frame.
         :param parent: the parent subject or top-level array.
-        :param property: the parent property, initialized to None.
+        :param property2: the parent property, initialized to None.
         """
         # validate the frame
         self._validate_frame(frame)
-        frame = frame[0]
+        frame2 = frame2[0]
 
         # get flags for current frame
         options = state['options']
@@ -3023,7 +3026,7 @@ class JsonLdProcessor(object):
         }
 
         # filter out subjects that match the frame
-        matches = self._filter_subjects(state, subjects, frame, flags)
+        matches = self._filter_subjects(state, subjects, frame2, flags)
 
         # add matches to output
         for id_, subject in sorted(matches.items()):
@@ -3034,13 +3037,13 @@ class JsonLdProcessor(object):
                 # when the frames are the same
 
                 # add existing linked subject
-                self._add_frame_output(parent, property, state['link'][id_])
+                self._add_frame_output(parent, property2, state['link'][id_])
                 continue
 
             # Note: In order to treat each top-level match as a
             # compartmentalized result, clear the unique embedded subjects map
             # when the property is None, which only occurs at the top-level.
-            if property is None:
+            if property2 is None:
                 state['uniqueEmbeds'] = {}
 
             # start output for subject
@@ -3054,7 +3057,7 @@ class JsonLdProcessor(object):
             # before reaching this point
             if (flags['embed'] == '@never' or self._creates_circular_reference(
                     subject, state['subjectStack'])):
-                self._add_frame_output(parent, property, output)
+                self._add_frame_output(parent, property2, output)
                 continue
 
             # if only the last match should be embedded
@@ -3064,7 +3067,7 @@ class JsonLdProcessor(object):
                     self._remove_embed(state, id_)
                 state['uniqueEmbeds'][id_] = {
                     'parent': parent,
-                    'property': property
+                    'property': property2
                 }
 
             # push matching subject onto stack to enable circular embed checks
@@ -3078,7 +3081,7 @@ class JsonLdProcessor(object):
                     continue
 
                 # explicit is on and property isn't in frame, skip processing
-                if flags['explicit'] and prop not in frame:
+                if flags['explicit'] and prop not in frame2:
                     continue
 
                 # add objects
@@ -3095,8 +3098,8 @@ class JsonLdProcessor(object):
                         for o in src:
                             if _is_subject_reference(o):
                                 # recurse into subject reference
-                                if prop in frame:
-                                    subframe = frame[prop][0]['@list']
+                                if prop in frame2:
+                                    subframe = frame2[prop][0]['@list']
                                 else:
                                     subframe = self._create_implicit_frame(
                                         flags)
@@ -3111,8 +3114,8 @@ class JsonLdProcessor(object):
 
                     if _is_subject_reference(o):
                         # recurse into subject reference
-                        if prop in frame:
-                            subframe = frame[prop]
+                        if prop in frame2:
+                            subframe = frame2[prop]
                         else:
                             subframe = self._create_implicit_frame(flags)
                         self._match_frame(
@@ -3122,30 +3125,30 @@ class JsonLdProcessor(object):
                         self._add_frame_output(output, prop, copy.deepcopy(o))
 
             # handle defaults in order
-            for prop in sorted(frame.keys()):
+            for prop in sorted(frame2.keys()):
                 # skip keywords
                 if _is_keyword(prop):
                     continue
                 # if omit default is off, then include default values for
                 # properties that appear in the next frame but are not in
                 # the matching subject
-                next = frame[prop][0]
+                next2 = frame2[prop][0]
                 omit_default_on = self._get_frame_flag(
-                    next, options, 'omitDefault')
+                    next2, options, 'omitDefault')
                 if not omit_default_on and prop not in output:
                     preserve = '@null'
-                    if '@default' in next:
-                        preserve = copy.deepcopy(next['@default'])
+                    if '@default' in next2:
+                        preserve = copy.deepcopy(next2['@default'])
                     preserve = JsonLdProcessor.arrayify(preserve)
                     output[prop] = [{'@preserve': preserve}]
 
             # add output to parent
-            self._add_frame_output(parent, property, output)
+            self._add_frame_output(parent, property2, output)
 
             # pop matching subject from circular ref-checking stack
             state['subjectStack'].pop()
 
-    def _create_implicit_frame(self, flags):
+    def _create_implicit_frame(self, flags) -> []:
         """
         Creates an implicit frame when recursing through subject matches. If
         a frame doesn't have an explicit frame for a particular property, then
@@ -3156,10 +3159,10 @@ class JsonLdProcessor(object):
 
         :return: the implicit frame.
         """
-        frame = {}
+        frame2 = {}
         for key in flags:
-            frame['@' + key] = [flags[key]]
-        return [frame]
+            frame2['@' + key] = [flags[key]]
+        return [frame2]
 
     def _creates_circular_reference(self, subject_to_embed, subject_stack):
         """
@@ -3176,17 +3179,17 @@ class JsonLdProcessor(object):
                 return True
         return False
 
-    def _get_frame_flag(self, frame, options, name):
+    def _get_frame_flag(self, frame2, options, name):
         """
         Gets the frame flag value for the given flag name.
 
-        :param frame: the frame.
+        :param frame2: the frame.
         :param options: the framing options.
         :param name: the flag name.
 
         :return: the flag value.
         """
-        rval = frame.get('@' + name, [options[name]])[0]
+        rval = frame2.get('@' + name, [options[name]])[0]
         if name == 'embed':
             # default is "@last"
             # backwards-compatibility support for "embed" maps:
@@ -3200,28 +3203,28 @@ class JsonLdProcessor(object):
                 rval = '@last'
         return rval
 
-    def _validate_frame(self, frame):
+    def _validate_frame(self, frame2):
         """
         Validates a JSON-LD frame, throwing an exception if the frame is
         invalid.
 
-        :param frame: the frame to validate.
+        :param frame2: the frame to validate.
         """
-        if (not _is_array(frame) or len(frame) != 1 or
-                not _is_object(frame[0])):
+        if (not _is_array(frame2) or len(frame2) != 1 or
+                not _is_object(frame2[0])):
             print('EX: ' +
                   'Invalid JSON-LD syntax; ' +
                   'a JSON-LD frame must be a single object. ' +
-                  str(frame))
+                  str(frame2))
             return {}
 
-    def _filter_subjects(self, state, subjects, frame, flags):
+    def _filter_subjects(self, state, subjects, frame2, flags):
         """
         Returns a map of all of the subjects that match a parsed frame.
 
         :param state: the current framing state.
         :param subjects: the set of subjects to filter.
-        :param frame: the parsed frame.
+        :param frame2: the parsed frame.
         :param flags: the frame flags.
 
         :return: all of the matched subjects.
@@ -3229,26 +3232,26 @@ class JsonLdProcessor(object):
         rval = {}
         for id_ in subjects:
             subject = state['subjects'][id_]
-            if self._filter_subject(subject, frame, flags):
+            if self._filter_subject(subject, frame2, flags):
                 rval[id_] = subject
         return rval
 
-    def _filter_subject(self, subject, frame, flags):
+    def _filter_subject(self, subject, frame2, flags):
         """
         Returns True if the given subject matches the given frame.
 
         :param subject: the subject to check.
-        :param frame: the frame to check.
+        :param frame2: the frame to check.
         :param flags: the frame flags.
 
         :return: True if the subject matches, False if not.
         """
         # check @type (object value means 'any' type, fall through to
         # ducktyping)
-        if ('@type' in frame and
-                not (len(frame['@type']) == 1 and
-                     _is_object(frame['@type'][0]))):
-            types = frame['@type']
+        if ('@type' in frame2 and
+                not (len(frame2['@type']) == 1 and
+                     _is_object(frame2['@type'][0]))):
+            types = frame2['@type']
             for t in types:
                 # any matching @type is a match
                 if JsonLdProcessor.has_value(subject, '@type', t):
@@ -3258,7 +3261,7 @@ class JsonLdProcessor(object):
         # check ducktype
         wildcard: bool = True
         matches_some: bool = False
-        for k, v in frame.items():
+        for k, v in frame2.items():
             if _is_keyword(k):
                 # skip non-@id and non-@type
                 if k != '@id' and k != '@type':
@@ -3303,7 +3306,7 @@ class JsonLdProcessor(object):
         # get existing embed
         embeds = state['uniqueEmbeds']
         embed = embeds[id_]
-        property = embed['property']
+        property2 = embed['property']
 
         # create reference to replace embed
         subject = {'@id': id_}
@@ -3317,12 +3320,12 @@ class JsonLdProcessor(object):
                     break
         else:
             # replace subject with reference
-            use_array = _is_array(embed['parent'][property])
+            use_array = _is_array(embed['parent'][property2])
             JsonLdProcessor.remove_value(
-                embed['parent'], property, subject,
+                embed['parent'], property2, subject,
                 {'propertyIsArray': use_array})
             JsonLdProcessor.add_value(
-                embed['parent'], property, subject,
+                embed['parent'], property2, subject,
                 {'propertyIsArray': use_array})
 
         # recursively remove dependent dangling embeds
@@ -3333,25 +3336,25 @@ class JsonLdProcessor(object):
                 ids = list(embeds.iterkeys())
             except AttributeError:
                 ids = list(embeds.keys())
-            for next in ids:
-                if (next in embeds and
-                        _is_object(embeds[next]['parent']) and
-                        embeds[next]['parent']['@id'] == id_):
-                    del embeds[next]
-                    remove_dependents(next)
+            for next2 in ids:
+                if (next2 in embeds and
+                        _is_object(embeds[next2]['parent']) and
+                        embeds[next2]['parent']['@id'] == id_):
+                    del embeds[next2]
+                    remove_dependents(next2)
         remove_dependents(id_)
 
-    def _add_frame_output(self, parent, property, output):
+    def _add_frame_output(self, parent, property2, output):
         """
         Adds framing output to the given parent.
 
         :param parent: the parent to add to.
-        :param property: the parent property.
+        :param property2: the parent property.
         :param output: the output to add.
         """
         if _is_object(parent):
             JsonLdProcessor.add_value(
-                parent, property, output, {'propertyIsArray': True})
+                parent, property2, output, {'propertyIsArray': True})
         else:
             parent.append(output)
 
@@ -3375,7 +3378,7 @@ class JsonLdProcessor(object):
                 if result is not None:
                     output.append(result)
             return output
-        elif _is_object(input_):
+        if _is_object(input_):
             # remove @preserve
             if '@preserve' in input_:
                 if input_['@preserve'] == '@null':
@@ -3445,8 +3448,8 @@ class JsonLdProcessor(object):
         # cache and return hashed quads
         md = hashlib.sha1()
         md.update(''.join(nquads).encode('utf-8'))
-        hash = bnodes[id_]['hash'] = md.hexdigest()
-        return hash
+        hash2 = bnodes[id_]['hash'] = md.hexdigest()
+        return hash2
 
     def _hash_paths(self, id_, bnodes, namer, path_namer):
         """
@@ -3848,7 +3851,7 @@ class JsonLdProcessor(object):
         type_ = JsonLdProcessor.get_context_value(
             active_ctx, active_property, '@type')
         compacted = self._compact_iri(
-            active_ctx, value['@id'], vocab=(type_ == '@vocab'))
+            active_ctx, value['@id'], vocab=type_ == '@vocab')
 
         # compact to scalar
         if type_ in ('@id', '@vocab'):
@@ -3984,7 +3987,7 @@ class JsonLdProcessor(object):
                       'Invalid JSON-LD syntax; @context @type value must be ' +
                       'a string. context: ' + str(local_ctx))
                 return
-            if type_ != '@id' and type_ != '@vocab':
+            if type_ not in ('@id', '@vocab'):
                 # expand @type to full IRI
                 type_ = self._expand_iri(
                     active_ctx, type_, vocab=True,
@@ -4032,7 +4035,7 @@ class JsonLdProcessor(object):
 
         # disallow aliasing @context and @preserve
         id_ = mapping['@id']
-        if id_ == '@context' or id_ == '@preserve':
+        if id_ in ('@context', '@preserve'):
             print('EX: ' +
                   'Invalid JSON-LD syntax; @context and @preserve ' +
                   'cannot be aliased. context: ' +
@@ -4158,7 +4161,7 @@ class JsonLdProcessor(object):
                     elif v not in urls:
                         urls[v] = False
 
-    def _retrieve_context_urls(self, input_, cycles, load_document,
+    def _retrieve_context_urls(self, input_, cycles, load_document2,
                                base: str = ''):
         """
         Retrieves external @context URLs using the given document loader. Each
@@ -4167,7 +4170,7 @@ class JsonLdProcessor(object):
 
         :param input_: the JSON-LD input with possible contexts.
         :param cycles: an object for tracking context cycles.
-        :param load_document(url): the document loader.
+        :param load_document2(url): the document loader.
         :param base: the base URL to resolve relative URLs against.
 
         :return: the result.
@@ -4201,7 +4204,7 @@ class JsonLdProcessor(object):
 
             # retrieve URL
             try:
-                remote_doc = load_document(url)
+                remote_doc = load_document2(url)
                 ctx = remote_doc['document']
             except BaseException as cause:
                 print('EX: Dereferencing a URL did not result ' +
@@ -4236,7 +4239,7 @@ class JsonLdProcessor(object):
                 ctx['@context'].append(remote_doc['contextUrl'])
 
             # recurse
-            self._retrieve_context_urls(ctx, cycles_, load_document, url)
+            self._retrieve_context_urls(ctx, cycles_, load_document2, url)
             urls[url] = ctx['@context']
 
         # replace all URLs in the input
@@ -4535,7 +4538,7 @@ def _is_string(v):
 
     :return: True if the value is a String, False if not.
     """
-    return isinstance(v, basestring)
+    return isinstance(v, BaseString)
 
 
 def _validate_type_value(v):
@@ -4720,11 +4723,15 @@ class ActiveContextCache(object):
         self.size = size
 
     def get(self, active_ctx, local_ctx):
+        """ get
+        """
         key1 = json.dumps(active_ctx)
         key2 = json.dumps(local_ctx)
         return self.cache.get(key1, {}).get(key2)
 
     def set(self, active_ctx, local_ctx, result):
+        """ set
+        """
         if len(self.order) == self.size:
             entry = self.order.popleft()
             del self.cache[entry['activeCtx']][entry['localCtx']]
@@ -4749,11 +4756,9 @@ class VerifiedHTTPSConnection(HTTPSConnection):
             self.sock = sock
             self._tunnel()
         # wrap the socket using verification with trusted_root_certs
-        self.sock = ssl.wrap_socket(sock,
-                                    self.key_file,
-                                    self.cert_file,
-                                    cert_reqs=ssl.CERT_REQUIRED,
-                                    ca_certs=_trust_root_certificates)
+        context = ssl.SSLContext()
+        context.load_cert_chain(self.cert_file, self.key_file)
+        self.sock = context.wrap_socket(sock)
 
 
 class VerifiedHTTPSHandler(HTTPSHandler):
@@ -4776,10 +4781,10 @@ _possible_trust_root_certificates = [
     '~/Library/OpenSSL/certs/ca-certificates.crt',
     '/System/Library/OpenSSL/certs/ca-certificates.crt',
 ]
-for path in _possible_trust_root_certificates:
-    path = os.path.expanduser(path)
-    if os.path.exists(path):
-        _trust_root_certificates = path
+for path2 in _possible_trust_root_certificates:
+    path2 = os.path.expanduser(path2)
+    if os.path.exists(path2):
+        _trust_root_certificates = path2
         break
 # FIXME: warn if not found?  MacOS X uses keychain vs file.
 
