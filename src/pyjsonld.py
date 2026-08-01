@@ -2425,7 +2425,7 @@ class JsonLdProcessor(object):
             nil = graph_object[RDF_NIL]
             for usage in nil['usages']:
                 node = usage['node']
-                property = usage['property']
+                property2 = usage['property']
                 head = usage['value']
                 list_ = []
                 list_nodes = []
@@ -2437,7 +2437,7 @@ class JsonLdProcessor(object):
                 # 4. Have no keys other than: @id, rdf:first, rdf:rest
                 #   and, optionally, @type where the value is rdf:List.
                 node_key_count = len(node.keys())
-                while (property == RDF_REST and
+                while (property2 == RDF_REST and
                        _is_object(referenced_once.get(node['@id'])) and
                        _is_array(node[RDF_FIRST]) and
                        len(node[RDF_FIRST]) == 1 and
@@ -2454,7 +2454,7 @@ class JsonLdProcessor(object):
                     # get next node, moving backwards through list
                     usage = referenced_once[node['@id']]
                     node = usage['node']
-                    property = usage['property']
+                    property2 = usage['property']
                     head = usage['value']
                     node_key_count = len(node.keys())
 
@@ -2463,7 +2463,7 @@ class JsonLdProcessor(object):
                         break
 
                 # the list is nested in another list
-                if property == RDF_FIRST:
+                if property2 == RDF_FIRST:
                     # empty list
                     if node['@id'] == RDF_NIL:
                         # can't convert rdf:nil to a @list object because it
