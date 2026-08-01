@@ -61,6 +61,100 @@ def show_instance_actor(self, calling_domain: str,
             'sharedInbox': actor_domain_url + '/inbox'
         }
     actor_json['name'] = 'ACTOR'
+    # FEPs
+    actor_json['implements'] = [
+        {
+            'href': 'https://w3id.org/fep/7aa9',
+            'name': 'FEP-7aa9: Featuring recommendations using a dedicated '
+            'collection'
+        },
+        {
+            'href': 'https://w3id.org/fep/ee3a',
+            'name': 'FEP-ee3a: Exif metadata support'
+        },
+        {
+            'href': 'https://w3id.org/fep/82f6',
+            'name': 'FEP-82f6: Actor statuses'
+        },
+        {
+            'href': 'https://w3id.org/fep/5711',
+            'name': 'FEP-5711: Inverse Properties for Collections'
+        },
+        {
+            'href': 'https://w3id.org/fep/dd4b',
+            'name': 'FEP-dd4b: Quote Posts'
+        },
+        {
+            'href': 'https://w3id.org/fep/b2b8',
+            'name': 'FEP-b2b8: Long-form Text'
+        },
+        {
+            'href': 'https://w3id.org/fep/268d',
+            'name': 'FEP-268d: Search consent signals for objects'
+        },
+        {
+            'href': 'https://w3id.org/fep/c16b',
+            'name': 'FEP-c16b: Formatting MFM functions'
+        },
+        {
+            'href': 'https://w3id.org/fep/5e53',
+            'name': 'FEP-5e53: Opt-out Preference Signals'
+        },
+        {
+            'href': 'https://w3id.org/fep/2677',
+            'name': 'FEP-2677: Identifying the Application Actor'
+        },
+        {
+            'href': 'https://w3id.org/fep/0837',
+            'name': 'FEP-0837: Federated Marketplace'
+        },
+        {
+            'href': 'https://w3id.org/fep/1970',
+            'name': 'FEP-1970: Chat Links'
+        },
+        {
+            'href': 'https://w3id.org/fep/fffd',
+            'name': 'FEP-fffd: Proxy Objects'
+        },
+        {
+            'href': 'https://w3id.org/fep/c118',
+            'name': 'FEP-c118: Content licensing support'
+        },
+        {
+            'href': 'https://w3id.org/fep/4ccd',
+            'name': 'FEP-4ccd: Pending Followers Collection and Pending '
+            'Following Collection'
+        },
+        {
+            'href': 'https://w3id.org/fep/521a',
+            'name': "FEP-521a: Representing actor's public keys"
+        },
+        {
+            'href': 'https://w3id.org/fep/c648',
+            'name': 'FEP-c648: Blocked Collection'
+        },
+        {
+            'href': 'https://w3id.org/fep/f1d5',
+            'name': 'FEP-f1d5: NodeInfo in Fediverse Software'
+        },
+        {
+            'href': 'https://w3id.org/fep/8fcf',
+            'name': 'FEP-8fcf: Followers collection synchronization '
+            'across servers'
+        },
+        {
+            'href': 'https://w3id.org/fep/9967',
+            'name': 'FEP-9967: Polls'
+        },
+        {
+            'href': 'https://w3id.org/fep/044f',
+            'name': 'FEP-044f: Consent-Respecting Quote Posts'
+        },
+        {
+            'href': 'https://w3id.org/fep/7628',
+            'name': 'FEP-7628: Move actor (incoming)'
+        }
+    ]
     actor_json['preferredUsername'] = domain_full
     actor_json['id'] = actor_domain_url + '/actor'
     actor_json['type'] = 'Application'
