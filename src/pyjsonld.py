@@ -145,7 +145,7 @@ LINK_HEADER_REL = 'http://www.w3.org/ns/json-ld#context'
 MAX_CONTEXT_URLS = 10
 
 
-def compact(input_, ctx, options=None):
+def compact(input_, ctx, options: {} = None):
     """
     Performs JSON-LD compaction.
 
@@ -165,7 +165,7 @@ def compact(input_, ctx, options=None):
     return JsonLdProcessor().compact(input_, ctx, options)
 
 
-def expand(input_, options=None):
+def expand(input_, options: {} = None):
     """
     Performs JSON-LD expansion.
 
@@ -181,7 +181,7 @@ def expand(input_, options=None):
     return JsonLdProcessor().expand(input_, options)
 
 
-def flatten(input_, ctx=None, options=None):
+def flatten(input_, ctx=None, options: {} = None):
     """
     Performs JSON-LD flattening.
 
@@ -198,7 +198,7 @@ def flatten(input_, ctx=None, options=None):
     return JsonLdProcessor().flatten(input_, ctx, options)
 
 
-def frame(input_, frame2, options=None):
+def frame(input_, frame2, options: {} = None):
     """
     Performs JSON-LD framing.
 
@@ -219,7 +219,7 @@ def frame(input_, frame2, options=None):
     return JsonLdProcessor().frame(input_, frame2, options)
 
 
-def link(input_, ctx, options=None):
+def link(input_, ctx, options: {} = None):
     """
     **Experimental**
 
@@ -244,7 +244,7 @@ def link(input_, ctx, options=None):
     return frame(input, frame2, options)
 
 
-def normalize(input_: {}, options=None):
+def normalize(input_: {}, options: {} = None):
     """
     Performs JSON-LD normalization.
 
@@ -261,7 +261,7 @@ def normalize(input_: {}, options=None):
     return JsonLdProcessor().normalize(input_, options)
 
 
-def from_rdf(input_, options=None):
+def from_rdf(input_, options: {} = None):
     """
     Converts an RDF dataset to JSON-LD.
 
@@ -279,7 +279,7 @@ def from_rdf(input_, options=None):
     return JsonLdProcessor().from_rdf(input_, options)
 
 
-def to_rdf(input_, options=None):
+def to_rdf(input_, options: {} = None):
     """
     Outputs the RDF dataset found in the given JSON-LD object.
 
@@ -690,7 +690,7 @@ class JsonLdProcessor(object):
         # processor-specific RDF parsers
         self.rdf_parsers = None
 
-    def compact(self, input_, ctx, options):
+    def compact(self, input_, ctx, options: {}):
         """
         Performs JSON-LD compaction.
 
@@ -803,7 +803,7 @@ class JsonLdProcessor(object):
             return {'compacted': compacted, 'activeCtx': active_ctx}
         return compacted
 
-    def expand(self, input_, options):
+    def expand(self, input_, options: {}):
         """
         Performs JSON-LD expansion.
 
@@ -892,7 +892,7 @@ class JsonLdProcessor(object):
         # normalize to an array
         return JsonLdProcessor.arrayify(expanded)
 
-    def flatten(self, input_, ctx, options):
+    def flatten(self, input_, ctx, options: {}):
         """
         Performs JSON-LD flattening.
 
@@ -936,7 +936,7 @@ class JsonLdProcessor(object):
 
         return compacted
 
-    def frame(self, input_, frame2, options):
+    def frame(self, input_, frame2, options: {}):
         """
         Performs JSON-LD framing.
 
@@ -1043,7 +1043,7 @@ class JsonLdProcessor(object):
             active_ctx, compacted[graph], options)
         return compacted
 
-    def normalize(self, input_, options):
+    def normalize(self, input_, options: {}):
         """
         Performs RDF normalization on the given JSON-LD input.
 
@@ -1078,7 +1078,7 @@ class JsonLdProcessor(object):
         # do normalization
         return self._normalize(dataset, options)
 
-    def from_rdf(self, dataset, options):
+    def from_rdf(self, dataset, options: {}):
         """
         Converts an RDF dataset to JSON-LD.
 
@@ -1124,7 +1124,7 @@ class JsonLdProcessor(object):
         # convert from RDF
         return self._from_rdf(dataset, options)
 
-    def to_rdf(self, input_, options):
+    def to_rdf(self, input_, options: {}):
         """
         Outputs the RDF dataset found in the given JSON-LD object.
 
@@ -1176,7 +1176,7 @@ class JsonLdProcessor(object):
             return {}
         return dataset
 
-    def process_context(self, active_ctx, local_ctx, options):
+    def process_context(self, active_ctx: {}, local_ctx: {}, options: {}):
         """
         Processes a local context, retrieving any URLs as necessary, and
         returns a new active context in its callback.
@@ -1711,7 +1711,7 @@ class JsonLdProcessor(object):
 
         return True
 
-    def _compact(self, active_ctx, active_property, element, options):
+    def _compact(self, active_ctx: {}, active_property, element, options: {}):
         """
         Recursively compacts an element using the given active context. All
         values must be in expanded form before this method is called.
@@ -1913,7 +1913,8 @@ class JsonLdProcessor(object):
         return element
 
     def _expand(
-            self, active_ctx, active_property, element, options, inside_list):
+            self, active_ctx: {}, active_property, element, options: {},
+            inside_list):
         """
         Recursively expands an element using the given context. Any context in
         the element will be removed. All context URLs must have been retrieved
@@ -2193,7 +2194,7 @@ class JsonLdProcessor(object):
         return [value for key, value in sorted(default_graph.items())
                 if not _is_subject_reference(value)]
 
-    def _frame(self, input_, frame2, options):
+    def _frame(self, input_, frame2, options: {}):
         """
         Performs JSON-LD framing.
 
@@ -2223,7 +2224,7 @@ class JsonLdProcessor(object):
             state, sorted(state['subjects'].keys()), frame2, framed, None)
         return framed
 
-    def _normalize(self, dataset, options):
+    def _normalize(self, dataset, options: {}):
         """
         Performs RDF normalization on the given RDF dataset.
 
@@ -2350,7 +2351,7 @@ class JsonLdProcessor(object):
         # return parsed RDF dataset
         return JsonLdProcessor.parse_nquads(''.join(normalized))
 
-    def _from_rdf(self, dataset, options):
+    def _from_rdf(self, dataset, options: {}):
         """
         Converts an RDF dataset to JSON-LD.
 
@@ -2492,7 +2493,7 @@ class JsonLdProcessor(object):
 
         return result
 
-    def _process_context(self, active_ctx, local_ctx, options):
+    def _process_context(self, active_ctx: {}, local_ctx: {}, options: {}):
         """
         Processes a local context and returns a new active context.
 
@@ -2637,7 +2638,7 @@ class JsonLdProcessor(object):
                 rval.append({'@value': item, '@language': key.lower()})
         return rval
 
-    def _expand_value(self, active_ctx, active_property, value):
+    def _expand_value(self, active_ctx: {}, active_property, value):
         """
         Expands the given value by using the coercion and keyword rules in the
         given context.
@@ -2691,7 +2692,7 @@ class JsonLdProcessor(object):
 
         return rval
 
-    def _graph_to_rdf(self, graph, namer, options):
+    def _graph_to_rdf(self, graph, namer, options: {}):
         """
         Creates an array of RDF triples for the given graph.
 
@@ -3179,7 +3180,7 @@ class JsonLdProcessor(object):
                 return True
         return False
 
-    def _get_frame_flag(self, frame2, options, name):
+    def _get_frame_flag(self, frame2, options: {}, name):
         """
         Gets the frame flag value for the given flag name.
 
@@ -3358,7 +3359,7 @@ class JsonLdProcessor(object):
         else:
             parent.append(output)
 
-    def _remove_preserve(self, ctx, input_, options):
+    def _remove_preserve(self, ctx, input_, options: {}):
         """
         Removes the @preserve keywords as the last step of the framing
         algorithm.
@@ -3578,7 +3579,7 @@ class JsonLdProcessor(object):
         return None
 
     def _select_term(
-            self, active_ctx, iri, value, containers,
+            self, active_ctx: {}, iri, value, containers,
             type_or_language, type_or_language_value):
         """
         Picks the preferred compaction term from the inverse context entry.
@@ -3630,7 +3631,7 @@ class JsonLdProcessor(object):
         return None
 
     def _compact_iri(
-            self, active_ctx, iri, value=None, vocab=False, reverse=False):
+            self, active_ctx: {}, iri, value=None, vocab=False, reverse=False):
         """
         Compacts an IRI or keyword into a term or CURIE if it can be. If the
         IRI has an associated value it may be passed.
@@ -3779,7 +3780,7 @@ class JsonLdProcessor(object):
         # return IRI as is
         return iri
 
-    def _compact_value(self, active_ctx, active_property, value):
+    def _compact_value(self, active_ctx: {}, active_property, value):
         """
         Performs value compaction on an object with @value or @id as the only
         property.
@@ -3861,7 +3862,8 @@ class JsonLdProcessor(object):
         rval[self._compact_iri(active_ctx, '@id')] = compacted
         return rval
 
-    def _create_term_definition(self, active_ctx, local_ctx, term, defined):
+    def _create_term_definition(self, active_ctx: {}, local_ctx: {},
+                                term, defined):
         """
         Creates a term definition during context processing.
 
@@ -4043,8 +4045,8 @@ class JsonLdProcessor(object):
             return
 
     def _expand_iri(
-            self, active_ctx, value, base=False, vocab=False,
-            local_ctx=None, defined=None):
+            self, active_ctx: {}, value, base=False, vocab=False,
+            local_ctx: {} = None, defined=None):
         """
         Expands a string value to a full IRI. The string may be a term, a
         prefix, a relative IRI, or an absolute IRI. The associated absolute
@@ -4251,7 +4253,7 @@ class JsonLdProcessor(object):
         # replace all URLs in the input
         self._find_context_urls(input_, urls, replace=True, base=base)
 
-    def _get_initial_context(self, options):
+    def _get_initial_context(self, options: {}):
         """
         Gets the initial context.
 
@@ -4266,7 +4268,7 @@ class JsonLdProcessor(object):
             'inverse': None
         }
 
-    def _get_inverse_context(self, active_ctx):
+    def _get_inverse_context(self, active_ctx: {}):
         """
         Generates an inverse context for use in the compaction algorithm, if
         not already generated for the given active context.
@@ -4322,7 +4324,7 @@ class JsonLdProcessor(object):
 
         return inverse
 
-    def _clone_active_context(self, active_ctx):
+    def _clone_active_context(self, active_ctx: {}):
         """
         Clones an active context, creating a child active context.
 
@@ -4728,14 +4730,14 @@ class ActiveContextCache(object):
         self.cache = {}
         self.size = size
 
-    def get(self, active_ctx, local_ctx):
+    def get(self, active_ctx: {}, local_ctx: {}):
         """ get
         """
         key1 = json.dumps(active_ctx)
         key2 = json.dumps(local_ctx)
         return self.cache.get(key1, {}).get(key2)
 
-    def set(self, active_ctx, local_ctx, result):
+    def set(self, active_ctx: {}, local_ctx: {}, result):
         """ set
         """
         if len(self.order) == self.size:
