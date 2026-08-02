@@ -4070,6 +4070,12 @@ class JsonLdProcessor(object):
                 defined.get(value) is not True):
             self._create_term_definition(active_ctx, local_ctx, value, defined)
 
+        if not active_ctx:
+            return value
+
+        if not active_ctx.get('mappings'):
+            return value
+
         if vocab and value in active_ctx['mappings']:
             mapping = active_ctx['mappings'].get(value)
             # value is explicitly ignored with None mapping
