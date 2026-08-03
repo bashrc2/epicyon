@@ -4093,7 +4093,9 @@ def check_bad_path(path: str, allow_local_network_access: bool):
 
     # allow /.well-known/...
     if '/.' in path_lower:
-        good_starts: list[str] = ('/.well-known/', '/users/.well-known/')
+        good_starts: list[str] = (
+            '/.well-known/', '/users/.well-known/'
+        )
         if string_starts_with(path_lower, good_starts):
             bad_strings: list[str] = ['..', '%2e%2e', '%252e%252e']
 
@@ -4117,7 +4119,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         if contains_ipv4_address(path_lower):
             return True
 
-    bad_starts = ('/firebase', '/composer', '/sugar')
+    bad_starts = ('/firebase', '/composer', '/sugar', '/_')
     if string_starts_with(path_lower, bad_starts):
         return True
 
