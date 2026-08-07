@@ -244,6 +244,9 @@ def get_actor_update_json(actor_json: {}) -> {}:
         if isinstance(actor_json['searchableBy'], list):
             searchable_by = actor_json['searchableBy']
     actor_url = get_url_from_post(actor_json['url'])
+    nickname = get_nickname_from_actor(actor_url)
+    domain, port = get_domain_from_actor(actor_url)
+    full_domain = get_full_domain(domain, port)
     icon_url = get_url_from_post(actor_json['icon']['url'])
     image_url = get_url_from_post(actor_json['image']['url'])
     attribution_domains: list[str] = []
@@ -254,6 +257,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
         '@context': [
             "https://www.w3.org/ns/activitystreams",
             "https://w3id.org/security/v1",
+            "https://purl.archive.org/socialweb/webfinger",
             {
                 "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
                 "indexable": "toot:indexable",
@@ -363,6 +367,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'published': actor_json['published'],
             'searchableBy': searchable_by,
             'devices': actor_json['devices'],
+            'webfinger': nickname + '@' + full_domain,
             "publicKey": actor_json['publicKey']
         }
     }
@@ -521,6 +526,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         '@context': [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
+            'https://purl.archive.org/socialweb/webfinger',
             get_default_person_context()
         ],
         'published': published,
@@ -1084,6 +1090,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         person_json['@context'] = [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
+            'https://purl.archive.org/socialweb/webfinger',
             get_default_person_context()
         ]
 
