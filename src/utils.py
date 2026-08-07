@@ -1462,19 +1462,31 @@ def get_nickname_from_actor(actor: str) -> str:
             continue
         nick_str: str = actor.split(possible_path)[1].replace('@', '')
         if '/' not in nick_str:
-            return _remove_did_prefix(nick_str)
+            nick_str = _remove_did_prefix(nick_str)
+            if ':' in nick_str:
+                nick_str = nick_str.split(':')[0]
+            return nick_str
         nick_str = nick_str.split('/')[0]
-        return _remove_did_prefix(nick_str)
+        nick_str = _remove_did_prefix(nick_str)
+        if ':' in nick_str:
+            nick_str = nick_str.split(':')[0]
+        return nick_str
     if '/@/' not in actor:
         if '/@' in actor:
             # https://domain/@nick
             nick_str: str = actor.split('/@')[1]
             if '/' in nick_str:
                 nick_str = nick_str.split('/')[0]
-            return _remove_did_prefix(nick_str)
+            nick_str = _remove_did_prefix(nick_str)
+            if ':' in nick_str:
+                nick_str = nick_str.split(':')[0]
+            return nick_str
         if '@' in actor:
             nick_str: str = actor.split('@')[0]
-            return _remove_did_prefix(nick_str)
+            nick_str = _remove_did_prefix(nick_str)
+            if ':' in nick_str:
+                nick_str = nick_str.split(':')[0]
+            return nick_str
     if '://' in actor:
         domain: str = actor.split('://')[1]
         if '/' in domain:
@@ -1484,7 +1496,10 @@ def get_nickname_from_actor(actor: str) -> str:
         nick_str: str = actor.split('://' + domain + '/')[1]
         if '/' in nick_str or '.' in nick_str:
             return None
-        return _remove_did_prefix(nick_str)
+        nick_str = _remove_did_prefix(nick_str)
+        if ':' in nick_str:
+            nick_str = nick_str.split(':')[0]
+        return nick_str
     return None
 
 
