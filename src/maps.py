@@ -1267,6 +1267,8 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
         return _hashtag_map_within_hours(base_dir, tag_name,
                                          hours, map_format,
                                          nickname, domain,

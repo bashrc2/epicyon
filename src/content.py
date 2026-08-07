@@ -1035,6 +1035,8 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
                         continue
                     follow_str = remove_eol(follow)
                     replace_nickname = follow_str.split('@')[0]
+                    if ':' in replace_nickname:
+                        replace_nickname = replace_nickname.split(':')[0]
                     replace_domain = follow_str.split('@')[1]
                     recipient_actor = \
                         _mention_to_url(base_dir, http_prefix,
@@ -1061,6 +1063,8 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
     possible_nickname = possible_handle.split('@')[0]
     if not possible_nickname:
         return False
+    if ':' in possible_nickname:
+        possible_nickname = possible_nickname.split(':')[0]
     possible_domain = \
         possible_handle.split('@')[1].strip('\n').strip('\r')
     if not possible_domain:

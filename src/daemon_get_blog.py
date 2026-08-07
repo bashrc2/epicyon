@@ -35,6 +35,8 @@ def show_blog_page(self, authorized: bool,
     nickname = path.split('/blog/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if '?' in nickname:
         nickname = nickname.split('?')[0]
     if '?page=' in path:

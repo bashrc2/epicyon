@@ -265,6 +265,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         # does this account block?
         if not block_dict.get(nickname):
             continue

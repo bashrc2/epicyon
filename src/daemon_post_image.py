@@ -38,6 +38,9 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
         self.server.postreq_busy = False
         return
     self.post_from_nickname = path_users_section.split('/')[0]
+    if ':' in self.post_from_nickname:
+        self.post_from_nickname = \
+            self.post_from_nickname.split(':')[0]
     accounts_dir = acct_dir(base_dir, self.post_from_nickname, domain)
     if not is_a_dir(accounts_dir):
         http_404(self, 13)

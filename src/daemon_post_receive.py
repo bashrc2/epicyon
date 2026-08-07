@@ -1861,6 +1861,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         nickname = nickname_str.split('/')[0]
     else:
         nickname = nickname_str
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if debug:
         print('DEBUG: POST nickname ' + str(nickname))
     if not nickname:

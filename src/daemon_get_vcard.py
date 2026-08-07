@@ -51,6 +51,8 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
     nickname = path.split('/users/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if '?' in nickname:
         nickname = nickname.split('?')[0]
     if self.server.vcard_is_active:

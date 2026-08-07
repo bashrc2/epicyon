@@ -1915,7 +1915,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             if '://' + domain + '/' not in original_handle:
                 return None, None
             nickname = original_handle.split('://' + domain + '/')[1]
-            if '/' in nickname or '.' in nickname:
+            if '/' in nickname or '.' in nickname or ':' in nickname:
                 return None, None
     else:
         # format: @nick@domain

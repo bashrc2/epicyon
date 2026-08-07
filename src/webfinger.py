@@ -305,6 +305,8 @@ def wellknown_protocol_handler(path: str, http_prefix: str,
             if '/' in nickname:
                 command = nickname.split('/')[0]
                 nickname = nickname.split('/')[1]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
             domain_length = len(domain_full)
             path_str = domain_and_path[domain_length:]
             return http_prefix + '://' + domain_full + \

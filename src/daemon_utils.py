@@ -785,6 +785,8 @@ def show_person_options(self, calling_domain: str, path: str,
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
             if self.server.key_shortcuts.get(nickname):
                 access_keys = self.server.key_shortcuts[nickname]
 

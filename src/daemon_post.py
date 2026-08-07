@@ -886,6 +886,10 @@ def daemon_http_post(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             if not self.server.key_shortcuts.get(nickname):
                 access_keys = self.server.access_keys
@@ -914,6 +918,10 @@ def daemon_http_post(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             if not self.server.key_shortcuts.get(nickname):
                 access_keys = self.server.access_keys
@@ -1061,6 +1069,8 @@ def daemon_http_post(self) -> None:
                 nickname = nickname.split('?')[0]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
@@ -1110,6 +1120,9 @@ def daemon_http_post(self) -> None:
                 self.outbox_authenticated = True
                 path_users_section = self.path.split('/users/')[1]
                 self.post_to_nickname = path_users_section.split('/')[0]
+                if ':' in self.post_to_nickname:
+                    self.post_to_nickname = \
+                        self.post_to_nickname.split(':')[0]
         if not self.outbox_authenticated:
             self.send_response(405)
             self.end_headers()
@@ -1281,6 +1294,8 @@ def daemon_http_post(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if nickname in self.server.block_military:
             if self.server.block_military[nickname] is True and \
                contains_military_domain(decoded_message_bytes):

@@ -213,6 +213,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                 nickname = get_nickname_from_actor(nickname)
             if '@' in nickname:
                 nickname = nickname.split('@')[0]
+                if ':' in nickname:
+                    nickname = nickname.split(':')[0]
             if moderation_button == 'suspend':
                 suspend_account(base_dir, nickname, domain)
             if moderation_button == 'unsuspend':

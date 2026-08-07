@@ -195,6 +195,8 @@ def get_featured_tags_collection(self, calling_domain: str,
     nickname: str = path.split('/users/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     account_dir: str = acct_dir(base_dir, nickname, domain)
 
     post_context = get_individual_post_context()

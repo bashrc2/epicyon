@@ -857,6 +857,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         shared_item_display_name = self.path.split('/shareditems/')[1]
         if not nickname or not shared_item_display_name:
             http_404(self, 112)
@@ -965,6 +967,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
@@ -1045,6 +1049,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
@@ -1108,6 +1114,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
@@ -1170,6 +1178,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
@@ -1211,6 +1221,8 @@ def daemon_http_get(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
             if self.server.debug:
                 print('Wanted collection for account: ' + nickname)
             base_dir = self.server.base_dir
@@ -1308,6 +1320,8 @@ def daemon_http_get(self) -> None:
                     nickname = self.path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if self.server.debug:
                         print('Catalog for account: ' + nickname)
                     base_dir = self.server.base_dir
@@ -1418,6 +1432,8 @@ def daemon_http_get(self) -> None:
                     nickname = self.path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if self.server.debug:
                         print('Wanted catalog for account: ' + nickname)
                     base_dir = self.server.base_dir
@@ -1763,6 +1779,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         episode_timestamp = self.path.split('?podepisode=')[1].strip()
         replacements = {
             '__': ' ',
@@ -1799,6 +1817,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
         if nickname == self.authorized_nickname and \
@@ -1815,6 +1835,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         pinned_post_json = \
             get_pinned_post_as_json(self.server.base_dir,
                                     self.server.http_prefix,
@@ -1859,6 +1881,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         # return the featured posts collection
         get_featured_collection(self, calling_domain, referer_domain,
                                 self.server.base_dir,
@@ -1876,6 +1900,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         # return the featured posts collection item
         get_featured_collection_item(self, calling_domain, referer_domain,
                                      self.server.base_dir,
@@ -1891,6 +1917,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         # return the feature authorization stamp
         # See verification section of
         # https://codeberg.org/fediverse/fep/src/branch/main
@@ -2536,6 +2564,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
 
         access_keys = self.server.access_keys
         if self.server.key_shortcuts.get(nickname):
@@ -2564,6 +2594,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
 
         if not is_artist(self.server.base_dir, nickname):
             http_403(self)
@@ -2595,6 +2627,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not is_welcome_screen_complete(self.server.base_dir,
                                           nickname,
                                           self.server.domain):
@@ -2619,6 +2653,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not is_welcome_screen_complete(self.server.base_dir,
                                           nickname,
                                           self.server.domain):
@@ -2646,6 +2682,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not is_welcome_screen_complete(self.server.base_dir,
                                           nickname,
                                           self.server.domain):
@@ -3402,6 +3440,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if self.server.hide_announces.get(nickname):
             del self.server.hide_announces[nickname]
         else:
@@ -3420,6 +3460,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         not_min = not is_minimal(self.server.base_dir,
                                  self.server.domain, nickname)
         set_minimal(self.server.base_dir,
@@ -3439,6 +3481,8 @@ def daemon_http_get(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             access_keys = self.server.access_keys
             if self.server.key_shortcuts.get(nickname):
@@ -3492,6 +3536,8 @@ def daemon_http_get(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             access_keys = self.server.access_keys
             if self.server.key_shortcuts.get(nickname):
@@ -3539,6 +3585,8 @@ def daemon_http_get(self) -> None:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
 
             access_keys = self.server.access_keys
             if self.server.key_shortcuts.get(nickname):
@@ -5682,6 +5730,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not is_moderator(self.server.base_dir, nickname):
             http_400(self)
             self.server.getreq_busy = False
@@ -5727,6 +5777,8 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not is_moderator(self.server.base_dir, nickname):
             http_400(self)
             self.server.getreq_busy = False
@@ -6575,6 +6627,8 @@ def _get_speaker(self, calling_domain: str, referer_domain: str,
     nickname = path.split('/users/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     speaker_filename = \
         acct_dir(base_dir, nickname, domain) + '/speaker.json'
     if not is_a_file(speaker_filename):

@@ -484,6 +484,8 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
         nickname = path.replace('/@', '', 1).replace('/' + follow_file, '')
     if not nickname:
         return None
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if not valid_nickname(domain, nickname):
         return None
 

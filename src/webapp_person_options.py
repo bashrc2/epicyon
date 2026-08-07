@@ -208,6 +208,8 @@ def html_person_options(default_timeline: str,
         nickname = origin_path_str.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
 #        follower_domain, follower_port = get_domain_from_actor(options_actor)

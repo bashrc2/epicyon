@@ -123,6 +123,8 @@ def get_featured_collections_feed(base_dir: str,
             path.replace('/@', '', 1).replace(FEATURED_COLLECTIONS_ENDING, '')
     if not nickname:
         return None
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if not valid_nickname(domain, nickname):
         return None
 

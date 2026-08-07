@@ -389,6 +389,8 @@ def get_ssml_box(base_dir: str, path: str,
     nickname = path.split('/users/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     speaker_filename = \
         acct_dir(base_dir, nickname, domain) + '/speaker.json'
     if not is_a_file(speaker_filename):

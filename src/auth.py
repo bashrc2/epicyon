@@ -116,6 +116,8 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
         nickname_from_path = path_users_section
         if '/' in nickname_from_path:
             nickname_from_path = nickname_from_path.split('/')[0]
+        if ':' in nickname_from_path:
+            nickname_from_path = nickname_from_path.split(':')[0]
         if '?' in nickname_from_path:
             nickname_from_path = nickname_from_path.split('?')[0]
     else:

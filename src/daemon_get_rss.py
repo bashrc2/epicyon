@@ -37,6 +37,8 @@ def get_rss2feed(self, calling_domain: str, path: str,
     nickname = path.split('/blog/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if not nickname.startswith('rss.'):
         account_dir = acct_dir(base_dir, nickname, domain)
         if is_a_dir(account_dir):
@@ -153,6 +155,8 @@ def get_rss3feed(self, calling_domain: str, path: str,
     nickname = path.split('/blog/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if not nickname.startswith('rss.'):
         account_dir = acct_dir(base_dir, nickname, domain)
         if is_a_dir(account_dir):

@@ -605,7 +605,7 @@ def has_users_path(path_str: str) -> bool:
         if '://' + domain + '/' not in path_str:
             return False
         nickname: str = path_str.split('://' + domain + '/')[1]
-        if '/' in nickname or '.' in nickname:
+        if '/' in nickname or '.' in nickname or ':' in nickname:
             return False
         return True
     return False

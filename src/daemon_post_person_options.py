@@ -930,6 +930,8 @@ def _person_options_dm(self, options_confirm_params: str,
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
             if key_shortcuts.get(nickname):
                 access_keys = key_shortcuts[nickname]
 
@@ -1186,6 +1188,8 @@ def _person_options_report(self, options_confirm_params: str,
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
+            if ':' in nickname:
+                nickname = nickname.split(':')[0]
             if key_shortcuts.get(nickname):
                 access_keys = key_shortcuts[nickname]
 

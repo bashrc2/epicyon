@@ -119,6 +119,8 @@ def show_shares_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]
 
@@ -318,6 +320,8 @@ def show_following_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]
 
@@ -400,6 +404,8 @@ def show_following_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if nickname and not authorized and \
                        hide_follows.get(nickname):
                         following = {}
@@ -522,6 +528,8 @@ def show_moved_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]
 
@@ -721,6 +729,8 @@ def show_inactive_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]
 
@@ -919,6 +929,8 @@ def show_followers_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]
 
@@ -998,6 +1010,8 @@ def show_followers_feed(self, authorized: bool,
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
+                    if ':' in nickname:
+                        nickname = nickname.split(':')[0]
                     if nickname and not authorized and \
                        hide_follows.get(nickname):
                         followers = {}
@@ -1046,6 +1060,8 @@ def show_featured_collections_feed(self, authorized: bool,
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
     if not nickname:
         return False
 

@@ -81,6 +81,8 @@ def newswire_vote(self, calling_domain: str, path: str,
         urllib.parse.unquote_plus(origin_path_str.split('/users/')[1])
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     print('Newswire item date: ' + date_str)
     if newswire.get(date_str):
         if is_moderator(base_dir, nickname):
@@ -142,6 +144,8 @@ def newswire_unvote(self, calling_domain: str, path: str,
         urllib.parse.unquote_plus(origin_path_str.split('/users/')[1])
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     if newswire.get(date_str):
         if is_moderator(base_dir, nickname):
             votes_index: int = 2
@@ -195,6 +199,8 @@ def edit_newswire2(self, calling_domain: str, path: str,
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
 
         if key_shortcuts.get(nickname):
             access_keys = key_shortcuts[nickname]

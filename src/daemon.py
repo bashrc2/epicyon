@@ -166,6 +166,8 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = self.path.split('/calendars/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
         if not nickname:
             print(endpoint_type.upper() + ' no nickname ' + self.path)
             http_400(self)

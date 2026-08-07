@@ -24,6 +24,8 @@ def edit_links2(self, calling_domain: str, path: str,
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        if ':' in nickname:
+            nickname = nickname.split(':')[0]
 
         if key_shortcuts.get(nickname):
             access_keys = key_shortcuts[nickname]

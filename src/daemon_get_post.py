@@ -1301,7 +1301,7 @@ def show_notify_post(self, authorized: bool,
     post_id = post_id.replace('-', '/')
     path = path.split('?notifypost=')[0]
     nickname = path.split('/users/')[1]
-    if '/' in nickname:
+    if '/' in nickname or ':' in nickname:
         return False
     replies: bool = False
 
@@ -1441,6 +1441,8 @@ def show_conversation_thread(self, authorized: bool,
         nickname = nickname.split(conv_separator)[0]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
+    if ':' in nickname:
+        nickname = nickname.split(':')[0]
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)

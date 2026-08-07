@@ -121,7 +121,13 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
                 }
             }
             path_users_section = path.split('/users/')[1]
-            self.post_to_nickname = path_users_section.split('/')[0]
+            if '/' in path_users_section:
+                self.post_to_nickname = path_users_section.split('/')[0]
+            else:
+                self.post_to_nickname = path_users_section
+            if ':' in self.post_to_nickname:
+                self.post_to_nickname = \
+                    self.post_to_nickname.split(':')[0]
             group_account = has_group_type(base_dir, following_actor,
                                            person_cache)
             unfollow_account(base_dir, self.post_to_nickname,
