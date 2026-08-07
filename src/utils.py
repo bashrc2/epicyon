@@ -2466,6 +2466,50 @@ def _is_valid_language(text: str) -> bool:
         "Gujarati": [2688, 2816],
         "Oriya": [2816, 2944],
         "Tamil": [2944, 3072],
+        "Japanese_hiragana1": [12353, 12436],
+        "Japanese_hiragana2": [12441, 12446],
+        "Japanese_hiragana3": [12437, 12438],
+        "Japanese_hiragana4": [12447, 12447],
+        "Japanese_KanaA1": [110848, 110878],
+        "Japanese_KanaA2": [110879, 110882],
+        "Japanese_KanaB1": [110576, 110579],
+        "Japanese_KanaB2": [110581, 110587],
+        "Japanese_KanaB3": [110589, 110590],
+        "Japanese_KanaSup1": [110592, 110593],
+        "Japanese_KanaSup2": [110594, 110847],
+        "Japanese_SmallKana1": [110928, 110930],
+        "Japanese_SmallKana2": [110948, 110951],
+        "Japanese_SmallKana3": [110898, 110933],
+        "Japanese_Katakana1": [12449, 12534],
+        "Japanese_Katakana2": [12539, 12542],
+        "Japanese_Katakana3": [12535, 12538],
+        "Japanese_Katakana4": [12448, 12543],
+        "Japanese_KatakanaPhon": [12784, 12799],
+        "CJK1": [19968, 25343],
+        "CJK2": [25344, 30719],
+        "CJK3": [30720, 36095],
+        "CJK4": [36096, 40959],
+        "CJKExtA": [13312, 19903],
+        "CJKExtB1": [131072, 136703],
+        "CJKExtB2": [136704, 143615],
+        "CJKExtB3": [143616, 148991],
+        "CJKExtB4": [148992, 155903],
+        "CJKExtB5": [155904, 161279],
+        "CJKExtB6": [161280, 168191],
+        "CJKExtB7": [168192, 173791],
+        "CJKExtC": [173824, 177983],
+        "CJKExtD": [177984, 178207],
+        "CJKExtE": [178208, 183983],
+        "CJKExtF": [183984, 191471],
+        "CJKExtG": [196608, 201551],
+        "CJKExtH": [201552, 205743],
+        "CJKExtI": [191472, 192095],
+        "CJKExtJ": [205744, 210047],
+        "CJKcompat": [63744, 64255],
+        "CJKcompatLegacy": [13056, 13311],
+        "CJKcompatLegacyForms": [65072, 65103],
+        "CJKcompatLegacyIdeo": [63744, 64255],
+        "CJKcompatLegacyIdeoSupp": [194560, 195103],
         "Telugu": [3072, 3200],
         "Kannada": [3200, 3328],
         "Malayalam": [3328, 3456],
@@ -2495,17 +2539,19 @@ def _is_valid_language(text: str) -> bool:
         "Phonetic Extensions": [7467, 7544],
         "Combining Half Marks": [65070, 65071]
     }
-    for _, lang_range in natural_languages.items():
-        ok_lang = True
-        for char in text:
-            if char.isdigit() or char == '_' or char == '.':
-                continue
-            if ord(char) not in range(lang_range[0], lang_range[1]):
-                ok_lang = False
+    for char in text:
+        # allowed characters
+        if char.isdigit() or char == '_' or char == '.':
+            continue
+        # character should exist in at least one language
+        char_found = False
+        for _, lang_range in natural_languages.items():
+            if ord(char) in range(lang_range[0], lang_range[1]):
+                char_found = True
                 break
-        if ok_lang:
-            return True
-    return False
+        if not char_found:
+            return False
+    return True
 
 
 def _get_reserved_words() -> str:

@@ -346,7 +346,7 @@ def _test_http_signed_get(base_dir: str):
     no_recency_check = True
     private_key_pem, public_key_pem, _, _ = \
         create_person(path, nickname, domain, port, http_prefix,
-                      False, False, password)
+                      False, False, password, debug)
     assert private_key_pem
     assert public_key_pem
     message_body_json_str = ''
@@ -634,7 +634,7 @@ def _test_signature():
     assert total % system == 374
 
 
-def _test_httpsig_base(with_digest: bool, base_dir: str):
+def _test_httpsig_base(with_digest: bool, base_dir: str, nickname: str):
     print('test_httpsig(' + str(with_digest) + ')')
 
     path = base_dir + '/.testHttpsigBase'
@@ -643,10 +643,10 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
     makedir(path)
     os.chdir(path)
 
+    debug = True
     algorithm = 'rsa-sha256'
     digest_algorithm = 'rsa-sha256'
     content_type = 'application/activity+json'
-    nickname = 'socrates'
     host_domain = 'someother.instance'
     domain = 'argumentative.social'
     http_prefix = 'https'
@@ -654,7 +654,7 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
     password = 'SuperSecretPassword'
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix,
-                      False, False, password)
+                      False, False, password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -757,8 +757,10 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
 
 
 def _test_httpsig(base_dir: str):
-    _test_httpsig_base(True, base_dir)
-    _test_httpsig_base(False, base_dir)
+    for nickname in ('socrates', '有効', 'дійсний', 'גילטיק'):
+        print('\nTesting http signatures with nickname ' + nickname)
+        _test_httpsig_base(True, base_dir, nickname)
+        _test_httpsig_base(False, base_dir, nickname)
 
 
 def _test_cache():
@@ -803,6 +805,7 @@ def create_server_alice(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False)
     makedir(path)
     os.chdir(path)
+    debug = True
     shared_items_federated_domains: list[str] = []
     system_language: str = 'en'
     languages_understood: list[str] = [system_language]
@@ -817,7 +820,7 @@ def create_server_alice(path: str, domain: str, port: int,
     low_bandwidth: bool = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
-                      False, password)
+                      False, password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -1013,6 +1016,7 @@ def create_server_bob(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False)
     makedir(path)
     os.chdir(path)
+    debug = True
     shared_items_federated_domains: list[str] = []
     system_language: str = 'en'
     languages_understood: list = [system_language]
@@ -1028,7 +1032,7 @@ def create_server_bob(path: str, domain: str, port: int,
     low_bandwidth: bool = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
-                      False, password)
+                      False, password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -1223,6 +1227,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
         shutil.rmtree(path, ignore_errors=False)
     makedir(path)
     os.chdir(path)
+    debug = True
     shared_items_federated_domains: list[str] = []
     nickname: str = 'eve'
     http_prefix: str = 'http'
@@ -1232,7 +1237,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     allow_deletion = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
-                      False, password)
+                      False, password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -1350,6 +1355,7 @@ def create_server_group(path: str, domain: str, port: int,
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
     # system_language = 'en'
+    debug = True
     nickname = 'testgroup'
     http_prefix = 'http'
     proxy_type = None
@@ -1360,7 +1366,7 @@ def create_server_group(path: str, domain: str, port: int,
     allow_deletion = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_group(path, nickname, domain, port, http_prefix, True,
-                     password)
+                     password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -2957,6 +2963,7 @@ def test_group_follow(base_dir: str) -> None:
 
 def _test_followers_of_person(base_dir: str) -> None:
     print('test_followers_of_person')
+    debug = True
     curr_dir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
@@ -2970,15 +2977,15 @@ def _test_followers_of_person(base_dir: str) -> None:
     makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'maxboardroom', domain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'ultrapancake', domain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'drokk', domain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'sausagedog', domain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
 
     clear_follows(base_dir, nickname, domain, 'following.txt')
     follow_person(base_dir, nickname, domain, 'maxboardroom', domain,
@@ -3006,6 +3013,7 @@ def _test_followers_of_person(base_dir: str) -> None:
 
 def _test_followers_on_domain(base_dir: str) -> None:
     print('test_followers_on_domain')
+    debug = True
     curr_dir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
@@ -3020,15 +3028,15 @@ def _test_followers_on_domain(base_dir: str) -> None:
     makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
-                  False, password)
+                  False, password, debug)
     create_person(base_dir, 'maxboardroom', otherdomain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'ultrapancake', otherdomain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'drokk', otherdomain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
     create_person(base_dir, 'sausagedog', otherdomain, port,
-                  http_prefix, True, False, password)
+                  http_prefix, True, False, password, debug)
 
     follow_person(base_dir, 'drokk', otherdomain, nickname, domain,
                   federation_list, False, False, 'following.txt')
@@ -3074,6 +3082,7 @@ def _test_followers_on_domain(base_dir: str) -> None:
 def _test_group_followers(base_dir: str) -> None:
     print('test_group_followers')
 
+    debug = True
     curr_dir = base_dir
     nickname = 'test735'
     domain = 'mydomain.com'
@@ -3087,7 +3096,7 @@ def _test_group_followers(base_dir: str) -> None:
     makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
-                  False, password)
+                  False, password, debug)
 
     clear_followers(base_dir, nickname, domain)
     add_follower_of_person(base_dir, nickname, domain, 'badger', 'wild.domain',
@@ -3120,6 +3129,7 @@ def _test_group_followers(base_dir: str) -> None:
 
 def _test_follows(base_dir: str) -> None:
     print('test_follows')
+    debug = True
     curr_dir = base_dir
     nickname: str = 'test529'
     domain: str = 'testdomain.com'
@@ -3133,7 +3143,7 @@ def _test_follows(base_dir: str) -> None:
     makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
-                  False, password)
+                  False, password, debug)
 
     clear_follows(base_dir, nickname, domain, 'following.txt')
     follow_person(base_dir, nickname, domain, 'badger', 'wild.com',
@@ -3210,6 +3220,7 @@ def _test_follows(base_dir: str) -> None:
 
 def _test_create_person_account(base_dir: str):
     print('test_create_person_account')
+    debug = True
     system_language: str = 'en'
     languages_understood: list = [system_language]
     curr_dir: str = base_dir
@@ -3227,7 +3238,7 @@ def _test_create_person_account(base_dir: str):
 
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(base_dir, nickname, domain, port,
-                      http_prefix, True, False, password)
+                      http_prefix, True, False, password, debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -4276,6 +4287,7 @@ def _test_web_links():
 
 def _test_addemoji(base_dir: str):
     print('test_addemoji')
+    debug = True
     content: str = "Emoji :lemon: :strawberry: :banana:"
     http_prefix: str = 'http'
     nickname: str = 'testuser'
@@ -4301,7 +4313,7 @@ def _test_addemoji(base_dir: str):
     os.chdir(base_dir)
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(base_dir, nickname, domain, port,
-                      http_prefix, True, False, 'password')
+                      http_prefix, True, False, 'password', debug)
     assert private_key_pem
     assert public_key_pem
     assert person
@@ -5326,6 +5338,21 @@ def _test_valid_nick():
     nickname = 'myvalidnick'
     assert valid_nickname(domain, nickname)
 
+    nickname = 'صالح'
+    assert valid_nickname(domain, nickname)
+
+    nickname = 'वैध'
+    assert valid_nickname(domain, nickname)
+
+    nickname = '有効'
+    assert valid_nickname(domain, nickname)
+
+    nickname = 'גילטיק'
+    assert valid_nickname(domain, nickname)
+
+    nickname = 'дійсний'
+    assert valid_nickname(domain, nickname)
+
     nickname = 'my#invalid#nick'
     assert not valid_nickname(domain, nickname)
 
@@ -5336,10 +5363,6 @@ def _test_valid_nick():
     assert not valid_nickname(domain, nickname)
 
     nickname = 'my invalid nick?'
-    assert not valid_nickname(domain, nickname)
-
-    # causes http signature check failures
-    nickname = '你好'
     assert not valid_nickname(domain, nickname)
 
     nickname = 'abc.def'
@@ -7917,7 +7940,7 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
     password = 'SuperSecretPassword'
     private_key_pem, public_key_pem, _, _ = \
         create_person(path, nickname, domain, port, http_prefix,
-                      False, False, password)
+                      False, False, password, debug)
     assert private_key_pem
     if with_digest:
         message_body_json = {

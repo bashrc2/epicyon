@@ -116,7 +116,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
 
             if not register_account(base_dir, http_prefix, domain, port,
                                     login_nickname, login_password,
-                                    manual_follower_approval):
+                                    manual_follower_approval, debug):
                 self.server.postreq_busy = False
                 login_url = \
                     get_instance_url(calling_domain,

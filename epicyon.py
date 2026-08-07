@@ -3338,8 +3338,9 @@ def _command_options() -> None:
         if domain.endswith('.ipns'):
             port = 80
             http_prefix = 'ipns'
+        password = argb.password.strip()
         create_person(base_dir, nickname, domain, port, http_prefix,
-                      True, not argb.noapproval, argb.password.strip())
+                      True, not argb.noapproval, password, debug)
         if is_a_dir(account_dir):
             print('Account created for ' + nickname + '@' + domain)
         else:
@@ -3375,8 +3376,9 @@ def _command_options() -> None:
         if is_a_dir(account_dir):
             print('Group already exists')
             sys.exit()
+        password = argb.password.strip()
         create_group(base_dir, nickname, domain, port, http_prefix,
-                     True, argb.password.strip())
+                     True, password, debug)
         if is_a_dir(account_dir):
             print('Group created for ' + nickname + '@' + domain)
         else:
@@ -3914,16 +3916,15 @@ def _command_options() -> None:
                          str(max_registrations))
 
         create_person(base_dir, 'maxboardroom', domain, port, http_prefix,
-                      True, False, password)
+                      True, False, password, debug)
         create_person(base_dir, 'ultrapancake', domain, port, http_prefix,
-                      True, False, password)
+                      True, False, password, debug)
         create_person(base_dir, 'drokk', domain, port, http_prefix,
-                      True, False, password)
+                      True, False, password, debug)
         create_person(base_dir, 'sausagedog', domain, port, http_prefix,
-                      True, False, password)
-
+                      True, False, password, debug)
         create_person(base_dir, nickname, domain, port, http_prefix,
-                      True, False, 'likewhateveryouwantscoob')
+                      True, False, 'likewhateveryouwantscoob', debug)
         set_skill_level(base_dir, nickname, domain, 'testing', 60)
         set_skill_level(base_dir, nickname, domain, 'typing', 50)
         set_role(base_dir, nickname, domain, 'admin')

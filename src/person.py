@@ -466,7 +466,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
                         http_prefix: str, save_to_file: bool,
                         manual_follower_approval: bool,
                         group_account: bool,
-                        password: str) -> (str, str, {}, {}):
+                        password: str,
+                        debug: bool) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     private_key_pem, public_key_pem = generate_rsa_key()
@@ -676,12 +677,17 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             password = remove_eol(password).strip()
             store_basic_credentials(base_dir, nickname, password)
 
+    if debug:
+        print('DEBUG: _create_person_base type ' + person_type + ' ' +
+              nickname + '@' + domain)
+
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
 
 
 def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
                      nickname: str, password: str,
-                     manual_follower_approval: bool) -> bool:
+                     manual_follower_approval: bool,
+                     debug: bool) -> bool:
     """Registers a new account from the web interface
     """
     if _account_exists(base_dir, nickname, domain):
@@ -697,7 +703,7 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
                            domain, port,
                            http_prefix, True,
                            manual_follower_approval,
-                           password)
+                           password, debug)
     if private_key_pem:
         return True
     return False
@@ -705,14 +711,16 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
 
 def create_group(base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, save_to_file: bool,
-                 password: str) -> (str, str, {}, {}):
+                 password: str,
+                 debug: bool) -> (str, str, {}, {}):
     """Returns a group
     """
     (private_key_pem, public_key_pem,
      new_person, webfinger_endpoint) = create_person(base_dir, nickname,
                                                      domain, port,
                                                      http_prefix, save_to_file,
-                                                     False, password, True)
+                                                     False, password,
+                                                     debug, True)
 
     return private_key_pem, public_key_pem, new_person, webfinger_endpoint
 
@@ -750,7 +758,12 @@ def save_person_qrcode(base_dir: str,
     if is_a_file(qrcode_filename):
         return
     handle = get_full_domain('@' + nickname + '@' + qrcode_domain, port)
-    url = pyqrcode.create(handle)
+    try:
+        url = pyqrcode.create(handle)
+    except UnicodeEncodeError as exc:
+        print('EX: pyqrcode unable to create from handle ' + handle +
+              ' ' + str(exc))
+        return
     try:
         url.png(qrcode_filename, scale)
     except ModuleNotFoundError:
@@ -761,10 +774,13 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
                   http_prefix: str, save_to_file: bool,
                   manual_follower_approval: bool,
                   password: str,
+                  debug: bool,
                   group_account: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not valid_nickname(domain, nickname):
+        if debug:
+            print('DEBUG: create_person invalid nickname')
         return None, None, None, None
 
     # If a config.json file doesn't exist then don't decrement
@@ -775,11 +791,15 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         if remaining_config_exists:
             registrations_remaining = int(remaining_config_exists)
             if registrations_remaining <= 0:
+                if debug:
+                    print('DEBUG: create_person no registrations remaining')
                 return None, None, None, None
     else:
         dir_str = data_dir(base_dir)
         if is_a_dir(dir_str + '/news@' + domain):
             # news account already exists
+            if debug:
+                print('DEBUG: create_person news account already exists')
             return None, None, None, None
 
     manual_follower = manual_follower_approval
@@ -791,7 +811,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
                                                            save_to_file,
                                                            manual_follower,
                                                            group_account,
-                                                           password)
+                                                           password,
+                                                           debug)
     if not get_config_param(base_dir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
@@ -873,16 +894,18 @@ def create_shared_inbox(base_dir: str, nickname: str, domain: str, port: int,
                         http_prefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
+    debug = False
     return _create_person_base(base_dir, nickname, domain, port, http_prefix,
-                               True, True, False, None)
+                               True, True, False, None, debug)
 
 
 def create_news_inbox(base_dir: str, domain: str, port: int,
                       http_prefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
+    debug = False
     return create_person(base_dir, 'news', domain, port,
-                         http_prefix, True, True, None)
+                         http_prefix, True, True, None, debug)
 
 
 def person_upgrade_actor(base_dir: str, person_json: {},
