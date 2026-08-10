@@ -4464,7 +4464,7 @@ def permutations(elements):
 
         # no more permutations
         if k is None:
-            print('EX: permutations StopIteration')
+            # print('EX: permutations StopIteration')
             break
 
         # swap k and the element it is looking at
