@@ -1819,7 +1819,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            system_language: str, debug: bool,
                            preferred_podcast_formats: [],
                            timeout_sec: int) -> {}:
-    """Gets rss feeds as a dictionary from src.newswire file
+    """Gets rss feeds as a dictionary from newswire file
     """
     subscriptions_filename = data_dir(base_dir) + '/newswire.txt'
     if not is_a_file(subscriptions_filename):
