@@ -4320,7 +4320,7 @@ def browser_supports_download_filename(ua_str: str) -> bool:
     return False
 
 
-def load_instance_software(base_dir: str) -> []:
+def load_instance_software(base_dir: str) -> {}:
     """For each domain encountered this stores the instance type
     such as mastodon, epicyon, pixelfed, etc
     """

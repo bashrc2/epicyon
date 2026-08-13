@@ -296,6 +296,10 @@ def _command_options() -> None:
                         dest='watermark_opacity', type=int,
                         default=5,
                         help='Opacity of watermark applied to attached images')
+    parser.add_argument('--pauseBetweenFeeds',
+                        dest='pause_between_feeds_sec', type=int,
+                        default=15,
+                        help='Pause between newswire RSS pulls')
     parser.add_argument('--watermarkPosition',
                         dest='watermark_position', type=str,
                         default="random",
@@ -4517,4 +4521,5 @@ if __name__ == "__main__":
                argb2.watermark_width_percent,
                argb2.watermark_position,
                argb2.watermark_opacity,
-               argb2.bind_to_ip_address)
+               argb2.bind_to_ip_address,
+               argb2.pause_between_feeds_sec)

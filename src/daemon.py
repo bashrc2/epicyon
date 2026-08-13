@@ -501,6 +501,8 @@ class EpicyonServer(ThreadingHTTPServer):
     instance_description_short: str = 'Epicyon'
     robots_txt = None
     last_llm_time = None
+    pause_between_feeds_sec = 15
+    instance_software = {}
     mitm_servers: list[str] = []
     log_unknown_requests: bool = False
     watermark_width_percent: int = 0
@@ -683,7 +685,8 @@ def run_daemon(accounts_data_dir: str,
                watermark_width_percent: int,
                watermark_position: str,
                watermark_opacity: int,
-               bind_to_ip_address: str) -> None:
+               bind_to_ip_address: str,
+               pause_between_feeds_sec: int) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -733,6 +736,10 @@ def run_daemon(accounts_data_dir: str,
 
     # the last time when an LLM scraper was replied to
     httpd.last_llm_time = None
+
+    # when the newswire pulls RSS feeds this is the pause between
+    # each pull
+    httpd.pause_between_feeds_sec = pause_between_feeds_sec
 
     # whether to log unknown requests
     httpd.log_unknown_requests = \

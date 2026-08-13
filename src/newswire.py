@@ -1818,7 +1818,8 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            max_categories_feed_item_size_kb: int,
                            system_language: str, debug: bool,
                            preferred_podcast_formats: [],
-                           timeout_sec: int) -> {}:
+                           timeout_sec: int,
+                           pause_between_feeds_sec: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptions_filename = data_dir(base_dir) + '/newswire.txt'
@@ -1870,7 +1871,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
         if items_list:
             for date_str, item in items_list.items():
                 result[date_str] = item
-        time.sleep(4)
+        time.sleep(pause_between_feeds_sec)
 
     # add blogs from each user account
     _add_blogs_to_newswire(base_dir, domain, result,
