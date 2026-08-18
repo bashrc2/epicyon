@@ -13,6 +13,7 @@ from pprint import pprint
 from src.flags import has_group_type
 from src.flags import url_permitted
 from src.status import get_status_number
+from src.utils import remove_html
 from src.utils import remove_post_from_cache
 from src.utils import get_cached_post_filename
 from src.utils import load_json
@@ -772,6 +773,7 @@ def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
             return True
 
     # check for attached images without descriptions
+    # or where the description is the same as the content
     if isinstance(attachment, list):
         for item in attachment:
             if not isinstance(item, dict):
@@ -790,5 +792,11 @@ def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
                 continue
             if len(image_description) < 5:
                 # not enough description
+                return True
+            # compare content with description, removing any formatting
+            content2 = content.strip().lower()
+            description2 = image_description.strip().lower()
+            if remove_html(content2) == remove_html(description2):
+                # content is the same as description
                 return True
     return False
