@@ -84,7 +84,7 @@ form {
     background-color: var(--options-bg-color);
 }
 
-mark {
+p mark {
     background-color: var(--main-fg-color);
     color: var(--main-bg-color);
     font-size: 110%;
