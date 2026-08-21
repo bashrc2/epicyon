@@ -4496,8 +4496,9 @@ def get_labels_from_json(json_object: {}) -> []:
                     label_str = label_str.strip()
                     label_str = remove_html(label_str)
                     if label_str:
-                        if len(labels) < 10:
-                            labels.append(label_str)
+                        if len(labels) >= 10:
+                            break
+                        labels.append(label_str)
                 # limit the number of labels
                 if len(labels) >= 10:
                     break
