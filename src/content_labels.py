@@ -56,7 +56,8 @@ def get_labels_from_json(json_object: {}) -> []:
                     if label_str:
                         if len(labels) >= MAX_CONTENT_LABELS:
                             break
-                        labels.append(label_str)
+                        if label_str not in labels:
+                            labels.append(label_str)
                 # limit the number of labels
                 if len(labels) >= MAX_CONTENT_LABELS:
                     break
@@ -68,7 +69,8 @@ def get_labels_from_json(json_object: {}) -> []:
                         if isinstance(tag_dict['href'], str):
                             if resembles_url(tag_dict['href']):
                                 label_str += '###' + tag_dict['href']
-                    labels.append(label_str)
+                    if label_str not in labels:
+                        labels.append(label_str)
                 # limit the number of labels
                 if len(labels) >= MAX_CONTENT_LABELS:
                     break
@@ -79,7 +81,8 @@ def get_labels_from_json(json_object: {}) -> []:
                     if isinstance(tag_dict['href'], str):
                         if resembles_url(tag_dict['href']):
                             label_str += '###' + tag_dict['href']
-                labels.append(label_str)
+                if label_str not in labels:
+                    labels.append(label_str)
             # limit the number of labels
             if len(labels) >= MAX_CONTENT_LABELS:
                 break
