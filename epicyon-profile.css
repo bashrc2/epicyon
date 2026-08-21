@@ -325,7 +325,7 @@ figure {
     height: auto;
 }
 
-mark {
+mark p {
     background-color: var(--main-fg-color);
     color: var(--main-bg-color);
     font-size: 110%;
