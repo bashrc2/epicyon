@@ -1461,6 +1461,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     conversation_id = None
     convthread_id = None
     low_bandwidth: bool = False
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache = {}
@@ -1481,7 +1482,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    low_bandwidth, dm_license_url,
                                    dm_license_url, '',
                                    languages_understood, bounce_is_chat,
-                                   translate, buy_url, chat_url,
+                                   translate, labels_str, buy_url, chat_url,
                                    auto_cw_cache, session)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)

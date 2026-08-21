@@ -155,6 +155,7 @@ from src.data import move_file
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
+from src.content_labels import set_post_content_labels
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1249,6 +1250,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      conversation_id: str, convthread_id: str,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
+                     labels_str: str,
                      buy_url: str, chat_url: str, translate: {},
                      searchable_by: [],
                      automatic_quote_approval: str,
@@ -1418,6 +1420,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
     _attach_post_license(new_post['object'], content_license_url)
     _attach_buy_link(new_post['object'], buy_url, translate)
     _attach_chat_link(new_post['object'], chat_url)
+    set_post_content_labels(new_post, labels_str)
     return new_post
 
 
@@ -1435,7 +1438,8 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                      conversation_id: str, convthread_id: str,
                      low_bandwidth: str,
                      content_license_url: str, media_license_url: str,
-                     media_creator: str, buy_url: str, chat_url: str,
+                     media_creator: str, labels_str: str,
+                     buy_url: str, chat_url: str,
                      translate: {}, searchable_by: [],
                      automatic_quote_approval: str,
                      session, debug: bool) -> {}:
@@ -1593,6 +1597,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     _attach_post_license(new_post, content_license_url)
     _attach_buy_link(new_post, buy_url, translate)
     _attach_chat_link(new_post, chat_url)
+    set_post_content_labels(new_post, labels_str)
     return new_post
 
 
@@ -1849,7 +1854,7 @@ def create_post_base(base_dir: str,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
                      languages_understood: [], translate: {},
-                     buy_url: str, chat_url: str,
+                     labels_str: str, buy_url: str, chat_url: str,
                      auto_cw_cache: {},
                      searchable_by: [],
                      session,
@@ -2041,7 +2046,7 @@ def create_post_base(base_dir: str,
                              in_reply_to_atom_uri, system_language,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
-                             media_creator, buy_url, chat_url,
+                             media_creator, labels_str, buy_url, chat_url,
                              translate, searchable_by_list,
                              automatic_quote_approval,
                              session, debug)
@@ -2060,7 +2065,7 @@ def create_post_base(base_dir: str,
                              in_reply_to_atom_uri, system_language,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
-                             media_creator, buy_url, chat_url,
+                             media_creator, labels_str, buy_url, chat_url,
                              translate, searchable_by_list,
                              automatic_quote_approval,
                              session, debug)
@@ -2316,6 +2321,7 @@ def create_public_post(base_dir: str,
                        low_bandwidth: bool, content_license_url: str,
                        media_license_url: str, media_creator: str,
                        languages_understood: [], translate: {},
+                       labels_str: str,
                        buy_url: str, chat_url: str,
                        auto_cw_cache: {},
                        searchable_by: [],
@@ -2357,7 +2363,8 @@ def create_public_post(base_dir: str,
                             conversation_id, convthread_id, low_bandwidth,
                             content_license_url,
                             media_license_url, media_creator,
-                            languages_understood, translate, buy_url,
+                            languages_understood, translate,
+                            labels_str, buy_url,
                             chat_url, auto_cw_cache, searchable_by,
                             session, automatic_quote_approval, debug)
 
@@ -2382,6 +2389,7 @@ def create_reading_post(base_dir: str,
                         low_bandwidth: bool, content_license_url: str,
                         media_license_url: str, media_creator: str,
                         languages_understood: [], translate: {},
+                        labels_str: str,
                         buy_url: str, chat_url: str,
                         auto_cw_cache: {},
                         searchable_by: [], session, debug: bool) -> {}:
@@ -2426,6 +2434,7 @@ def create_reading_post(base_dir: str,
                            content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate,
+                           labels_str,
                            buy_url, chat_url, auto_cw_cache,
                            searchable_by, session, debug)
     if post_json_object:
@@ -2487,6 +2496,7 @@ def create_blog_post(base_dir: str,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
                      languages_understood: [], translate: {},
+                     labels_str: str,
                      buy_url: str, chat_url: str,
                      searchable_by: [], session, debug: bool) -> {}:
     auto_cw_cache = {}
@@ -2506,7 +2516,8 @@ def create_blog_post(base_dir: str,
                            conversation_id, convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     url_str = get_url_from_post(blog_json['object']['url'])
     obj_url = remove_html(url_str)
@@ -2528,7 +2539,7 @@ def create_news_post(base_dir: str,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
                      languages_understood: [], translate: {},
-                     buy_url: str, chat_url: str, session,
+                     labels_str: str, buy_url: str, chat_url: str, session,
                      debug: bool) -> {}:
     auto_cw_cache = {}
     client_to_server: bool = False
@@ -2556,7 +2567,8 @@ def create_news_post(base_dir: str,
                            conversation_id, convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     blog['object']['type'] = 'Article'
     return blog
@@ -2582,6 +2594,7 @@ def create_question_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    labels_str = ''
     buy_url = ''
     chat_url = ''
     is_moderation_report: bool = False
@@ -2617,7 +2630,8 @@ def create_question_post(base_dir: str,
                          conversation_id, convthread_id, low_bandwidth,
                          content_license_url,
                          media_license_url, media_creator,
-                         languages_understood, translate, buy_url,
+                         languages_understood, translate,
+                         labels_str, buy_url,
                          chat_url, auto_cw_cache, searchable_by,
                          session, automatic_quote_approval, debug)
     message_json['object']['type'] = 'Question'
@@ -2659,6 +2673,7 @@ def create_unlisted_post(base_dir: str,
                          low_bandwidth: bool, content_license_url: str,
                          media_license_url: str, media_creator: str,
                          languages_understood: [], translate: {},
+                         labels_str: str,
                          buy_url: str, chat_url: str,
                          auto_cw_cache: {}, session, debug: bool) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
@@ -2699,6 +2714,7 @@ def create_unlisted_post(base_dir: str,
                             content_license_url,
                             media_license_url, media_creator,
                             languages_understood, translate,
+                            labels_str,
                             buy_url, chat_url, auto_cw_cache,
                             searchable_by, session,
                             automatic_quote_approval, debug)
@@ -2723,7 +2739,7 @@ def create_followers_only_post(base_dir: str,
                                low_bandwidth: bool, content_license_url: str,
                                media_license_url: str, media_creator: str,
                                languages_understood: [],
-                               translate: {}, buy_url: str,
+                               translate: {}, labels_str: str, buy_url: str,
                                chat_url: str,
                                auto_cw_cache: {},
                                searchable_by: [], session,
@@ -2761,6 +2777,7 @@ def create_followers_only_post(base_dir: str,
                             content_license_url,
                             media_license_url, media_creator,
                             languages_understood, translate,
+                            labels_str,
                             buy_url, chat_url, auto_cw_cache,
                             searchable_by, session,
                             automatic_quote_approval, debug)
@@ -2824,6 +2841,7 @@ def create_direct_message_post(base_dir: str,
                                media_license_url: str, media_creator: str,
                                languages_understood: [],
                                dm_is_chat: bool, translate: {},
+                               labels_str: str,
                                buy_url: str, chat_url: str,
                                auto_cw_cache: {}, session) -> {}:
     """Direct Message post
@@ -2869,7 +2887,8 @@ def create_direct_message_post(base_dir: str,
                          conversation_id, convthread_id, low_bandwidth,
                          content_license_url,
                          media_license_url, media_creator,
-                         languages_understood, translate, buy_url, chat_url,
+                         languages_understood, translate,
+                         labels_str, buy_url, chat_url,
                          auto_cw_cache, searchable_by, session,
                          automatic_quote_approval, debug)
     # mentioned recipients go into To rather than Cc
@@ -2964,6 +2983,7 @@ def create_report_post(base_dir: str,
     post_to = moderators_list
     post_cc = None
     post_json_object = None
+    labels_str = ''
     buy_url = ''
     chat_url = ''
     is_moderation_report = True
@@ -3015,6 +3035,7 @@ def create_report_post(base_dir: str,
                              content_license_url,
                              media_license_url, media_creator,
                              languages_understood, translate,
+                             labels_str,
                              buy_url, chat_url, auto_cw_cache,
                              searchable_by, session,
                              automatic_quote_approval, debug)
@@ -3218,7 +3239,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
               shared_item_federation_tokens: {},
               low_bandwidth: bool, content_license_url: str,
               media_license_url: str, media_creator: str,
-              translate: {}, buy_url: str, chat_url: str,
+              translate: {}, labels_str: str,
+              buy_url: str, chat_url: str,
               auto_cw_cache: {},
               debug: bool, in_reply_to: str,
               in_reply_to_atom_uri: str, subject: str,
@@ -3315,7 +3337,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                          content_license_url,
                          media_license_url, media_creator,
                          languages_understood,
-                         translate, buy_url, chat_url,
+                         translate, labels_str, buy_url, chat_url,
                          auto_cw_cache, searchable_by, session,
                          automatic_quote_approval, debug)
 

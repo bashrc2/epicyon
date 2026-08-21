@@ -231,6 +231,7 @@ def _send_reply_to_question(self, base_dir: str,
     location = None
     conversation_id = None
     convthread_id = None
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     city = get_spoofed_city(city_name, base_dir, nickname, domain)
@@ -269,7 +270,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        dm_license_url,
                                        content_license_url, '',
                                        languages_understood, False,
-                                       translate, buy_url,
+                                       translate, labels_str, buy_url,
                                        chat_url,
                                        auto_cw_cache, curr_session)
     if message_json:

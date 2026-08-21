@@ -566,6 +566,7 @@ def _desktop_reply_to_post(session, post_id: str,
     event_end_time = None
     event_category: str = ''
     location = None
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     video_transcript = None
@@ -588,7 +589,8 @@ def _desktop_reply_to_post(session, post_id: str,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time,
                             event_category, location,
-                            translate, buy_url, chat_url, auto_cw_cache,
+                            translate, labels_str, buy_url,
+                            chat_url, auto_cw_cache,
                             debug, post_id, post_id,
                             conversation_id, convthread_id, subject,
                             searchable_by, mitm_servers) == 0:
@@ -657,6 +659,7 @@ def _desktop_new_post(session,
     event_end_time = None
     event_category: str = ''
     location = None
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     video_transcript = None
@@ -678,7 +681,8 @@ def _desktop_new_post(session,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time,
                             event_category, location,
-                            translate, buy_url, chat_url, auto_cw_cache,
+                            translate, labels_str, buy_url,
+                            chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,
                             searchable_by, mitm_servers) == 0:
@@ -1501,6 +1505,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     event_end_time = None
     event_category: str = ''
     location = None
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     video_transcript = None
@@ -1524,7 +1529,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time,
                             event_category, location,
-                            translate, buy_url, chat_url, auto_cw_cache,
+                            translate, labels_str, buy_url,
+                            chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,
                             searchable_by, mitm_servers) == 0:

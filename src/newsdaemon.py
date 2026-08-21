@@ -646,6 +646,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         conversation_id = None
         convthread_id = None
         languages_understood = [system_language]
+        labels_str = ''
         buy_url = ''
         chat_url = ''
         blog = create_news_post(base_dir,
@@ -659,6 +660,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 content_license_url,
                                 media_license_url, media_creator,
                                 languages_understood, translate,
+                                labels_str,
                                 buy_url, chat_url, session, debug)
         if not blog:
             continue

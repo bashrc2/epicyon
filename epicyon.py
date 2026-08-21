@@ -2101,6 +2101,7 @@ def _command_options() -> None:
                 argb.eventCategory = ''
 
         print('Sending post to ' + argb.sendto)
+        labels_str: str = ''
         send_post_via_server(signing_priv_key_pem, __version__,
                              base_dir, session, argb.nickname, argb.password,
                              domain, port,
@@ -2118,7 +2119,8 @@ def _command_options() -> None:
                              argb.media_license_url, argb.media_creator,
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
                              argb.eventCategory,
-                             argb.eventLocation, translate, argb.buyUrl,
+                             argb.eventLocation, translate,
+                             labels_str, argb.buyUrl,
                              argb.chatUrl, auto_cw_cache, argb.debug,
                              reply_to, reply_to, argb.conversationId,
                              argb.convthreadId, subject, searchable_by,
@@ -4013,6 +4015,7 @@ def _command_options() -> None:
         low_bandwidth: bool = False
         languages_understood = [argb.language]
         translate = {}
+        labels_str: str = ''
         buy_url: str = ''
         chat_url: str = ''
         auto_cw_cache = {}
@@ -4038,7 +4041,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
@@ -4058,7 +4062,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
@@ -4078,7 +4083,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
@@ -4098,7 +4104,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
@@ -4119,7 +4126,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
@@ -4139,7 +4147,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
@@ -4159,7 +4168,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
@@ -4179,7 +4189,8 @@ def _command_options() -> None:
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, curr_session, debug)
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain, 'following.txt')

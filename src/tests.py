@@ -861,6 +861,7 @@ def create_server_alice(path: str, domain: str, port: int,
         media_license_url: str = \
             'https://creativecommons.org/licenses/by-nc/4.0'
         media_creator: str = 'Mr Blobby'
+        labels_str: str = ''
         buy_url: str = ''
         chat_url: str = ''
         auto_cw_cache: dict = {}
@@ -887,7 +888,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
@@ -908,7 +910,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
@@ -930,7 +933,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
@@ -1074,6 +1078,7 @@ def create_server_bob(path: str, domain: str, port: int,
             'https://creativecommons.org/licenses/by-nc/4.0'
         media_creator: str = 'Hamster'
         translate: dict = {}
+        labels_str: str = ''
         buy_url: str = ''
         chat_url: str = ''
         auto_cw_cache: dict = {}
@@ -1100,7 +1105,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
@@ -1122,7 +1128,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
@@ -1143,7 +1150,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
@@ -1567,6 +1575,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     low_bandwidth: bool = False
     signing_priv_key_pem = None
     translate: dict = {}
+    labels_str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache: dict = {}
@@ -1591,7 +1600,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
-                  translate, buy_url, chat_url, auto_cw_cache, True,
+                  translate, labels_str, buy_url,
+                  chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
                   searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
@@ -1974,6 +1984,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     low_bandwidth: bool = False
     signing_priv_key_pem = None
     translate: dict = {}
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     video_transcript = None
@@ -2000,7 +2011,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
-                  translate, buy_url, chat_url, auto_cw_cache, True,
+                  translate, labels_str, buy_url,
+                  chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
                   searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
@@ -2401,6 +2413,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     low_bandwidth: bool = False
     signing_priv_key_pem = None
     translate: dict = {}
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     video_transcript = None
@@ -2427,7 +2440,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
-                  translate, buy_url, chat_url, auto_cw_cache, True,
+                  translate, labels_str, buy_url,
+                  chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
                   searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
@@ -2862,6 +2876,7 @@ def test_group_follow(base_dir: str) -> None:
              if os.path.isfile(os.path.join(outbox_path, name))])
 
     translate = {}
+    labels_str = ''
     buy_url = ''
     chat_url = ''
     video_transcript = None
@@ -2888,7 +2903,8 @@ def test_group_follow(base_dir: str) -> None:
                   alice_shared_items_federated_domains,
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
-                  translate, buy_url, chat_url, auto_cw_cache, True,
+                  translate, labels_str, buy_url,
+                  chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
                   searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
@@ -3288,6 +3304,7 @@ def _test_create_person_account(base_dir: str):
         "(yawn)\n\n...then it's not really independent.\n\n" + \
         "Politicians will threaten to withdraw funding if you do " + \
         "anything which challenges middle class sensibilities or incomes."
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache: dict = {}
@@ -3310,7 +3327,8 @@ def _test_create_person_account(base_dir: str):
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     assert test_post_json
     assert test_post_json.get('object')
@@ -3341,7 +3359,8 @@ def _test_create_person_account(base_dir: str):
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     assert test_post_json
     assert test_post_json.get('object')
@@ -3549,6 +3568,7 @@ def test_client_to_server(base_dir: str):
     event_category = ''
     location = "Kinshasa"
     translate = {}
+    labels_str = ''
     buy_url = ''
     chat_url = ''
     video_transcript = None
@@ -3573,7 +3593,8 @@ def test_client_to_server(base_dir: str):
                              media_license_url, media_creator,
                              event_date, event_time, event_end_time,
                              event_category, location,
-                             translate, buy_url, chat_url, auto_cw_cache,
+                             translate, labels_str, buy_url,
+                             chat_url, auto_cw_cache,
                              True, None, None, conversation_id, convthread_id,
                              None, searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
@@ -5456,6 +5477,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
         'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator: str = 'Skeletor'
     translate: dict = {}
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache: dict = {}
@@ -5480,7 +5502,8 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     # print(str(reply))
     expected_str = \
@@ -6571,6 +6594,7 @@ def _test_links_within_post(base_dir: str) -> None:
         'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator: str = 'Dr No'
     translate: dict = {}
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache: dict = {}
@@ -6595,7 +6619,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
 
     expected_str = \
@@ -6653,7 +6678,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
@@ -6680,7 +6706,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     if post_json_object['object']['content'] != content:
         print('content1: ' + post_json_object['object']['content'])
@@ -7783,6 +7810,7 @@ def _test_can_replyto(base_dir: str) -> None:
         'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator: str = 'The Penguin'
     translate: dict = {}
+    labels_str: str = ''
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache: dict = {}
@@ -7807,7 +7835,8 @@ def _test_can_replyto(base_dir: str) -> None:
                            convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
-                           languages_understood, translate, buy_url, chat_url,
+                           languages_understood, translate,
+                           labels_str, buy_url, chat_url,
                            auto_cw_cache, searchable_by, session, debug)
     # set the date on the post
     curr_date_str = "2021-09-08T20:45:00Z"

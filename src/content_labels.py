@@ -145,3 +145,36 @@ def set_actor_content_labels(actor_json: {}, labels: str) -> None:
         'value': labels
     }
     actor_json['attachment'].append(labels_dict)
+
+
+def set_post_content_labels(post_json_object: {}, labels: str) -> None:
+    """Sets a string containing comma separated content labels
+    within the given post
+    """
+    if not labels:
+        return
+
+    labels = remove_html(labels)
+
+    obj = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+
+    if 'tag' not in obj:
+        obj['tag'] = []
+
+    for tag_dict in obj['tag']:
+        if 'name' not in tag_dict:
+            continue
+        if not isinstance(tag_dict['name'], str):
+            continue
+        if tag_dict['name'] == 'Labels':
+            tag_dict['value'] = labels
+            return
+
+    labels_dict = {
+        'type': 'PropertyValue',
+        'name': 'Labels',
+        'value': labels
+    }
+    obj['attachment'].append(labels_dict)
