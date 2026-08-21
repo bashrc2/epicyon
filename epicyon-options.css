@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --main-bg-color: #282c37;
+    --main-fg-color: #dddddd;
     --banner-height: 20vh;
     --banner-height-mobile: 10vh;
     --banner-height-tiny: 10vh;
@@ -84,7 +86,7 @@ form {
     background-color: var(--options-bg-color);
 }
 
-p mark {
+mark {
     background-color: var(--main-fg-color);
     color: var(--main-bg-color);
     font-size: 110%;
