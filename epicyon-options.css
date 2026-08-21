@@ -84,6 +84,13 @@ form {
     background-color: var(--options-bg-color);
 }
 
+mark {
+    background-color: var(--main-fg-color);
+    color: var(--main-bg-color);
+    font-size: 110%;
+    font-weight: bold;
+}
+
 a, u {
     color: var(--options-fg-color);
 }
