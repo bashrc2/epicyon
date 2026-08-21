@@ -425,7 +425,7 @@ def page_number_buttons(users_path: str, box_name: str,
         page_str: str = ' ' + str(page) + ' '
         curr_page_str: str = ''
         if page == page_number:
-            page_str = '[<mark>' + str(page) + '</mark>]'
+            page_str = '<b>[' + str(page) + ']</b>'
             aria_page_str = ' aria-current="true"'
             curr_page_str = 'Current Page, '
         num_str += \

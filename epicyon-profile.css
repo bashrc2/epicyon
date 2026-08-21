@@ -325,13 +325,6 @@ figure {
     height: auto;
 }
 
-mark {
-    background-color: var(--main-bg-color);
-    color: var(--main-fg-color);
-    font-size: 110%;
-    font-weight: bold;
-}
-
 p mark {
     background-color: var(--main-fg-color);
     color: var(--main-bg-color);
