@@ -22,7 +22,7 @@ from src.textmode import text_mode_removals
 from src.unicodetext import uninvert_text
 from src.unicodetext import standardize_text
 from src.occupation import get_occupation_name
-from src.utils import get_labels_from_json
+from src.content_labels import get_labels_from_json
 from src.utils import get_preferred_username
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
@@ -104,7 +104,7 @@ from src.follow import get_follower_domains
 from src.follow import is_following_actor
 from src.webapp_frontscreen import html_front_screen
 from src.textmode import text_mode_browser
-from src.webapp_utils import labels_list_html
+from src.content_labels import labels_list_html
 from src.webapp_utils import get_display_name_prefix
 from src.webapp_utils import html_following_dropdown
 from src.webapp_utils import edit_number_field
@@ -3559,6 +3559,12 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
     edit_profile_form += '<br>\n' + \
         edit_text_field(translate['Featured hashtags'], 'featuredHashtags',
                         featured_hashtags, '#tag1 #tag2')
+
+    labels_list: list[str] = get_labels_from_json(actor_json)
+    labels_str = labels_list_html(labels_list)
+    edit_profile_form += \
+        edit_text_field(translate['Content labels'], 'contentLabels',
+                        labels_str, '1, 2, 3...')
 
     edit_profile_form += \
         '      <label class="labels">' + translate['Avatar image'] + \

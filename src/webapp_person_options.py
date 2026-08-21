@@ -30,7 +30,7 @@ from src.follow import is_following_actor
 from src.followingCalendar import receiving_calendar_events
 from src.notifyOnPost import notify_when_person_posts
 from src.person import get_person_notes
-from src.webapp_utils import labels_list_html
+from src.content_labels import labels_list_html
 from src.webapp_utils import mitm_warning_html
 from src.webapp_utils import html_header_with_external_style
 from src.webapp_utils import html_footer

@@ -59,8 +59,6 @@ INVALID_ACTOR_URL_CHARACTERS = (
     ';', '='
 )
 
-MAX_CONTENT_LABELS = 10
-
 
 def is_account_dir(dir_name: str) -> bool:
     """Is the given directory an account within /accounts ?
@@ -4456,75 +4454,3 @@ def url_text_to_number(url: str) -> str:
     """
     hash_result = get_sha_256(url)
     return base64.b64encode(hash_result).decode('utf-8')
-
-
-def get_labels_from_json(json_object: {}) -> []:
-    """Returns labels attached to an actor or post
-    """
-    tags_list: list[dict] = []
-    obj: dict = json_object
-    if has_object_dict(json_object):
-        obj = json_object['object']
-    if 'tag' in obj:
-        if isinstance(obj['tag'], list):
-            tags_list = obj['tag']
-    if 'attachment' in json_object:
-        if isinstance(json_object['attachment'], list):
-            tags_list = json_object['attachment']
-    if not tags_list:
-        return []
-    labels: list[str] = []
-    for tag_dict in tags_list:
-        if not isinstance(tag_dict, dict):
-            continue
-        if 'type' not in tag_dict or 'name' not in tag_dict:
-            continue
-        if 'value' not in tag_dict and 'href' not in tag_dict:
-            continue
-        if not isinstance(tag_dict['type'], str):
-            continue
-        if not isinstance(tag_dict['name'], str):
-            continue
-        if tag_dict['type'] == 'PropertyValue' and \
-           'value' in tag_dict:
-            if not isinstance(tag_dict['value'], str):
-                continue
-            if tag_dict['name'] == 'Labels':
-                if ',' in tag_dict['value']:
-                    labels_list = tag_dict['value'].split(',')
-                else:
-                    labels_list = tag_dict['value'].split('/')
-                for label_str in labels_list:
-                    label_str = label_str.strip()
-                    label_str = remove_html(label_str)
-                    if label_str:
-                        if len(labels) >= MAX_CONTENT_LABELS:
-                            break
-                        labels.append(label_str)
-                # limit the number of labels
-                if len(labels) >= MAX_CONTENT_LABELS:
-                    break
-            elif tag_dict['name'] == 'Label':
-                label_str = tag_dict['value'].strip()
-                label_str = remove_html(label_str)
-                if label_str:
-                    if 'href' in tag_dict:
-                        if isinstance(tag_dict['href'], str):
-                            if resembles_url(tag_dict['href']):
-                                label_str += '###' + tag_dict['href']
-                    labels.append(label_str)
-                # limit the number of labels
-                if len(labels) >= MAX_CONTENT_LABELS:
-                    break
-        elif tag_dict['type'] == 'Label':
-            label_str = remove_html(tag_dict['name'])
-            if label_str:
-                if 'href' in tag_dict:
-                    if isinstance(tag_dict['href'], str):
-                        if resembles_url(tag_dict['href']):
-                            label_str += '###' + tag_dict['href']
-                labels.append(label_str)
-            # limit the number of labels
-            if len(labels) >= MAX_CONTENT_LABELS:
-                break
-    return labels

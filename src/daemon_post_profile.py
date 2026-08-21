@@ -157,6 +157,8 @@ from src.data import erase_file
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
+from src.content_labels import get_actor_content_labels
+from src.content_labels import set_actor_content_labels
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -1608,6 +1610,24 @@ def _profile_post_featured_hashtags(base_dir: str, nickname: str, domain: str,
         if featured_hashtags:
             set_featured_hashtags(base_dir, nickname, domain, '')
     return
+
+
+def _profile_post_content_labels(fields: {}, actor_json: {},
+                                 actor_changed: bool) -> bool:
+    """ HTTP POST content labels on edit profile screen
+    """
+    labels_str = get_actor_content_labels(actor_json)
+    if fields.get('contentLabels'):
+        fields['contentLabels'] = remove_html(fields['contentLabels'])
+        if labels_str != fields['contentLabels']:
+            set_actor_content_labels(actor_json,
+                                     fields['contentLabels'])
+            actor_changed = True
+    else:
+        if labels_str:
+            set_actor_content_labels(actor_json, '')
+            actor_changed = True
+    return actor_changed
 
 
 def _profile_post_occupation(actor_json: {}, fields: {},
@@ -3203,6 +3223,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 _profile_post_featured_hashtags(base_dir, nickname, domain,
                                                 fields)
+
+                actor_changed = \
+                    _profile_post_content_labels(fields, actor_json,
+                                                 actor_changed)
 
                 actor_changed = \
                     _profile_post_alsoknownas(actor_json, fields,

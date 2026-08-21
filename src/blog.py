@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 
 from src.content import replace_emoji_from_tags
-from src.webapp_utils import labels_list_html
+from src.content_labels import labels_list_html
 from src.webapp_utils import html_header_with_external_style
 from src.webapp_utils import html_header_with_blog_markup
 from src.webapp_utils import html_footer
@@ -18,7 +18,7 @@ from src.webapp_utils import get_post_attachments_as_html
 from src.webapp_utils import edit_text_area
 from src.webapp_media import add_embedded_elements
 from src.timeFunctions import date_from_string_format
-from src.utils import get_labels_from_json
+from src.content_labels import get_labels_from_json
 from src.utils import replace_embedded_map_with_link
 from src.utils import replace_strings
 from src.utils import data_dir

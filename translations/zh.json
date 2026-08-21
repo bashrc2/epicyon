@@ -774,5 +774,6 @@
 	"Disinformation Instances": "虚假信息实例",
 	"Allow this account to be added to lists": "允许将此帐户添加到列表中",
 	"Apply dithering to images.": "对图像应用抖动处理。",
-	"Replace dashes with em dashes": "将连字符替换为长破折号"
+	"Replace dashes with em dashes": "将连字符替换为长破折号",
+	"Content labels": "内容标签"
 }

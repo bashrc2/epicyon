@@ -28,7 +28,7 @@ from src.posts import add_to_field
 from src.status import actor_status_expired
 from src.status import get_actor_status
 from src.mitm import detect_mitm
-from src.utils import get_labels_from_json
+from src.content_labels import get_labels_from_json
 from src.utils import valid_nickname
 from src.utils import is_yggdrasil_url
 from src.utils import data_dir

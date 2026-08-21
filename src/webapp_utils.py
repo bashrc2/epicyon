@@ -2567,25 +2567,3 @@ def get_display_name_prefix(actor_type: str,
           nickname in chatbot_nicknames()):
         display_name_prefix = '<b>[' + translate['Bot'] + ']</b> '
     return display_name_prefix
-
-
-def labels_list_html(labels_list: []) -> str:
-    """Returns html for a list of labels for an actor or post
-    """
-    labels_str = ''
-    for label in labels_list:
-        label_url = ''
-        if '###' in label:
-            label_url = label.split('###')[1]
-            label = label.split('###')[0]
-        if labels_str:
-            labels_str += ' '
-        if not label_url:
-            labels_str += '<mark>' + label + '</mark>'
-        else:
-            labels_str += '<mark><a href="' + label_url + \
-                '" target="_blank" rel="nofollow noopener noreferrer">' + \
-                label + '</a></mark>'
-    if labels_str:
-        labels_str = '<p>' + labels_str + '</p>\n'
-    return labels_str

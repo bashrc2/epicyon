@@ -774,5 +774,6 @@
 	"Disinformation Instances": "Dezenformasyon Vakaları",
 	"Allow this account to be added to lists": "Bu hesabın listelere eklenmesine izin ver",
 	"Apply dithering to images.": "Görüntülere dithering uygulayın.",
-	"Replace dashes with em dashes": "Kısa çizgileri uzun çizgilerle (em dash) değiştirin."
+	"Replace dashes with em dashes": "Kısa çizgileri uzun çizgilerle (em dash) değiştirin.",
+	"Content labels": "İçerik etiketleri"
 }

@@ -75,7 +75,7 @@ from src.tests import test_update_actor
 from src.tests import run_all_tests
 from src.auth import store_basic_credentials
 from src.auth import create_password
-from src.utils import get_labels_from_json
+from src.content_labels import get_labels_from_json
 from src.utils import resembles_domain
 from src.utils import string_starts_with
 from src.utils import is_yggdrasil_url

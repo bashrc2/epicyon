@@ -42,7 +42,7 @@ from src.textmode import text_mode_removals
 from src.quote import get_quote_toot_url
 from src.timeFunctions import date_from_string_format
 from src.timeFunctions import convert_published_to_local_timezone
-from src.utils import get_labels_from_json
+from src.content_labels import get_labels_from_json
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
 from src.utils import get_mutuals_of_person
@@ -109,7 +109,7 @@ from src.content import add_auto_cw
 from src.person import is_person_snoozed
 from src.person import get_person_avatar_url
 from src.textmode import text_mode_browser
-from src.webapp_utils import labels_list_html
+from src.content_labels import labels_list_html
 from src.webapp_utils import get_display_name_prefix
 from src.webapp_utils import get_show_map_button
 from src.webapp_utils import mitm_warning_html
