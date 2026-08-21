@@ -177,4 +177,4 @@ def set_post_content_labels(post_json_object: {}, labels: str) -> None:
         'name': 'Labels',
         'value': labels
     }
-    obj['attachment'].append(labels_dict)
+    obj['tag'].append(labels_dict)
