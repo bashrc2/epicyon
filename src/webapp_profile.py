@@ -23,6 +23,7 @@ from src.unicodetext import uninvert_text
 from src.unicodetext import standardize_text
 from src.occupation import get_occupation_name
 from src.content_labels import get_labels_from_json
+from src.content_labels import get_actor_content_labels
 from src.utils import get_preferred_username
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
@@ -3560,8 +3561,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
         edit_text_field(translate['Featured hashtags'], 'featuredHashtags',
                         featured_hashtags, '#tag1 #tag2')
 
-    labels_list: list[str] = get_labels_from_json(actor_json)
-    labels_str = labels_list_html(labels_list)
+    labels_str = get_actor_content_labels(actor_json)
     edit_profile_form += \
         edit_text_field(translate['Content labels'], 'contentLabels',
                         labels_str, '1, 2, 3...')
