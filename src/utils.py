@@ -2538,7 +2538,18 @@ def _is_valid_language(text: str) -> bool:
     }
     for char in text:
         # allowed characters
-        if char.isdigit() or char == '_' or char == '.':
+        if char.isdigit() or char == '_':
+            if '__' not in text:
+                continue
+        char_allowed = False
+        for check_char in ('.', '-'):
+            if char == check_char and \
+               not text.startswith(check_char) and \
+               not text.endswith(check_char):
+                if check_char + check_char not in text:
+                    char_allowed = True
+                    break
+        if char_allowed:
             continue
         # character should exist in at least one language
         char_found = False
@@ -3294,7 +3305,7 @@ def valid_hash_tag(hashtag: str) -> bool:
     if len(hashtag) >= 32:
         return False
     # numbers are not permitted to be hashtags
-    if hashtag.isdigit() or '.' in hashtag:
+    if hashtag.isdigit() or '.' in hashtag or '-' in hashtag:
         return False
     if set(hashtag).issubset(VALID_HASHTAG_CHARS):
         return True

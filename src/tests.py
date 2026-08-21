@@ -5376,6 +5376,24 @@ def _test_valid_nick():
     nickname = 'abc.def'
     assert valid_nickname(domain, nickname)
 
+    nickname = '.abc.def'
+    assert not valid_nickname(domain, nickname)
+
+    nickname = 'abc..def'
+    assert not valid_nickname(domain, nickname)
+
+    nickname = 'abc-def'
+    assert valid_nickname(domain, nickname)
+
+    nickname = 'abc--def'
+    assert not valid_nickname(domain, nickname)
+
+    nickname = '-abc-def-'
+    assert not valid_nickname(domain, nickname)
+
+    nickname = 'abc_def'
+    assert valid_nickname(domain, nickname)
+
 
 def _test_guess_tag_category() -> None:
     print('test_guess_hashtag_category')
