@@ -237,7 +237,7 @@ def post_to_outbox_thread(self, message_json: {},
 
 def update_inbox_queue(self, nickname: str, message_json: {},
                        message_bytes: str, debug: bool) -> int:
-    """Update the inbox queue
+    """Update the inbox queue with an incoming post
     """
     if debug:
         print('INBOX: checking inbox queue restart')

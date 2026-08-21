@@ -10,4 +10,4 @@ if [ ! -d /etc/${dir_name} ]; then
 	fi
 fi
 
-journalctl -u ${dir_name} | grep "invalid expanded\|invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request"
+journalctl -u ${dir_name} | grep "invalid expanded\|invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request\|no actor domain\|no actor nickname\|should be a string\|has no actor\|no valid context\|fields should be strings\|fields should be lists\|should be a list\|which are too long\|does not look like a url\|actor contains local network address"
