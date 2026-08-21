@@ -22,6 +22,7 @@ from src.textmode import text_mode_removals
 from src.unicodetext import uninvert_text
 from src.unicodetext import standardize_text
 from src.occupation import get_occupation_name
+from src.utils import get_labels_from_json
 from src.utils import get_preferred_username
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
@@ -103,6 +104,7 @@ from src.follow import get_follower_domains
 from src.follow import is_following_actor
 from src.webapp_frontscreen import html_front_screen
 from src.textmode import text_mode_browser
+from src.webapp_utils import labels_list_html
 from src.webapp_utils import get_display_name_prefix
 from src.webapp_utils import html_following_dropdown
 from src.webapp_utils import edit_number_field
@@ -397,6 +399,7 @@ def html_profile_after_search(authorized: bool,
     ricochet_address: str = get_ricochet_address(profile_json)
     briar_address: str = get_briar_address(profile_json)
     xmpp_address: str = get_xmpp_address(profile_json)
+    labels_list: list[str] = get_labels_from_json(profile_json)
 
     moved_to: str = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -568,7 +571,8 @@ def html_profile_after_search(authorized: bool,
                                          youtube, peertube, loops, pixelfed,
                                          discord, music_site_url,
                                          art_site_url,
-                                         donate_url)
+                                         donate_url,
+                                         labels_list)
 
     follow_is_permitted: bool = True
     if not profile_json.get('followers'):
@@ -785,7 +789,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         no_of_books: int,
                         authorized: bool,
                         birth_date: str,
-                        premium: bool) -> str:
+                        premium: bool,
+                        labels_list: []) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -812,6 +817,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         occupation_str += \
             '        <b>' + occupation_name + '</b><br>\n'
 
+    labels_str = labels_list_html(labels_list)
+
     html_str += '        <h1>' + display_name + '\n</h1>\n'
 
     if premium:
@@ -821,7 +828,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if pronouns:
         html_str += '        ' + pronouns + '<br><br>\n'
 
-    html_str += occupation_str
+    html_str += occupation_str + labels_str
 
     # show if the actor is proxied
     if not actor_proxied:
@@ -991,7 +998,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      discord: str,
                                      music_site_url: str,
                                      art_site_url: str,
-                                     donate_url: str) -> str:
+                                     donate_url: str,
+                                     labels_list: []) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -1098,6 +1106,7 @@ def _get_profile_header_after_search(base_dir: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             html_str += other_accounts_html
+    html_str += labels_list_html(labels_list)
     if is_valid_date(birth_date):
         birth_date: str = remove_html(birth_date)
         html_str += \
@@ -1761,6 +1770,8 @@ def html_profile(signing_priv_key_pem: str,
     if profile_json.get('vcard:bday'):
         birth_date = profile_json['vcard:bday']
 
+    labels_list: list[str] = get_labels_from_json(profile_json)
+
     profile_header_str: str = \
         _get_profile_header(base_dir, http_prefix,
                             nickname,
@@ -1777,7 +1788,8 @@ def html_profile(signing_priv_key_pem: str,
                             occupation_name,
                             actor_proxied, actor,
                             no_of_books, authorized,
-                            birth_date, premium)
+                            birth_date, premium,
+                            labels_list)
 
     # keyboard navigation
     user_path_str: str = '/users/' + nickname

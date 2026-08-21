@@ -28,6 +28,7 @@ from src.posts import add_to_field
 from src.status import actor_status_expired
 from src.status import get_actor_status
 from src.mitm import detect_mitm
+from src.utils import get_labels_from_json
 from src.utils import valid_nickname
 from src.utils import is_yggdrasil_url
 from src.utils import data_dir
@@ -723,6 +724,7 @@ def show_person_options(self, calling_domain: str, path: str,
         moved_to: str = ''
         repo_url = None
         status = None
+        labels_list: list[str] = []
         actor_json = \
             get_person_from_cache(base_dir,
                                   options_actor,
@@ -775,6 +777,7 @@ def show_person_options(self, calling_domain: str, path: str,
                 also_known_as = remove_html(actor_json['alsoKnownAs'])
             repo_url = get_repo_url(actor_json)
             status = get_actor_status(actor_json)
+            labels_list = get_labels_from_json(actor_json)
             if status:
                 if actor_status_expired(actor_json['sm:status']):
                     status: str = ''
@@ -846,7 +849,8 @@ def show_person_options(self, calling_domain: str, path: str,
                                 art_site_url,
                                 self.server.mitm_servers,
                                 status,
-                                self.server.system_language)
+                                self.server.system_language,
+                                labels_list)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

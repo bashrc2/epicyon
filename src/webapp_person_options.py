@@ -30,6 +30,7 @@ from src.follow import is_following_actor
 from src.followingCalendar import receiving_calendar_events
 from src.notifyOnPost import notify_when_person_posts
 from src.person import get_person_notes
+from src.webapp_utils import labels_list_html
 from src.webapp_utils import mitm_warning_html
 from src.webapp_utils import html_header_with_external_style
 from src.webapp_utils import html_footer
@@ -178,7 +179,8 @@ def html_person_options(default_timeline: str,
                         art_site_url: str,
                         mitm_servers: [],
                         status: str,
-                        system_language: str) -> str:
+                        system_language: str,
+                        labels_list: []) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str: str = ''
@@ -414,6 +416,7 @@ def html_person_options(default_timeline: str,
             options_str += \
                 '  <p class="imText">' + status_str + ': ' + \
                 remove_html(status) + '</p>\n'
+    options_str += labels_list_html(labels_list)
     if pronouns:
         options_str += \
             '  <p class="imText">' + translate['Pronouns'] + \
