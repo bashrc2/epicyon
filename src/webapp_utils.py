@@ -1301,7 +1301,8 @@ def get_post_attachments_as_html(base_dir: str,
                                  mute_str: str,
                                  content: str,
                                  minimize_all_images: bool,
-                                 system_language: str) -> (str, str):
+                                 system_language: str,
+                                 labels_str: str) -> (str, str):
     """Returns a string representing any attachments
     """
     attachment_str: str = ''
@@ -1566,6 +1567,7 @@ def get_post_attachments_as_html(base_dir: str,
                     else:
                         gallery_str += \
                             '<label class="transparent">---</label><br>'
+                    gallery_str += labels_str
                     gallery_str += '  <div class="mediaicons">\n'
                     # don't show the announce icon if there is no image
                     # description
@@ -1697,6 +1699,7 @@ def get_post_attachments_as_html(base_dir: str,
                     else:
                         gallery_str += \
                             '<label class="transparent">---</label><br>'
+                    gallery_str += labels_str
                     gallery_str += '  <div class="mediaicons">\n'
                     gallery_str += \
                         '    ' + reply_str + announce_str + like_str + \
@@ -1780,6 +1783,7 @@ def get_post_attachments_as_html(base_dir: str,
                     else:
                         gallery_str += \
                             '<label class="transparent">---</label><br>'
+                    gallery_str += labels_str
                     gallery_str += '  <div class="mediaicons">\n'
                     gallery_str += \
                         '    ' + reply_str + announce_str + \

@@ -42,6 +42,7 @@ from src.textmode import text_mode_removals
 from src.quote import get_quote_toot_url
 from src.timeFunctions import date_from_string_format
 from src.timeFunctions import convert_published_to_local_timezone
+from src.utils import get_labels_from_json
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
 from src.utils import get_mutuals_of_person
@@ -108,6 +109,7 @@ from src.content import add_auto_cw
 from src.person import is_person_snoozed
 from src.person import get_person_avatar_url
 from src.textmode import text_mode_browser
+from src.webapp_utils import labels_list_html
 from src.webapp_utils import get_display_name_prefix
 from src.webapp_utils import get_show_map_button
 from src.webapp_utils import mitm_warning_html
@@ -2986,6 +2988,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                languages_understood, "content")
     content_str = dont_speak_hashtags(content_str)
 
+    # any labels added to the post
+    labels_list = get_labels_from_json(post_json_object)
+    labels_str = labels_list_html(labels_list)
+
     attachment_str, gallery_str = \
         get_post_attachments_as_html(base_dir, nickname, domain,
                                      domain_full,
@@ -2996,7 +3002,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      bookmark_str, delete_str, mute_str,
                                      content_str,
                                      minimize_all_images,
-                                     system_language)
+                                     system_language,
+                                     labels_str)
 
     published_str: str = \
         _get_published_date_str(post_json_object, show_published_date_only,
@@ -3471,7 +3478,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
         post_html += \
             content_str + citations_str + map_str + \
-            reaction_str + footer_str + '\n'
+            reaction_str + labels_str + footer_str + '\n'
         post_html += '    </div>\n'
     else:
         post_html = gallery_str

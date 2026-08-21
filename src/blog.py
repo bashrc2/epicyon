@@ -10,6 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 
 from src.content import replace_emoji_from_tags
+from src.webapp_utils import labels_list_html
 from src.webapp_utils import html_header_with_external_style
 from src.webapp_utils import html_header_with_blog_markup
 from src.webapp_utils import html_footer
@@ -17,6 +18,7 @@ from src.webapp_utils import get_post_attachments_as_html
 from src.webapp_utils import edit_text_area
 from src.webapp_media import add_embedded_elements
 from src.timeFunctions import date_from_string_format
+from src.utils import get_labels_from_json
 from src.utils import replace_embedded_map_with_link
 from src.utils import replace_strings
 from src.utils import data_dir
@@ -395,6 +397,11 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,
                                          languages_understood, "content")
+
+    # any labels added to the post
+    labels_list: list[str] = get_labels_from_json(post_json_object)
+    labels_str: str = labels_list_html(labels_list)
+
     minimize_all_images: bool = False
     attachment_str, _ = \
         get_post_attachments_as_html(base_dir, nickname, domain,
@@ -406,7 +413,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                                      delete_str, mute_str,
                                      json_content,
                                      minimize_all_images,
-                                     system_language)
+                                     system_language, labels_str)
     if attachment_str:
         blog_str += '<br><center>' + attachment_str + '</center>'
     if json_content:
@@ -424,6 +431,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
             blog_str += '<br>' + content_str + '</article>\n'
         else:
             blog_str += '<br><article>' + content_str + '</article>\n'
+
+    blog_str += labels_str
 
     citations_str: str = ''
     if post_json_object['object'].get('tag'):
