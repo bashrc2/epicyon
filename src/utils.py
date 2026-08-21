@@ -4488,12 +4488,19 @@ def get_labels_from_json(json_object: {}) -> []:
             if not isinstance(tag_dict['value'], str):
                 continue
             if tag_dict['name'] == 'Labels':
-                labels_list = tag_dict['value'].split(',')
+                if ',' in tag_dict['value']:
+                    labels_list = tag_dict['value'].split(',')
+                else:
+                    labels_list = tag_dict['value'].split('/')
                 for label_str in labels_list:
                     label_str = label_str.strip()
                     label_str = remove_html(label_str)
                     if label_str:
-                        labels.append(label_str)
+                        if len(labels) < 10:
+                            labels.append(label_str)
+                # limit the number of labels
+                if len(labels) >= 10:
+                    break
             elif tag_dict['name'] == 'Label':
                 label_str = tag_dict['value'].strip()
                 label_str = remove_html(label_str)
@@ -4503,6 +4510,9 @@ def get_labels_from_json(json_object: {}) -> []:
                             if resembles_url(tag_dict['href']):
                                 label_str += '###' + tag_dict['href']
                     labels.append(label_str)
+                # limit the number of labels
+                if len(labels) >= 10:
+                    break
         elif tag_dict['type'] == 'Label':
             label_str = remove_html(tag_dict['name'])
             if label_str:
@@ -4511,4 +4521,7 @@ def get_labels_from_json(json_object: {}) -> []:
                         if resembles_url(tag_dict['href']):
                             label_str += '###' + tag_dict['href']
                 labels.append(label_str)
+            # limit the number of labels
+            if len(labels) >= 10:
+                break
     return labels
