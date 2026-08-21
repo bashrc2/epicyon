@@ -59,6 +59,8 @@ INVALID_ACTOR_URL_CHARACTERS = (
     ';', '='
 )
 
+MAX_CONTENT_LABELS = 10
+
 
 def is_account_dir(dir_name: str) -> bool:
     """Is the given directory an account within /accounts ?
@@ -4496,11 +4498,11 @@ def get_labels_from_json(json_object: {}) -> []:
                     label_str = label_str.strip()
                     label_str = remove_html(label_str)
                     if label_str:
-                        if len(labels) >= 10:
+                        if len(labels) >= MAX_CONTENT_LABELS:
                             break
                         labels.append(label_str)
                 # limit the number of labels
-                if len(labels) >= 10:
+                if len(labels) >= MAX_CONTENT_LABELS:
                     break
             elif tag_dict['name'] == 'Label':
                 label_str = tag_dict['value'].strip()
@@ -4512,7 +4514,7 @@ def get_labels_from_json(json_object: {}) -> []:
                                 label_str += '###' + tag_dict['href']
                     labels.append(label_str)
                 # limit the number of labels
-                if len(labels) >= 10:
+                if len(labels) >= MAX_CONTENT_LABELS:
                     break
         elif tag_dict['type'] == 'Label':
             label_str = remove_html(tag_dict['name'])
@@ -4523,6 +4525,6 @@ def get_labels_from_json(json_object: {}) -> []:
                             label_str += '###' + tag_dict['href']
                 labels.append(label_str)
             # limit the number of labels
-            if len(labels) >= 10:
+            if len(labels) >= MAX_CONTENT_LABELS:
                 break
     return labels
