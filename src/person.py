@@ -1885,6 +1885,8 @@ def get_person_notes_endpoint(base_dir: str, nickname: str, domain: str,
 def _detect_users_path(url: str) -> []:
     """Tries to detect the /users/ path
     """
+    if not url:
+        return '/users/'
     if '/' not in url:
         return '/users/'
     users_paths = get_user_paths()

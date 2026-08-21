@@ -4460,15 +4460,15 @@ def get_labels_from_json(json_object: {}) -> []:
     """Returns labels attached to an actor or post
     """
     tags_list: list[dict] = []
-    if 'attachment' in json_object:
-        if isinstance(json_object['attachment'], list):
-            tags_list = json_object['attachment']
     obj: dict = json_object
     if has_object_dict(json_object):
         obj = json_object['object']
     if 'tag' in obj:
         if isinstance(obj['tag'], list):
             tags_list = obj['tag']
+    if 'attachment' in json_object:
+        if isinstance(json_object['attachment'], list):
+            tags_list = json_object['attachment']
     if not tags_list:
         return []
     labels: list[str] = []
@@ -4477,7 +4477,7 @@ def get_labels_from_json(json_object: {}) -> []:
             continue
         if 'type' not in tag_dict or 'name' not in tag_dict:
             continue
-        if 'value' not in tag_dict or 'href' not in tag_dict:
+        if 'value' not in tag_dict and 'href' not in tag_dict:
             continue
         if not isinstance(tag_dict['type'], str):
             continue

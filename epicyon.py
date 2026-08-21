@@ -75,6 +75,7 @@ from src.tests import test_update_actor
 from src.tests import run_all_tests
 from src.auth import store_basic_credentials
 from src.auth import create_password
+from src.utils import get_labels_from_json
 from src.utils import resembles_domain
 from src.utils import string_starts_with
 from src.utils import is_yggdrasil_url
@@ -431,6 +432,9 @@ def _command_options() -> None:
     parser.add_argument('--actor', dest='actor', type=str,
                         default=None,
                         help='Show the json actor the given handle')
+    parser.add_argument('--labels', dest='labels', type=str,
+                        default=None,
+                        help='Show labels for the given actor')
     parser.add_argument('--posts', dest='posts', type=str,
                         default=None,
                         help='Show posts for the given handle')
@@ -3118,6 +3122,31 @@ def _command_options() -> None:
                        argb.ipfs, argb.ipns,
                        debug, False, signing_priv_key_pem, None,
                        mitm_servers)
+        sys.exit()
+
+    if argb.labels:
+        # returns any labels attached to an actor
+        if not domain:
+            domain = get_config_param(base_dir, 'domain')
+        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        if debug:
+            print('base_dir: ' + str(base_dir))
+            if signing_priv_key_pem:
+                print('Obtained instance actor signing key')
+            else:
+                print('Did not obtain instance actor key for ' + domain)
+        if argb.labels.startswith('@'):
+            argb.labels = argb.actor[1:]
+        mitm_servers: list[str] = []
+        quiet: bool = True
+        post_json_object, _ = \
+            get_actor_json(domain, argb.labels, argb.http, argb.gnunet,
+                           argb.ipfs, argb.ipns,
+                           debug, quiet, signing_priv_key_pem, None,
+                           mitm_servers)
+        if post_json_object:
+            labels_list = get_labels_from_json(post_json_object)
+            pprint(labels_list)
         sys.exit()
 
     if argb.followers:
