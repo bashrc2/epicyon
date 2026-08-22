@@ -431,6 +431,8 @@ def store_content_labels(base_dir: str, nickname: str, domain: str,
     relevant label files.
     """
     labels_list: list[str] = get_labels_from_json(post_json_object)
+    if not labels_list:
+        return
 
     labels_dir = base_dir + '/labels'
 
