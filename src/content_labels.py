@@ -239,14 +239,14 @@ def _store_content_label(nickname: str,
     if not is_a_file(labels_filename):
         if save_string(label_line, labels_filename,
                        'EX: _store_content_label unable to write ' +
-                       labels_filename):
+                       labels_filename + ' [ex]'):
             label_added = True
     else:
-        content = load_string(labels_filename,
-                              'EX: _store_content_label failed to read ' +
-                              labels_filename)
+        content: str = load_string(labels_filename,
+                                   'EX: _store_content_label failed to read ' +
+                                   labels_filename + ' [ex]')
         if content is None:
-            content: str = ''
+            content = ''
         if post_url not in content:
             content = label_line + content
             if save_string(content, labels_filename,
