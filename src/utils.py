@@ -46,6 +46,17 @@ VALID_HASHTAG_CHARS = \
         'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
         'ŴŵÝýŸÿŶŷŹźŽžŻż')
 
+VALID_LABEL_CHARS = \
+    set(' _0123456789' +
+        'abcdefghijklmnopqrstuvwxyz' +
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+        '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
+        'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
+        'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
+        'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
+        'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
+        'ŴŵÝýŸÿŶŷŹźŽžŻż')
+
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
@@ -2049,7 +2060,7 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
         newlines += file_line
     if not newlines.strip():
         # if there are no lines then remove the hashtag file
-        ex_text = 'EX: _delete_hashtags_on_post ' + \
+        ex_text = 'EX: _remove_post_id_from_tag_index ' + \
             'unable to delete tag index ' + str(tag_index_filename)
         erase_file(tag_index_filename, ex_text)
     else:
@@ -2057,6 +2068,34 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
         save_string(newlines, tag_index_filename,
                     'EX: _remove_post_id_from_tag_index unable to write ' +
                     tag_index_filename)
+
+
+def _remove_post_id_from_label_index(labels_index_filename: str,
+                                     post_id: str) -> None:
+    """Remove post_id from the label index file
+    """
+    lines: list[str] = \
+        load_list(labels_index_filename,
+                  'EX: _remove_post_id_from_label_index unable to read ' +
+                  labels_index_filename)
+    if not lines:
+        return
+    newlines: str = ''
+    for file_line in lines:
+        if post_id in file_line:
+            # skip over the deleted post
+            continue
+        newlines += file_line
+    if not newlines.strip():
+        # if there are no lines then remove the hashtag file
+        ex_text = 'EX: _remove_post_id_from_label_index ' + \
+            'unable to delete label index ' + str(labels_index_filename)
+        erase_file(labels_index_filename, ex_text)
+    else:
+        # write the new label index without the given post in it
+        save_string(newlines, labels_index_filename,
+                    'EX: _remove_post_id_from_label_index unable to write ' +
+                    labels_index_filename)
 
 
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
@@ -2094,6 +2133,84 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
             base_dir + '/tags/' + tag['name'][1:] + '.txt'
         if is_a_file(tag_index_filename):
             _remove_post_id_from_tag_index(tag_index_filename, post_id)
+
+
+def _delete_labels_on_post(base_dir: str, post_json_object: {}) -> None:
+    """Removes labels when a post is deleted
+    """
+    tags_list: list[dict] = []
+    obj: dict = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+    if 'tag' in obj:
+        if isinstance(obj['tag'], list):
+            tags_list = obj['tag']
+    if not tags_list:
+        return
+    if not obj.get('id'):
+        return
+    labels: list[str] = []
+    for tag_dict in tags_list:
+        if not isinstance(tag_dict, dict):
+            continue
+        if 'type' not in tag_dict or 'name' not in tag_dict:
+            continue
+        if 'value' not in tag_dict and 'href' not in tag_dict:
+            continue
+        if not isinstance(tag_dict['type'], str):
+            continue
+        if not isinstance(tag_dict['name'], str):
+            continue
+        if tag_dict['type'] == 'PropertyValue' and \
+           'value' in tag_dict:
+            if not isinstance(tag_dict['value'], str):
+                continue
+            if tag_dict['name'] == 'Labels':
+                if ',' in tag_dict['value']:
+                    labels_list = tag_dict['value'].split(',')
+                else:
+                    labels_list = tag_dict['value'].split('/')
+                for label_str in labels_list:
+                    label_str = label_str.strip()
+                    label_str = remove_html(label_str)
+                    if label_str:
+                        if label_str not in labels:
+                            labels.append(label_str)
+            elif tag_dict['name'] == 'Label':
+                label_str = tag_dict['value'].strip()
+                label_str = remove_html(label_str)
+                if label_str:
+                    if 'href' in tag_dict:
+                        if isinstance(tag_dict['href'], str):
+                            if resembles_url(tag_dict['href']):
+                                label_str += '###' + tag_dict['href']
+                    if label_str not in labels:
+                        labels.append(label_str)
+        elif tag_dict['type'] == 'Label':
+            label_str = remove_html(tag_dict['name'])
+            if label_str:
+                if 'href' in tag_dict:
+                    if isinstance(tag_dict['href'], str):
+                        if resembles_url(tag_dict['href']):
+                            label_str += '###' + tag_dict['href']
+                if label_str not in labels:
+                    labels.append(label_str)
+    if not labels:
+        return
+
+    # get the id of the post
+    post_id: str = remove_id_ending(post_json_object['object']['id'])
+    for label in labels:
+        # find the index file for this label
+        labels_map_filename: str = \
+            base_dir + '/labelsmaps/' + label + '.txt'
+        if is_a_file(labels_map_filename):
+            _remove_post_id_from_label_index(labels_map_filename, post_id)
+        # find the index file for this tag
+        labels_index_filename: str = \
+            base_dir + '/labels/' + label + '.txt'
+        if is_a_file(labels_index_filename):
+            _remove_post_id_from_label_index(labels_index_filename, post_id)
 
 
 def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
@@ -2429,9 +2546,10 @@ def delete_post(base_dir: str, http_prefix: str,
                     post_id: str = remove_id_ending(post_json_object['id'])
                     remove_moderation_post_from_index(base_dir, post_id, debug)
 
-    # remove any hashtags index entries
+    # remove any hashtags and labels index entries
     if has_object:
         _delete_hashtags_on_post(base_dir, post_json_object)
+        _delete_labels_on_post(base_dir, post_json_object)
 
     # remove any replies
     _delete_post_remove_replies(base_dir, nickname, domain,
@@ -3310,6 +3428,19 @@ def valid_hash_tag(hashtag: str) -> bool:
     if set(hashtag).issubset(VALID_HASHTAG_CHARS):
         return True
     if _is_valid_language(hashtag):
+        return True
+    return False
+
+
+def valid_content_label(label: str) -> bool:
+    """Returns true if the give content label contains valid characters
+    """
+    # long labels are not valid
+    if len(label) >= 32:
+        return False
+    if set(label).issubset(VALID_LABEL_CHARS):
+        return True
+    if _is_valid_language(label):
         return True
     return False
 

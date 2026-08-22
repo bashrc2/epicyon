@@ -1099,6 +1099,55 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
                 'EX: error writing tag map ' + tag_map_filename)
 
 
+def add_label_map_links(labels_maps_dir: str, label: str,
+                        map_links: [], published: str, post_url: str) -> None:
+    """Appends to a hashtag file containing map links
+    This is used to show a map for a particular hashtag
+    """
+    labels_map_filename: str = labels_maps_dir + '/' + label + '.txt'
+    post_url = post_url.replace('#', '/')
+
+    # read the existing map links
+    existing_map_links: list[str] = []
+    if is_a_file(labels_map_filename):
+        existing_map_links_str = \
+            load_string(labels_map_filename,
+                        'EX: error reading label map ' + labels_map_filename)
+        if existing_map_links_str:
+            existing_map_links = existing_map_links_str.split('\n')
+
+    # combine map links with the existing list
+    secs_since_epoch: int = \
+        int((date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z']) -
+             date_epoch()).total_seconds())
+    links_changed: bool = False
+    for link in map_links:
+        line = str(secs_since_epoch) + ' ' + link + ' ' + post_url
+        if line in existing_map_links:
+            continue
+        links_changed = True
+        existing_map_links = [line] + existing_map_links
+    if not links_changed:
+        return
+
+    # sort the list of map links
+    existing_map_links.sort(reverse=True)
+    map_links_str: str = ''
+    ctr: int = 0
+    for link in existing_map_links:
+        if not link:
+            continue
+        map_links_str += link + '\n'
+        ctr += 1
+        # don't allow the list to grow indefinitely
+        if ctr >= 2000:
+            break
+
+    # save the tag
+    save_string(map_links_str, labels_map_filename,
+                'EX: error writing label map ' + labels_map_filename)
+
+
 def _gpx_location(latitude: float, longitude: float, post_id: str) -> str:
     """Returns a gpx waypoint
     """

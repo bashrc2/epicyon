@@ -219,3 +219,36 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
         erase_file(erase_filename,
                    'EX: remove_old_hashtags unable to delete ' +
                    erase_filename)
+
+
+def remove_old_labels(base_dir: str, max_months: int) -> str:
+    """Remove old labels
+    """
+    max_months: int = min(max_months, 11)
+    prev_date = date_from_numbers(1970, 1 + max_months, 1, 0, 0)
+    max_days_since_epoch: int = (date_utcnow() - prev_date).days
+    remove_labels: list[str] = []
+
+    for _, _, files in os.walk(base_dir + '/labels'):
+        for fname in files:
+            labels_filename: str = os.path.join(base_dir + '/labels', fname)
+            if not is_a_file(labels_filename):
+                continue
+            # get last modified datetime
+            mod_time_since_epoc = os.path.getmtime(labels_filename)
+            last_modified_date = \
+                datetime.fromtimestamp(mod_time_since_epoc,
+                                       timezone.utc)
+            prev_date_epoch = date_epoch()
+            file_days_since_epoch = \
+                (last_modified_date - prev_date_epoch).days
+
+            # check of the file is too old
+            if file_days_since_epoch < max_days_since_epoch:
+                remove_labels.append(labels_filename)
+        break
+
+    for erase_filename in remove_labels:
+        erase_file(erase_filename,
+                   'EX: remove_old_labels unable to delete ' +
+                   erase_filename)

@@ -152,6 +152,7 @@ from src.data import erase_file
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
+from src.content_labels import store_content_labels
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -2835,6 +2836,15 @@ def _inbox_after_initial(server, inbox_start_time,
             fitness_performance(inbox_start_time,
                                 server.fitness,
                                 'INBOX', 'store_hash_tags',
+                                debug)
+            inbox_start_time = time.time()
+
+            store_content_labels(base_dir, handle_name, domain,
+                                 http_prefix, domain_full,
+                                 post_json_object, session)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', 'store_content_labels',
                                 debug)
             inbox_start_time = time.time()
 
