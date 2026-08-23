@@ -25,6 +25,7 @@ from src.data import is_a_dir
 from src.data import makedir
 from src.data import is_a_file
 from src.data import save_string
+from src.data import erase_file
 from src.maps import get_map_links_from_post_content
 from src.maps import get_location_from_post
 from src.maps import geocoords_from_map_link
@@ -32,9 +33,42 @@ from src.maps import add_label_map_links
 from src.timeFunctions import date_utcnow
 from src.timeFunctions import date_epoch
 from src.timeFunctions import date_from_string_format
-# from src.delete import remove_old_labels
+from src.timeFunctions import date_from_numbers
 
 MAX_CONTENT_LABELS = 10
+
+
+def _remove_old_labels(base_dir: str, max_months: int) -> str:
+    """Remove old labels
+    """
+    max_months: int = min(max_months, 11)
+    prev_date = date_from_numbers(1970, 1 + max_months, 1, 0, 0)
+    max_days_since_epoch: int = (date_utcnow() - prev_date).days
+    remove_labels: list[str] = []
+
+    for _, _, files in os.walk(base_dir + '/labels'):
+        for fname in files:
+            labels_filename: str = os.path.join(base_dir + '/labels', fname)
+            if not is_a_file(labels_filename):
+                continue
+            # get last modified datetime
+            mod_time_since_epoc = os.path.getmtime(labels_filename)
+            last_modified_date = \
+                datetime.fromtimestamp(mod_time_since_epoc,
+                                       timezone.utc)
+            prev_date_epoch = date_epoch()
+            file_days_since_epoch = \
+                (last_modified_date - prev_date_epoch).days
+
+            # check of the file is too old
+            if file_days_since_epoch < max_days_since_epoch:
+                remove_labels.append(labels_filename)
+        break
+
+    for erase_filename in remove_labels:
+        erase_file(erase_filename,
+                   'EX: remove_old_labels unable to delete ' +
+                   erase_filename)
 
 
 def get_labels_from_json(json_object: {}) -> []:
@@ -227,7 +261,7 @@ def _store_content_label(nickname: str,
     """
     if not valid_content_label(label):
         return False
-    labels_filename = labels_dir + '/' + label + '.txt'
+    labels_filename: str = labels_dir + '/' + label + '.txt'
     days_diff = date_utcnow() - date_epoch()
     days_since_epoch = days_diff.days
     label_line = \
@@ -258,6 +292,38 @@ def _store_content_label(nickname: str,
         return False
 
     return True
+
+
+def _store_person_label(label: str, labels_dir: str, actor_url: str) -> bool:
+    """stores an individual label for a person
+    """
+    if not valid_content_label(label):
+        return False
+    actor_url: str = remove_id_ending(actor_url)
+    labels_filename: str = labels_dir + '/' + label + '.txt'
+
+    label_added: bool = False
+    if not is_a_file(labels_filename):
+        if save_string(actor_url, labels_filename,
+                       'EX: _store_person_label unable to write ' +
+                       labels_filename + ' [ex]'):
+            label_added = True
+    else:
+        content: str = load_string(labels_filename,
+                                   'EX: _store_person_label failed to read ' +
+                                   labels_filename + ' [ex]')
+        if content is None:
+            content = ''
+        if actor_url + '\n' not in content:
+            content = actor_url + '\n' + content
+            if save_string(content, labels_filename,
+                           'EX: Failed to write entry to labels file ' +
+                           labels_filename + ' [ex]'):
+                label_added = True
+
+    if not label_added:
+        return False
+    return False
 
 
 def _html_labels_swarm(base_dir: str, actor: str) -> str:
@@ -412,6 +478,7 @@ def _update_cached_labels_swarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(last_modified))
     if save_swarm:
+        _remove_old_labels(base_dir, 3)
         actor = local_actor_url(http_prefix, nickname, domain_full)
         new_swarm_str = _html_labels_swarm(base_dir, actor)
         if new_swarm_str:
@@ -419,14 +486,13 @@ def _update_cached_labels_swarm(base_dir: str, nickname: str, domain: str,
                            'EX: unable to write cached labels swarm ' +
                            cached_labels_swarm_filename):
                 return True
-        # remove_old_labels(base_dir, 3)
     return False
 
 
-def store_content_labels(base_dir: str, nickname: str, domain: str,
-                         http_prefix: str, domain_full: str,
-                         post_json_object: {},
-                         session) -> None:
+def _store_content_labels_base(base_dir: str, nickname: str, domain: str,
+                               http_prefix: str, domain_full: str,
+                               post_json_object: {},
+                               session, is_person: bool) -> None:
     """Extracts content labels from an incoming post and updates the
     relevant label files.
     """
@@ -435,6 +501,8 @@ def store_content_labels(base_dir: str, nickname: str, domain: str,
         return
 
     labels_dir = base_dir + '/labels'
+    if is_person:
+        labels_dir = base_dir + '/personlabels'
 
     # add labels directory if it doesn't exist
     if not is_a_dir(labels_dir):
@@ -472,15 +540,43 @@ def store_content_labels(base_dir: str, nickname: str, domain: str,
     post_url = remove_id_ending(post_json_object['id'])
     post_url = post_url.replace('/', '#')
     labels_ctr: int = 0
-    for label in labels_list:
-        if _store_content_label(nickname,
-                                label, labels_dir, post_url,
-                                map_links, published,
-                                labels_maps_dir):
-            labels_ctr += 1
+    if is_person:
+        for label in labels_list:
+            if _store_content_label(nickname,
+                                    label, labels_dir, post_url,
+                                    map_links, published,
+                                    labels_maps_dir):
+                labels_ctr += 1
+    else:
+        for label in labels_list:
+            if _store_person_label(label, labels_dir, post_url):
+                labels_ctr += 1
 
     # if some labels were found then recalculate the swarm
     # ready for later display
     if labels_ctr > 0:
         _update_cached_labels_swarm(base_dir, nickname, domain,
                                     http_prefix, domain_full)
+
+
+def store_person_labels(base_dir: str, nickname: str, domain: str,
+                        http_prefix: str, domain_full: str,
+                        actor_json: {}, session) -> None:
+    """Extracts labels from an incoming actor to the
+    relevant label files.
+    """
+    _store_content_labels_base(base_dir, nickname, domain,
+                               http_prefix, domain_full,
+                               actor_json, session, True)
+
+
+def store_content_labels(base_dir: str, nickname: str, domain: str,
+                         http_prefix: str, domain_full: str,
+                         post_json_object: {},
+                         session) -> None:
+    """Extracts labels from an incoming post to the
+    relevant label files.
+    """
+    _store_content_labels_base(base_dir, nickname, domain,
+                               http_prefix, domain_full,
+                               post_json_object, session, False)

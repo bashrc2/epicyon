@@ -102,6 +102,7 @@ from src.acceptreject import create_feature_accept
 from src.posts import send_signed_json
 from src.collections import store_feature_authorization
 from src.collections import allow_lists
+from src.content_labels import store_person_labels
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -183,11 +184,12 @@ def _notify_moved(base_dir: str, domain_full: str,
 
 
 def _person_receive_update(base_dir: str,
-                           domain: str, port: int,
+                           nickname: str, domain: str, port: int,
                            update_nickname: str, update_domain: str,
                            update_port: int,
                            person_json: {}, person_cache: {},
-                           debug: bool, http_prefix: str) -> bool:
+                           debug: bool, http_prefix: str,
+                           session) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
     url_str = get_url_from_post(person_json['url'])
@@ -248,6 +250,12 @@ def _person_receive_update(base_dir: str,
                         print('WARN: Public key does not match ' +
                               'cached actor when updating')
                     return False
+
+    # store any labels for the person
+    store_person_labels(base_dir, nickname, domain,
+                        http_prefix, domain_full,
+                        person_json, session)
+
     # save to cache in memory
     store_person_in_cache(base_dir, idx, person_json,
                           person_cache, True)
@@ -773,11 +781,12 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                 get_domain_from_actor(actor_url)
             if update_nickname and update_domain:
                 if _person_receive_update(base_dir,
-                                          domain, port,
+                                          nickname, domain, port,
                                           update_nickname, update_domain,
                                           update_port,
                                           message_json['object'],
-                                          person_cache, debug, http_prefix):
+                                          person_cache, debug, http_prefix,
+                                          session):
                     print('Person Update: ' + str(message_json))
                     if debug:
                         print('DEBUG: Profile update was received for ' +

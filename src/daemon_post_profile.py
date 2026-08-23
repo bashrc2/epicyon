@@ -159,6 +159,7 @@ from src.data import is_a_dir
 from src.data import makedir
 from src.content_labels import get_actor_content_labels
 from src.content_labels import set_actor_content_labels
+from src.content_labels import store_person_labels
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -177,7 +178,8 @@ def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
 
 
 def _profile_post_save_actor(base_dir: str, http_prefix: str,
-                             nickname: str, domain: str, port: int,
+                             nickname: str, domain: str,
+                             domain_full: str, port: int,
                              actor_json: {}, actor_filename: str,
                              onion_domain: str, i2p_domain: str,
                              yggdrasil_domain: str,
@@ -185,7 +187,8 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
                              send_move_activity: bool,
                              self, cached_webfingers: {},
                              person_cache: {}, project_version: str,
-                             system_language: str) -> None:
+                             system_language: str,
+                             session) -> None:
     """ HTTP POST save actor json file within accounts
     """
     add_name_emojis_to_tags(base_dir, http_prefix,
@@ -210,6 +213,10 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     webfinger_update(base_dir, nickname, domain,
                      onion_domain, i2p_domain, yggdrasil_domain,
                      cached_webfingers)
+    # store any labels for the person
+    store_person_labels(base_dir, nickname, domain,
+                        http_prefix, domain_full,
+                        actor_json, session)
     # also copy to the actors cache and
     # person_cache in memory
     store_person_in_cache(base_dir, actor_json['id'], actor_json,
@@ -3461,7 +3468,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 # save actor json file within accounts
                 if actor_changed:
                     _profile_post_save_actor(base_dir, http_prefix,
-                                             nickname, domain,
+                                             nickname, domain, domain_full,
                                              self.server.port,
                                              actor_json, actor_filename,
                                              onion_domain, i2p_domain,
@@ -3470,7 +3477,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                              send_move_activity,
                                              self, cached_webfingers,
                                              person_cache, project_version,
-                                             system_language)
+                                             system_language, curr_session)
 
                 if _profile_post_deactivate_account(base_dir, nickname, domain,
                                                     calling_domain,

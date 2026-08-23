@@ -156,6 +156,7 @@ from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
 from src.content_labels import set_post_content_labels
+from src.content_labels import store_person_labels
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -427,7 +428,8 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
 
     person_id = None
     if person_json.get('id'):
-        person_id = person_json['id']
+        if isinstance(person_json['id'], str):
+            person_id = person_json['id']
     pub_key, pub_key_id = get_actor_public_key_from_id(person_json, None)
     shared_inbox = None
     if person_json.get('sharedInbox'):
@@ -462,6 +464,18 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
         # have they moved?
         if person_json.get('movedTo') or person_json.get('copiedTo'):
             display_name += ' ⌂'
+
+    # store any labels for the person
+    if person_id:
+        person_http_prefix = http_prefix
+        if '://' in person_id:
+            person_http_prefix = http_prefix.split('://')[0]
+        person_nickname = get_nickname_from_actor(person_id)
+        person_domain, person_port = get_domain_from_actor(person_id)
+        person_domain_full = get_full_domain(person_domain, person_port)
+        store_person_labels(base_dir, person_nickname, person_domain,
+                            person_http_prefix, person_domain_full,
+                            person_json, session)
 
     store_person_in_cache(base_dir, person_url, person_json,
                           person_cache, True)
