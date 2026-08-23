@@ -348,6 +348,7 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(last_modified))
     if save_swarm:
+        remove_old_hashtags(base_dir, 3)
         actor = local_actor_url(http_prefix, nickname, domain_full)
         new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if new_swarm_str:
@@ -355,7 +356,6 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
                            'EX: unable to write cached hashtag swarm ' +
                            cached_hashtag_swarm_filename):
                 return True
-        remove_old_hashtags(base_dir, 3)
     return False
 
 
