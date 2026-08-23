@@ -513,10 +513,11 @@ def _store_content_labels_base(base_dir: str, nickname: str, domain: str,
     # get geolocations from content
     map_links: list[str] = []
     published = None
-    if 'content' in post_json_object['object']:
-        published = post_json_object['object']['published']
-        post_content = post_json_object['object']['content']
-        map_links += get_map_links_from_post_content(post_content, session)
+    if has_object_dict(post_json_object):
+        if 'content' in post_json_object['object']:
+            published = post_json_object['object']['published']
+            post_content = post_json_object['object']['content']
+            map_links += get_map_links_from_post_content(post_content, session)
     # get geolocation from labels
     location_str = get_location_from_post(post_json_object)
     if location_str:
