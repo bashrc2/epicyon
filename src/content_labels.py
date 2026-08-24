@@ -304,7 +304,7 @@ def _store_person_label(label: str, labels_dir: str, actor_url: str) -> bool:
 
     label_added: bool = False
     if not is_a_file(labels_filename):
-        if save_string(actor_url, labels_filename,
+        if save_string(actor_url + '\n', labels_filename,
                        'EX: _store_person_label unable to write ' +
                        labels_filename + ' [ex]'):
             label_added = True
