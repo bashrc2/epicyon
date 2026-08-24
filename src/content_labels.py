@@ -545,7 +545,7 @@ def _store_content_labels_base(base_dir: str, nickname: str, domain: str,
     post_url = remove_id_ending(post_json_object['id'])
     post_url = post_url.replace('/', '#')
     labels_ctr: int = 0
-    if is_person:
+    if not is_person:
         for label in labels_list:
             if _store_content_label(nickname,
                                     label, labels_dir, post_url,
