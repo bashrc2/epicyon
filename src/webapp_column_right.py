@@ -161,14 +161,18 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
         translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
-    rss_icon_str += \
-        '        <a href="/categories.xml" tabindex="4" ' + \
-        'class="imageAnchor">' + \
-        '<img class="' + edit_image_class + \
-        '" loading="lazy" decoding="async" alt="' + \
-        translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
-        translate['Hashtag Categories RSS Feed'] + '" src="/' + \
-        'icons/categoriesrss.png" /></a>\n'
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+    show_categories_filename: str = account_dir + '/.showCategories'
+    show_categories = is_a_file(show_categories_filename)
+    if show_categories:
+        rss_icon_str += \
+            '        <a href="/categories.xml" tabindex="4" ' + \
+            'class="imageAnchor">' + \
+            '<img class="' + edit_image_class + \
+            '" loading="lazy" decoding="async" alt="' + \
+            translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
+            translate['Hashtag Categories RSS Feed'] + '" src="/' + \
+            'icons/categoriesrss.png" /></a>\n'
     if rss_icon_at_top:
         html_str += rss_icon_str
 

@@ -90,7 +90,8 @@ def get_hashtag_categories_feed(base_dir: str,
     return rss_str
 
 
-def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
+def html_hash_tag_swarm(base_dir: str, actor: str, translate: {},
+                        show_categories: bool) -> str:
     """Returns a tag swarm of today's hashtags
     """
     max_tag_length = 42
@@ -321,9 +322,9 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
                                  translate: {}) -> bool:
     """Updates the hashtag swarm stored as a file
     """
-    cached_hashtag_swarm_filename = \
-        acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
     save_swarm = True
+    account_dir: str = acct_dir(base_dir, nickname, domain)
+    cached_hashtag_swarm_filename = account_dir + '/.hashtagSwarm'
     if is_a_file(cached_hashtag_swarm_filename):
         last_modified = file_last_modified(cached_hashtag_swarm_filename)
         modified_date = None
@@ -348,9 +349,12 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(last_modified))
     if save_swarm:
+        show_categories_filename = account_dir + '/.showCategories'
+        show_categories = is_a_file(show_categories_filename)
         remove_old_hashtags(base_dir, 3)
         actor = local_actor_url(http_prefix, nickname, domain_full)
-        new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
+        new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate,
+                                            show_categories)
         if new_swarm_str:
             if save_string(new_swarm_str, cached_hashtag_swarm_filename,
                            'EX: unable to write cached hashtag swarm ' +

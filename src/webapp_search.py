@@ -522,9 +522,9 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         translate['Search'] + '</button>\n'
     follow_str += '  </form>\n'
 
-    cached_hashtag_swarm_filename: str = \
-        acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
     swarm_str: str = ''
+    account_dir = acct_dir(base_dir, search_nickname, domain)
+    cached_hashtag_swarm_filename: str = account_dir + '/.hashtagSwarm'
     if is_a_file(cached_hashtag_swarm_filename):
         swarm_str = \
             load_string(cached_hashtag_swarm_filename,
@@ -534,7 +534,10 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         if swarm_str is None:
             swarm_str: str = ''
     if not swarm_str:
-        swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
+        show_categories_filename: str = account_dir + '/.showCategories'
+        show_categories = is_a_file(show_categories_filename)
+        swarm_str = html_hash_tag_swarm(base_dir, actor, translate,
+                                        show_categories)
         if swarm_str:
             save_string(swarm_str, cached_hashtag_swarm_filename,
                         'EX: ' +
