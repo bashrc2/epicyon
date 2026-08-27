@@ -220,7 +220,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {},
 
     # swarm of categories
     category_swarm_str: str = ''
-    if category_swarm:
+    if category_swarm and show_categories:
         if len(category_swarm) > 3:
             category_swarm.sort()
             for category_str in category_swarm:
