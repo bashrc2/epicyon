@@ -2405,18 +2405,25 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     if self.path.endswith('/about'):
-        if calling_domain.endswith('.onion'):
+        if calling_domain.endswith('.onion') and self.server.onion_domain:
             msg = \
                 html_about(self.server.base_dir, 'http',
                            self.server.onion_domain,
                            None, self.server.translate,
                            self.server.system_language)
-        elif calling_domain.endswith('.i2p'):
+        elif calling_domain.endswith('.i2p') and self.server.i2p_domain:
             msg = \
                 html_about(self.server.base_dir, 'http',
                            self.server.i2p_domain,
                            self.server.yggdrasil_domain,
                            self.server.translate,
+                           self.server.system_language)
+        elif (is_yggdrasil_address(calling_domain) and
+              self.server.yggdrasil_domain):
+            msg = \
+                html_about(self.server.base_dir, 'http',
+                           self.server.yggdrasil_domain,
+                           None, self.server.translate,
                            self.server.system_language)
         else:
             msg = \
@@ -6683,7 +6690,8 @@ def _get_ontology(self, calling_domain: str,
                     ontology_file.replace('static.datafoodconsortium.org',
                                           calling_domain)
                 if not calling_domain.endswith('.i2p') and \
-                   not calling_domain.endswith('.onion'):
+                   not calling_domain.endswith('.onion') and \
+                   not is_yggdrasil_address(calling_domain):
                     ontology_file = \
                         ontology_file.replace('http://' +
                                               calling_domain,

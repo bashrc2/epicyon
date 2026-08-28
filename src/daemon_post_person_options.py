@@ -275,15 +275,17 @@ def _person_options_view(self, options_confirm_params: str,
 
         # establish the session
         curr_proxy_type = proxy_type
-        if '.onion/' in profile_handle or \
-           profile_handle.endswith('.onion'):
+        if (('.onion/' in profile_handle or
+             profile_handle.endswith('.onion')) and self.server.session_onion):
             curr_proxy_type = 'tor'
             curr_session = self.server.session_onion
-        elif ('.i2p/' in profile_handle or
-              profile_handle.endswith('.i2p')):
+        elif (('.i2p/' in profile_handle or
+               profile_handle.endswith('.i2p')) and
+              self.server.session_i2p):
             curr_proxy_type = 'i2p'
             curr_session = self.server.session_i2p
-        elif is_yggdrasil_url(profile_handle):
+        elif (is_yggdrasil_url(profile_handle) and
+              self.server.session_yggdrasil):
             curr_proxy_type = 'yggdrasil'
             curr_session = self.server.session_yggdrasil
 

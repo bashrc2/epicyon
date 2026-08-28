@@ -15,6 +15,8 @@ from src.utils import resembles_url
 from src.utils import get_nickname_from_actor
 from src.utils import get_domain_from_actor
 from src.utils import get_full_domain
+from src.utils import is_yggdrasil_address
+from src.utils import local_network_host
 
 pixelfed_fieldnames = ('pixelfed', 'fotos', 'photos')
 
@@ -62,7 +64,9 @@ def get_pixelfed(actor_json: {}) -> str:
                 continue
             http_prefix = 'https://'
             if domain.endswith('.onion') or \
-               domain.endswith('.i2p'):
+               domain.endswith('.i2p') or \
+               is_yggdrasil_address(domain) or \
+               local_network_host(domain):
                 http_prefix = 'http://'
             pixelfed_text = \
                 http_prefix + \

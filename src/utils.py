@@ -583,9 +583,10 @@ def decoded_host(host: str) -> str:
     if ':' not in host:
         # eg. mydomain:8000
         if not local_network_host(host):
-            if not host.endswith('.onion'):
-                if not host.endswith('.i2p'):
-                    return idna.decode(host)
+            if not host.endswith('.onion') and \
+               not host.endswith('.i2p') and \
+               not is_yggdrasil_address(host):
+                return idna.decode(host)
     return host
 
 
@@ -3059,7 +3060,9 @@ def get_alt_path(actor: str, domain_full: str, calling_domain: str) -> str:
     post_actor: str = actor
     if calling_domain not in actor and domain_full in actor:
         if calling_domain.endswith('.onion') or \
-           calling_domain.endswith('.i2p'):
+           calling_domain.endswith('.i2p') or \
+           is_yggdrasil_address(calling_domain) or \
+           local_network_host(calling_domain):
             post_actor = \
                 'http://' + calling_domain + actor.split(domain_full)[1]
             print('Changed POST domain from ' + actor + ' to ' + post_actor)

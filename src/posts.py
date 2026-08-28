@@ -45,6 +45,7 @@ from src.timeFunctions import date_utcnow
 from src.timeFunctions import date_from_string_format
 from src.timeFunctions import date_epoch
 from src.timeFunctions import valid_post_date
+from src.utils import local_network_host
 from src.utils import resembles_domain
 from src.utils import string_starts_with
 from src.utils import is_yggdrasil_address
@@ -3542,7 +3543,10 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         return 8
     with_digest = True
 
-    if to_domain.endswith('.onion') or to_domain.endswith('.i2p'):
+    if to_domain.endswith('.onion') or \
+       to_domain.endswith('.i2p') or \
+       is_yggdrasil_address(to_domain) or \
+       local_network_host(to_domain):
         http_prefix = 'http'
 
     if to_nickname == 'inbox':
@@ -3698,7 +3702,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
               domain + ' ' + curr_domain)
     if domain != curr_domain:
         if not curr_domain.endswith('.onion') and \
-           not curr_domain.endswith('.i2p'):
+           not curr_domain.endswith('.i2p') and \
+           not is_yggdrasil_address(curr_domain):
             if debug:
                 print('send_signed_json ' +
                       'changing post content sender domain from ' +

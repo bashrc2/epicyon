@@ -15,6 +15,7 @@ from src.session import get_json_valid
 from src.flags import is_float
 from src.flags import is_moderator
 from src.formats import media_file_mime_type
+from src.utils import is_yggdrasil_address
 from src.utils import get_preferred_username
 from src.utils import replace_embedded_map_with_link
 from src.utils import chatbot_nicknames
@@ -2521,6 +2522,7 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
             http_prefix = 'https'
             if instance.endswith('.onion') or \
                instance.endswith('.i2p') or \
+               is_yggdrasil_address(instance) or \
                local_network_host(instance):
                 http_prefix = 'http'
             instances_text += \

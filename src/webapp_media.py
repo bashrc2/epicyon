@@ -10,6 +10,8 @@ __module_group__ = "Timeline"
 from src.utils import data_dir
 from src.utils import string_ends_with
 from src.utils import valid_url_prefix
+from src.utils import is_yggdrasil_address
+from src.utils import local_network_host
 from src.data import load_string
 from src.data import is_a_file
 
@@ -263,7 +265,10 @@ def _add_embedded_video_from_sites(content: str,
                 site = site.replace('http://', '')
             elif site.startswith('https://'):
                 site = site.replace('https://', '')
-            if site.endswith('.onion') or site.endswith('.i2p'):
+            if site.endswith('.onion') or \
+               site.endswith('.i2p') or \
+               is_yggdrasil_address(site) or \
+               local_network_host(site):
                 site_str = 'http://' + site
             else:
                 site_str = 'https://' + site
@@ -329,7 +334,10 @@ def _add_embedded_video_from_sites(content: str,
                 site = site.replace('http://', '')
             elif site.startswith('https://'):
                 site = site.replace('https://', '')
-            if site.endswith('.onion') or site.endswith('.i2p'):
+            if site.endswith('.onion') or \
+               site.endswith('.i2p') or \
+               is_yggdrasil_address(site) or \
+               local_network_host(site):
                 site_str = 'http://' + site
             else:
                 site_str = 'https://' + site

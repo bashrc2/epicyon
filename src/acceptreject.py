@@ -468,7 +468,7 @@ def _accept_follow(base_dir: str, message_json: {},
               followed_actor)
         return
 
-    # convert from onion/i2p to clearnet accepted domain
+    # convert from onion/i2p/yggdrasil to clearnet accepted domain
     if onion_domain:
         if accepted_domain.endswith('.onion') and \
            not curr_domain.endswith('.onion'):

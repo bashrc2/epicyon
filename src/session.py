@@ -14,6 +14,7 @@ from socket import error as SocketError
 from http.client import HTTPConnection
 from src.flags import is_image_file
 from src.flags import url_permitted
+from src.utils import local_network_host
 from src.utils import get_port_from_domain
 from src.utils import remove_domain_port
 from src.utils import text_in_file
@@ -520,7 +521,10 @@ def verify_html(session, url: str, debug: bool,
         domain + '/users/' + nickname
     ]
     for actor in actor_links:
-        if domain.endswith('.onion') or domain.endswith('.i2p'):
+        if domain.endswith('.onion') or \
+           domain.endswith('.i2p') or \
+           is_yggdrasil_address(domain) or \
+           local_network_host(domain):
             actor = 'http://' + actor
         else:
             actor = http_prefix + '://' + actor

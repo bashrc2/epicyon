@@ -12,6 +12,7 @@ import http.client
 import ssl
 import socket
 from urllib.parse import urlparse
+from src.utils import local_network_host
 from src.utils import data_dir
 from src.utils import string_starts_with
 from src.utils import is_yggdrasil_address
@@ -113,7 +114,8 @@ def site_is_active(url: str, timeout: int,
         return False
     if '.onion/' in url or '.i2p/' in url or \
        url.endswith('.onion') or \
-       url.endswith('.i2p'):
+       url.endswith('.i2p') or \
+       local_network_host(url):
         # skip this check for onion and i2p
         return True
     if 'http://' in url:

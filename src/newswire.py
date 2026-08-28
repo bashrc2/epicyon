@@ -22,6 +22,7 @@ from src.categories import set_hashtag_category
 from src.flags import is_suspended
 from src.flags import is_local_network_address
 from src.flags import is_public_post
+from src.utils import local_network_host
 from src.utils import is_yggdrasil_address
 from src.utils import data_dir
 from src.utils import string_contains
@@ -159,7 +160,10 @@ def get_newswire_favicon_url(url: str) -> str:
     if '://' not in url:
         return '/newswire_favicon.ico'
     if url.startswith('http://'):
-        if not (url.endswith('.onion') or url.endswith('.i2p')):
+        if not (url.endswith('.onion') or
+                url.endswith('.i2p') or
+                is_yggdrasil_address(url) or
+                local_network_host(url)):
             return '/newswire_favicon.ico'
     domain: str = url.split('://')[1]
     if '/' not in domain:
