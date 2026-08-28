@@ -14,6 +14,7 @@ import socket
 from urllib.parse import urlparse
 from src.utils import data_dir
 from src.utils import string_starts_with
+from src.utils import is_yggdrasil_address
 from src.data import load_string
 from src.data import save_string
 
@@ -115,6 +116,13 @@ def site_is_active(url: str, timeout: int,
        url.endswith('.i2p'):
         # skip this check for onion and i2p
         return True
+    if 'http://' in url:
+        domain = url.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if is_yggdrasil_address(domain):
+            # skip this check for yggdrasil
+            return True
 
     loc = _site_active_parse_url(url)
     result = Result(url=url)
@@ -197,5 +205,6 @@ def is_online(host: str = "8.8.8.8",
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
     except socket.error as ex:
-        print(ex)
+        msg = str(ex).replace('\n', ' ')
+        print('OFFLINE: ' + msg)
         return False
