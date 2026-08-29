@@ -1227,12 +1227,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     hashtag_rss: str = hashtag_url
     if '.html' in hashtag_rss:
         hashtag_rss = hashtag_rss.replace('.html', '')
-    hashtag_search_form += ' <a href="' + hashtag_rss + '.rss">'
-    hashtag_search_form += \
-        '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" decoding="async" ' + \
-        'alt="RSS 2.0" title="RSS 2.0" src="/' + \
-        'icons/logorss.png" /></a></h1>\n'
+    hashtag_search_form += ' <a href="' + hashtag_rss + '.rss" ' + \
+        'alt="RSS 2.0" title="RSS 2.0">🛜</a></h1>\n'
 
     tag_link: str = '/users/' + nickname + '?remotetag=' + \
         hashtag_url.replace('/', '--')
