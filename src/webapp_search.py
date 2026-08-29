@@ -990,7 +990,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     # RSS link for hashtag feed
     hashtag_search_form += \
-        ' <a href="/tags/rss2/' + hashtag + '">🛜</a></h1>\n'
+        ' <a href="/tags/rss2/' + hashtag + '" ' + \
+        'alt="RSS 2.0" title="RSS 2.0">🛜</a></h1>\n'
 
     # maps for geolocations with this hashtag
     maps_str: str = \
