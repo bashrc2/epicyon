@@ -926,8 +926,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     separator_str: str = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
+    account_dir: str = acct_dir(base_dir, nickname, domain)
     if nickname:
-        account_dir: str = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             nickname = None
 
@@ -1005,7 +1005,9 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     hashtag_search_form += maps_str
 
     # edit the category for this hashtag
-    if is_editor(base_dir, nickname):
+    show_categories_filename: str = account_dir + '/.showCategories'
+    show_categories = is_a_file(show_categories_filename)
+    if show_categories and is_editor(base_dir, nickname):
         category: str = get_hashtag_category(base_dir, hashtag)
         hashtag_search_form += '<div class="hashtagCategoryContainer">\n'
         hashtag_search_form += '  <form enctype="multipart/form-data" ' + \
