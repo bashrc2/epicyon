@@ -926,8 +926,9 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     separator_str: str = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
-    account_dir: str = acct_dir(base_dir, nickname, domain)
+    account_dir: str = None
     if nickname:
+        account_dir = acct_dir(base_dir, nickname, domain)
         if not is_a_dir(account_dir):
             nickname = None
 
@@ -1002,26 +1003,27 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     hashtag_search_form += maps_str
 
     # edit the category for this hashtag
-    show_categories_filename: str = account_dir + '/.showCategories'
-    show_categories = is_a_file(show_categories_filename)
-    if show_categories and is_editor(base_dir, nickname):
-        category: str = get_hashtag_category(base_dir, hashtag)
-        hashtag_search_form += '<div class="hashtagCategoryContainer">\n'
-        hashtag_search_form += '  <form enctype="multipart/form-data" ' + \
-            'method="POST" accept-charset="UTF-8" action="' + \
-            '/users/' + nickname + '/tags/' + hashtag + \
-            '/sethashtagcategory">\n'
-        hashtag_search_form += '    <center>\n'
-        hashtag_search_form += translate['Category']
-        hashtag_search_form += \
-            '      <input type="text" style="width: 20ch" ' + \
-            'name="hashtagCategory" value="' + category + '">\n'
-        hashtag_search_form += \
-            '      <button type="submit" class="button" name="submitYes">' + \
-            translate['Publish'] + '</button>\n'
-        hashtag_search_form += '    </center>\n'
-        hashtag_search_form += '  </form>\n'
-        hashtag_search_form += '</div>\n'
+    if account_dir:
+        show_categories_filename: str = account_dir + '/.showCategories'
+        show_categories = is_a_file(show_categories_filename)
+        if show_categories and is_editor(base_dir, nickname):
+            category: str = get_hashtag_category(base_dir, hashtag)
+            hashtag_search_form += '<div class="hashtagCategoryContainer">\n'
+            hashtag_search_form += '  <form enctype="multipart/form-data" ' + \
+                'method="POST" accept-charset="UTF-8" action="' + \
+                '/users/' + nickname + '/tags/' + hashtag + \
+                '/sethashtagcategory">\n'
+            hashtag_search_form += '    <center>\n'
+            hashtag_search_form += translate['Category']
+            hashtag_search_form += \
+                '      <input type="text" style="width: 20ch" ' + \
+                'name="hashtagCategory" value="' + category + '">\n'
+            hashtag_search_form += \
+                '      <button type="submit" class="button" ' + \
+                'name="submitYes">' + translate['Publish'] + '</button>\n'
+            hashtag_search_form += '    </center>\n'
+            hashtag_search_form += '  </form>\n'
+            hashtag_search_form += '</div>\n'
 
     if start_index > 0:
         # previous page link
