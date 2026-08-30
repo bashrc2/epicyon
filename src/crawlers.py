@@ -23,7 +23,7 @@ from src.data import save_string
 from src.data import is_a_file
 
 default_user_agent_blocks = [
-    'fedilist', 'ncsc scan', 'fedifetcher'
+    'fedilist', 'ncsc scan', 'fedifetcher', 'example.com'
 ]
 
 
