@@ -333,7 +333,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
         if debug:
             print('INBOX: checking object fields')
         # check that some fields are a string or list
-        string_or_list_fields = ('url', 'attributedTo')
+        string_or_list_fields: dict = ['url']
         for check_field in string_or_list_fields:
             if not message_json['object'].get(check_field):
                 continue
@@ -342,6 +342,19 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                not isinstance(field_value, list):
                 print('INBOX: ' +
                       check_field + ' should be a string or list ' +
+                      str(message_json['object'][check_field]))
+                http_400(self)
+                self.server.postreq_busy = False
+                return 3
+        # check that some fields are a string or list or dict
+        check_field: str = 'attributedTo'
+        if message_json['object'].get(check_field):
+            field_value = message_json['object'][check_field]
+            if not isinstance(field_value, str) and \
+               not isinstance(field_value, list) and \
+               not isinstance(field_value, dict):
+                print('INBOX: ' +
+                      check_field + ' should be a string or list or dict ' +
                       str(message_json['object'][check_field]))
                 http_400(self)
                 self.server.postreq_busy = False

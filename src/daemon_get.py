@@ -3327,6 +3327,13 @@ def daemon_http_get(self) -> None:
             redirect_headers(self, hashtag_url, None, calling_domain, 303)
         return
 
+    if self.path.startswith('/labels/'):
+        # TODO
+        # label_str = self.path.split('/labels/')[1]
+        self.server.getreq_busy = False
+        http_404(self, 720)
+        return
+
     # hashtag search
     if self.path.startswith('/tags/') or \
        (authorized and '/tags/' in self.path):

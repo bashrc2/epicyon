@@ -132,7 +132,7 @@ def get_person_icon(person_json: {}) -> str:
     return ''
 
 
-def get_attributed_to(field: str | list) -> str:
+def get_attributed_to(field: str | list | dict) -> str:
     """Returns the actor
     """
     if isinstance(field, str):
@@ -151,6 +151,16 @@ def get_attributed_to(field: str | list) -> str:
                 return attrib['id']
         if isinstance(field[0], str):
             return field[0]
+    if isinstance(field, dict):
+        if not (field.get('type') and field.get('id')):
+            return None
+        if not (isinstance(field['type'], str) and
+                isinstance(field['id'], str)):
+            return None
+        potential_id: str = remove_id_ending(field['id'])
+        if field['type'] == 'Person' and \
+           resembles_url(potential_id):
+            return potential_id
     return None
 
 
