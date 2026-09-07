@@ -167,7 +167,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'exabot', 'nagetbot', 'newsai', 'henkbot', 'opencode', 'trae',
             'agenttimes', 'shap-user', 'cragcrawler', 'geisthaus-pagefetcher',
             'kimi-user', 'querit-searchbot', 'useai', 'cursor',
-            'reflectionbot', 'exasearchbot', 'lightpanda'
+            'reflectionbot', 'exasearchbot', 'lightpanda', 'ilands.ai'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
