@@ -1509,7 +1509,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
     following = None
-    petnames = None
+    petnames: list[str] = []
     if '@' in words:
         if is_a_file(following_filename):
             following: list[str] = []
