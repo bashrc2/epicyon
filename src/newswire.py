@@ -1567,11 +1567,11 @@ def get_rss(base_dir: str, domain: str, session, url: str,
         else:
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as ex:
-        print('WARN: get_rss failed\nurl: ' + str(url) + ', ' +
+        print('WARN: get_rss failed, url1: ' + str(url) + ', ' +
               'headers: ' + str(session_headers) + ', ' +
               'params: ' + str(session_params) + ', ' + str(ex))
     except ValueError as ex:
-        print('WARN: get_rss failed\nurl: ' + str(url) + ', ' +
+        print('WARN: get_rss failed, url2: ' + str(url) + ', ' +
               'headers: ' + str(session_headers) + ', ' +
               'params: ' + str(session_params) + ', ' + str(ex))
     except SocketError as ex:
