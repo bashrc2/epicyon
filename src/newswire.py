@@ -1528,6 +1528,8 @@ def _comment_out_feed(base_dir: str, url: str) -> bool:
         load_string(subscriptions_filename,
                     'EX: _comment_out_feed unable to read ' +
                     subscriptions_filename)
+    if not newswire_str:
+        return False
     if url not in newswire_str:
         return False
     if '# ' + url in newswire_str or '#' + url in newswire_str:
