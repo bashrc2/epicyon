@@ -57,11 +57,13 @@ from src.session import download_image_any_mime_type
 from src.content import remove_script
 from src.data import load_list
 from src.data import load_string
+from src.data import save_string
 from src.data import save_binary
 from src.data import erase_file
 from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
+from src.data import move_file
 
 
 def _remove_cdata(text: str) -> str:
@@ -1516,6 +1518,31 @@ def _yt_channel_to_atom_feed(url: str) -> str:
     return channel_url
 
 
+def _comment_out_feed(base_dir: str, url: str) -> bool:
+    """Comments out an RSS feed if the name or service is not known
+    """
+    subscriptions_filename = data_dir(base_dir) + '/newswire.txt'
+    if not is_a_file(subscriptions_filename):
+        return False
+    newswire_str: str = \
+        load_string(subscriptions_filename,
+                    'EX: _comment_out_feed unable to read ' +
+                    subscriptions_filename)
+    if url not in newswire_str:
+        return False
+    if '# ' + url in newswire_str or '#' + url in newswire_str:
+        return False
+    newswire_str = newswire_str.replace(url, '# ' + url)
+    if not save_string(newswire_str, subscriptions_filename + '.new',
+                       'EX: _comment_out_feed unable to save ' +
+                       subscriptions_filename + '.new'):
+        return False
+    return move_file(subscriptions_filename + '.new', subscriptions_filename,
+                     'EX: _comment_out_feed unable to move ' +
+                     subscriptions_filename + '.new -> ' +
+                     subscriptions_filename)
+
+
 def get_rss(base_dir: str, domain: str, session, url: str,
             moderated: bool, mirrored: bool,
             max_posts_per_source: int, max_feed_size_kb: int,
@@ -1570,6 +1597,10 @@ def get_rss(base_dir: str, domain: str, session, url: str,
         print('WARN: get_rss failed, url1: ' + str(url) + ', ' +
               'headers: ' + str(session_headers) + ', ' +
               'params: ' + str(session_params) + ', ' + str(ex))
+        if ' -2]' in str(ex):
+            # Errno -2 Name or service not known
+            # Note that ex does not return an errno as such
+            _comment_out_feed(base_dir, url)
     except ValueError as ex:
         print('WARN: get_rss failed, url2: ' + str(url) + ', ' +
               'headers: ' + str(session_headers) + ', ' +
