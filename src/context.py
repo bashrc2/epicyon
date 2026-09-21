@@ -28,7 +28,8 @@ VALID_CONTEXTS = (
     "https://w3id.org/security/data-integrity/v1",
     "*/contexts/data-integrity/v1.jsonld",
     "*/ns/privacyHeaders",
-    "https://w3id.org/fep/*"
+    "https://w3id.org/fep/*",
+    "https://gotosocial.org/ns"
 )
 
 
