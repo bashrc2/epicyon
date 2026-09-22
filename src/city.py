@@ -181,13 +181,16 @@ def parse_nogo_string(nogo_line: str) -> []:
         if 'E' in longitude_str:
             longitude_str = \
                 longitude_str.replace('E', '')
+            longitude_str = longitude_str.replace(',', '.')
             longitude = float(longitude_str)
         elif 'W' in longitude_str:
             longitude_str = \
                 longitude_str.replace('W', '')
+            longitude_str = longitude_str.replace(',', '.')
             longitude = -float(longitude_str)
         else:
             longitude = float(longitude_str)
+        latitude_str = latitude_str.replace(',', '.')
         latitude = float(latitude_str)
         polygon.append([latitude, longitude])
     return polygon
@@ -272,6 +275,11 @@ def spoof_geolocation(base_dir: str,
             if 'W' in longitude:
                 longdirection: str = 'W'
                 longitude = longitude.replace('W', '')
+
+            # ensure that decimal point is a dot
+            latitude = latitude.replace(',', '.')
+            longitude = longitude.replace(',', '.')
+
             latitude = float(latitude)
             longitude = float(longitude)
             # get the time of day at the city

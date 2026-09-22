@@ -2878,7 +2878,8 @@ class JsonLdProcessor(object):
                         if rval['@value'].isdigit():
                             rval['@value'] = int(rval['@value'])
                     elif type_ == XSD_DOUBLE:
-                        rval['@value'] = float(rval['@value'])
+                        value_str = rval['@value'].replace(',', '.')
+                        rval['@value'] = float(value_str)
                 # do not add native type
                 if type_ not in [XSD_BOOLEAN, XSD_INTEGER, XSD_DOUBLE,
                                  XSD_STRING]:
