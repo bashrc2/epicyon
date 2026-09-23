@@ -1986,12 +1986,26 @@ def get_price_from_string(price_str: str) -> (str, str):
     for symbol, name in currencies.items():
         if symbol in price_str:
             price = price_str.replace(symbol, '')
+            # decimal point represented by dot
+            if '.' not in price:
+                price = price.replace(',', '.')
+            price = price.replace(',', '')
             if is_float(price):
                 return price, name
         elif name in price_str:
             price = price_str.replace(name, '')
+            # decimal point represented by dot
+            if '.' not in price:
+                price = price.replace(',', '.')
+            price = price.replace(',', '')
             if is_float(price):
                 return price, name
+
+    # decimal point represented by dot
+    if '.' not in price_str:
+        price_str = price_str.replace(',', '.')
+    price_str = price_str.replace(',', '')
+
     if is_float(price_str):
         return price_str, "EUR"
     return "0.00", "EUR"

@@ -7707,6 +7707,12 @@ def _test_get_price_from_string() -> None:
     price, curr = get_price_from_string("5.23")
     assert price == "5.23"
     assert curr == "EUR"
+    price, curr = get_price_from_string("5,23")
+    assert price == "5.23"
+    assert curr == "EUR"
+    price, curr = get_price_from_string("500,000.99")
+    assert price == "500000.99"
+    assert curr == "EUR"
     price, curr = get_price_from_string("£7.36")
     assert price == "7.36"
     assert curr == "GBP"
