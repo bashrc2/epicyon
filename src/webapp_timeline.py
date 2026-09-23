@@ -1238,11 +1238,13 @@ def html_individual_share(domain: str, share_id: str,
             shared_item['location'] + '<br>'
     contact_title_str: str = translate['Contact']
     if shared_item.get('itemPrice') and shared_item.get('itemCurrency'):
-        if is_float(shared_item['itemPrice']):
-            if float(shared_item['itemPrice']) > 0:
+        price_str = shared_item['itemPrice']
+        price_str = price_str.replace(',', '.')
+        if is_float(price_str):
+            if float(price_str) > 0:
                 profile_str += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \
-                    shared_item['itemPrice'] + ' ' + \
+                    price_str + ' ' + \
                     shared_item['itemCurrency']
                 contact_title_str = translate['Buy']
     profile_str += '</p>\n'

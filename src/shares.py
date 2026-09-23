@@ -1327,9 +1327,11 @@ def _shares_catalog_params(path: str) -> (bool, float, float, str):
             if 't' in value or 'y' in value or '1' in value:
                 today = True
         elif key.startswith('min'):
+            value = value.replace(',', '.')
             if is_float(value):
                 min_price = float(value)
         elif key.startswith('max'):
+            value = value.replace(',', '.')
             if is_float(value):
                 max_price = float(value)
         elif key.startswith('match'):

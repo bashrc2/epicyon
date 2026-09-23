@@ -324,6 +324,8 @@ def get_location_from_post(post_json_object: {}) -> str:
                         elif 'W' in longitude:
                             longitude = longitude.replace('W', '')
                             is_west = True
+                        # decimal point represented by dot
+                        longitude = longitude.replace(',', '.')
                     if not is_float(longitude):
                         if isinstance(longitude, str):
                             longitude = longitude.replace(',', '.')
@@ -341,6 +343,8 @@ def get_location_from_post(post_json_object: {}) -> str:
                             is_south = True
                         elif 'N' in latitude:
                             latitude = latitude.replace('N', '')
+                        # decimal point represented by dot
+                        latitude = latitude.replace(',', '.')
                     if not is_float(latitude):
                         if isinstance(latitude, str):
                             latitude = latitude.replace(',', '.')
@@ -507,16 +511,16 @@ def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     latitude = coords[1]
+    # ensure decimal point is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
     longitude = coords[2]
+    # ensure decimal point is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
     zoom = int(zoom)
-
-    # ensure decimal point is a dot
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
 
     latitude = float(latitude)
     longitude = float(longitude)
@@ -539,12 +543,16 @@ def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
     latitude = url.split('mlat=')[1]
     if '&' in latitude:
         latitude = latitude.split('&')[0]
+    # ensure that decimal place is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
 
     longitude = url.split('mlon=')[1]
     if '&' in longitude:
         longitude = longitude.split('&')[0]
+    # ensure that decimal place is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
 
@@ -560,11 +568,6 @@ def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     zoom = int(zoom)
-
-    # ensure that decimal place is a dot
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
-
     latitude = float(latitude)
     longitude = float(longitude)
     return zoom, latitude, longitude
@@ -612,10 +615,6 @@ def _geocoords_from_osmand_link(url: str) -> (int, float, float):
             latitude_str = pin_coords_str.split(',')[0]
             longitude_str = pin_coords_str.split(',')[1]
             if is_float(latitude_str) and is_float(longitude_str):
-                # ensure that decimal point is a dot
-                latitude_str = latitude_str.replace(',', '.')
-                longitude_str = longitude_str.replace(',', '.')
-
                 latitude = float(latitude_str)
                 longitude = float(longitude_str)
 
@@ -627,13 +626,12 @@ def _geocoords_from_osmand_link(url: str) -> (int, float, float):
                 zoom_str = sections[0]
                 latitude_str = sections[1]
                 longitude_str = sections[2]
+                # ensure that decimal point is a dot
+                latitude_str = latitude_str.replace(',', '.')
+                longitude_str = longitude_str.replace(',', '.')
                 if zoom_str.isnumeric() and \
                    is_float(latitude_str) and \
                    is_float(longitude_str):
-                    # ensure that decimal point is a dot
-                    latitude_str = latitude_str.replace(',', '.')
-                    longitude_str = longitude_str.replace(',', '.')
-
                     latitude = float(latitude_str)
                     longitude = float(longitude_str)
                     zoom = int(zoom_str)
@@ -661,11 +659,10 @@ def _geocoords_from_geo_link(url: str) -> (int, float, float):
                 longitude_str = longitude_str.split('?')[0]
             if ' ' in longitude_str:
                 longitude_str = longitude_str.split(' ')[0]
+            # ensure that decimal point is a dot
+            latitude_str = latitude_str.replace(',', '.')
+            longitude_str = longitude_str.replace(',', '.')
             if is_float(latitude_str) and is_float(longitude_str):
-                # ensure that decimal point is a dot
-                latitude_str = latitude_str.replace(',', '.')
-                longitude_str = longitude_str.replace(',', '.')
-
                 latitude = float(latitude_str)
                 longitude = float(longitude_str)
     return zoom, latitude, longitude
@@ -706,19 +703,18 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
             else:
                 return None, None, None
     latitude = coords[0]
+    # ensure that decimal point is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
     if '"' in coords[1]:
         coords[1] = coords[1].split('"')[0]
     longitude = coords[1]
+    # ensure that decimal point is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
     zoom = int(zoom)
-
-    # ensure that decimal point is a dor
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
-
     latitude = float(latitude)
     longitude = float(longitude)
     return zoom, latitude, longitude
@@ -749,11 +745,15 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
     if len(coords) != 2:
         return None, None, None
     latitude = coords[0]
+    # ensure that decimal point is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
     if '"' in coords[1]:
         coords[1] = coords[1].split('"')[0]
+    # ensure that decimal point is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
     zoom: int = 17
@@ -766,11 +766,6 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     zoom = int(zoom)
-
-    # ensure that decimal point is a dor
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
-
     latitude = float(latitude)
     longitude = float(longitude)
     return zoom, latitude, longitude
@@ -802,11 +797,15 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
     if len(coords) != 2:
         return None, None, None
     latitude = coords[0]
+    # ensure that decimal point is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
     if '"' in coords[1]:
         coords[1] = coords[1].split('"')[0]
+    # ensure that decimal point is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
     zoom: int = 17
@@ -817,11 +816,6 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
     if not zoom.isdigit():
         return None, None, None
     zoom = int(zoom)
-
-    # ensure that decimal point is a dor
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
-
     latitude = float(latitude)
     longitude = float(longitude)
     return zoom, latitude, longitude
@@ -847,22 +841,21 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
     if len(coords) < 3:
         return None, None, None
     latitude = coords[0]
+    # ensure that decimal point is a dot
+    latitude = latitude.replace(',', '.')
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
     if '"' in coords[1]:
         coords[1] = coords[1].split('"')[0]
+    # ensure that decimal point is a dot
+    longitude = longitude.replace(',', '.')
     if not is_float(longitude):
         return None, None, None
     zoom = coords[2]
     if not zoom.isdigit():
         return None, None, None
     zoom = int(zoom)
-
-    # ensure that decimal point is a dor
-    latitude = latitude.replace(',', '.')
-    longitude = longitude.replace(',', '.')
-
     latitude = float(latitude)
     longitude = float(longitude)
     return zoom, latitude, longitude

@@ -1708,8 +1708,9 @@ def _receive_new_post_process_newshare(self, fields: {},
     city: str = get_spoofed_city(city, base_dir, nickname, domain)
     item_qty: int = 1
     if fields['itemQty']:
-        if is_float(fields['itemQty']):
-            item_qty = float(fields['itemQty'])
+        qty_str = fields['itemQty'].replace(',', '.')
+        if is_float(qty_str):
+            item_qty = float(qty_str)
     item_price = "0.00"
     item_currency = "EUR"
     if fields['itemPrice']:
@@ -2094,6 +2095,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         elif 'W' in longitude:
                             longitude = longitude.replace('W', '')
                             is_west = True
+                        # decimal point represented by dot
+                        longitude = longitude.replace(',', '.')
                     if not is_float(longitude):
                         if isinstance(longitude, str):
                             longitude = float(longitude)
@@ -2110,6 +2113,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                             is_south = True
                         elif 'N' in latitude:
                             latitude = latitude.replace('N', '')
+                        # decimal point represented by dot
+                        latitude = latitude.replace(',', '.')
                     if not is_float(latitude):
                         if isinstance(latitude, str):
                             latitude = float(latitude)
