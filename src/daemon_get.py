@@ -389,10 +389,21 @@ def daemon_http_get(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    if ua_str:
-        if 'Epicyon/' in ua_str:
-            log_epicyon_instances(self.server.base_dir, ua_str,
-                                  self.server.known_epicyon_instances)
+    invalid_user_agent: bool = False
+    if not ua_str:
+        invalid_user_agent = True
+    else:
+        # if user agent is just spaces
+        if not ua_str.strip():
+            invalid_user_agent = True
+    if invalid_user_agent:
+        print('GET no user agent ' + str(self.headers).replace('\n', ' '))
+        http_400(self)
+        return
+
+    if 'Epicyon/' in ua_str:
+        log_epicyon_instances(self.server.base_dir, ua_str,
+                              self.server.known_epicyon_instances)
 
     if not _permitted_crawler_path(self.path):
         block, self.server.blocked_cache_last_updated, llm = \
