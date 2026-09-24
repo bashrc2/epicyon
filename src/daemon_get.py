@@ -397,7 +397,9 @@ def daemon_http_get(self) -> None:
         if not ua_str.strip():
             invalid_user_agent = True
     if invalid_user_agent:
-        print('GET no user agent ' + str(self.headers).replace('\n', ' '))
+        print('GET no user agent ' +
+              str(self.headers).replace('\n', ' ') +
+              ' Path: ' + str(self.path))
         http_400(self)
         return
 
