@@ -3627,7 +3627,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
         edit_text_field(translate['Time Zone'], 'timeZone',
                         timezone, 'Europe/London')
 
-    person_content_license_url = ''
+    person_content_license_url: str = ''
     if actor_json.get('preferredLicense'):
         person_content_license_url = \
             license_link_from_name(actor_json['preferredLicense'])
