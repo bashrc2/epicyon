@@ -2310,12 +2310,12 @@ def _profile_post_instance_short_desc(self, base_dir: str, fields: {}) -> None:
             self.server.instance_description_short = 'Epicyon'
 
 
-def _profile_post_content_license(base_dir: str, fields: {}, self) -> None:
+def _profile_instance_content_license(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST change instance content license
     """
     if fields.get('contentLicenseUrl'):
         if fields['contentLicenseUrl'] != self.server.content_license_url:
-            license_str = fields['contentLicenseUrl']
+            license_str = remove_html(fields['contentLicenseUrl'])
             if '://' not in license_str:
                 license_str = license_link_from_name(license_str)
             set_config_param(base_dir,
@@ -2326,6 +2326,25 @@ def _profile_post_content_license(base_dir: str, fields: {}, self) -> None:
         license_str = 'https://creativecommons.org/licenses/by-nc/4.0'
         set_config_param(base_dir, 'contentLicenseUrl', license_str)
         self.server.content_license_url = license_str
+
+
+def _profile_person_content_license(fields: {}, actor_json: {},
+                                    actor_changed: bool) -> bool:
+    """ HTTP POST change content license for a particular account
+    """
+    content_license_url = ''
+    if actor_json.get('preferredLicense'):
+        content_license_url = actor_json['preferredLicense']
+
+    if fields.get('personContentLicenseUrl'):
+        if fields['personContentLicenseUrl'] != content_license_url:
+            license_str = remove_html(fields['personContentLicenseUrl'])
+            if '://' not in license_str:
+                license_str = license_link_from_name(license_str)
+            if license_str:
+                actor_json['preferredLicense'] = license_str
+                return True
+    return actor_changed
 
 
 def _profile_post_libretranslate_api_key(base_dir: str, fields: {}) -> None:
@@ -3075,7 +3094,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_libretranslate_api_key(base_dir, fields)
 
-                    _profile_post_content_license(base_dir, fields, self)
+                    _profile_instance_content_license(base_dir, fields, self)
 
                     _profile_post_instance_short_desc(self, base_dir, fields)
 
@@ -3083,6 +3102,9 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_memorial_accounts(base_dir, domain,
                                                     person_cache, fields)
+                actor_changed = \
+                    _profile_person_content_license(fields, actor_json,
+                                                    actor_changed)
                 actor_changed = \
                     _profile_post_email_address(actor_json, fields,
                                                 actor_changed)

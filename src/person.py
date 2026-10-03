@@ -41,6 +41,7 @@ from src.media import process_meta_data
 from src.flags import is_image_file
 from src.timeFunctions import date_utcnow
 from src.timeFunctions import get_current_time_int
+from src.utils import license_link_from_name
 from src.utils import resembles_url
 from src.utils import get_preferred_username
 from src.utils import string_starts_with
@@ -523,6 +524,13 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
     _, published = get_status_number()
     featured_collections_url = \
         person_id + src.collections.FEATURED_COLLECTIONS_ENDING
+
+    content_license_url = get_config_param(base_dir, 'contentLicenseUrl')
+    if not content_license_url:
+        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
+    else:
+        content_license_url = license_link_from_name(content_license_url)
+
     new_person = {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
@@ -601,9 +609,11 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'vcard:bday': '',
         'showFeatured': False,
         'showMedia': False,
-        'showRepliesInMedia': False,
-        'preferredLicense': 'https://creativecommons.org/licenses/by-nc/4.0'
+        'showRepliesInMedia': False
     }
+
+    if content_license_url:
+        new_person['preferredLicense'] = content_license_url
 
     # extra fields used only by groups
     if group_account:
@@ -947,9 +957,15 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             update_actor = True
 
     if 'preferredLicense' not in person_json:
-        person_json['preferredLicense'] = \
-            'https://creativecommons.org/licenses/by-nc/4.0'
-        update_actor = True
+        content_license_url = get_config_param(base_dir, 'contentLicenseUrl')
+        if not content_license_url:
+            content_license_url = \
+                'https://creativecommons.org/licenses/by-nc/4.0'
+        else:
+            content_license_url = license_link_from_name(content_license_url)
+        if content_license_url:
+            person_json['preferredLicense'] = content_license_url
+            update_actor = True
 
     if 'memorial' not in person_json:
         person_json['memorial'] = False

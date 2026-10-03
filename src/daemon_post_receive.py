@@ -1880,6 +1880,23 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
               ' path ' + path)
         return NEW_POST_FAILED
 
+    # get actor from username
+    actor = \
+        get_instance_url(calling_domain, http_prefix,
+                         domain_full, onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
+        '/users/' + nickname
+    actor_json = get_person_from_cache(base_dir, actor, person_cache)
+    if not actor_json:
+        actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+        if is_a_file(actor_filename):
+            actor_json = load_json(actor_filename)
+    if actor_json:
+        # get the content license for this account
+        if actor_json.get('preferredLicense'):
+            content_license_url = \
+                license_link_from_name(actor_json['preferredLicense'])
+
     # get the message id of an edited post
     edited_postid = None
     print('DEBUG: edited_postid path ' + path)

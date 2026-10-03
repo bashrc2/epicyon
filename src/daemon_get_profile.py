@@ -90,6 +90,8 @@ def show_person_profile(self, authorized: bool,
     actor_json = person_lookup(domain, path, base_dir)
     if not actor_json:
         return False
+    if actor_json.get('preferredLicense'):
+        content_license_url = actor_json['preferredLicense']
     add_alternate_domains(actor_json, domain, onion_domain, i2p_domain,
                           yggdrasil_domain)
     if request_http(self.headers, debug):
@@ -275,6 +277,9 @@ def show_roles(self, calling_domain: str, referer_domain: str,
     actor_json: dict = load_json(actor_filename)
     if not actor_json:
         return False
+
+    if actor_json.get('preferredLicense'):
+        content_license_url = actor_json['preferredLicense']
 
     if actor_json.get('hasOccupation'):
         if request_http(self.headers, debug):
@@ -462,6 +467,9 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                 self.server.known_epicyon_instances
                             instance_software = \
                                 self.server.instance_software
+                            if actor_json.get('preferredLicense'):
+                                content_license_url = \
+                                    actor_json['preferredLicense']
                             msg = \
                                 html_profile(signing_priv_key_pem,
                                              rss_icon_at_top,

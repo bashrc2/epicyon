@@ -24,6 +24,7 @@ from src.unicodetext import standardize_text
 from src.occupation import get_occupation_name
 from src.content_labels import get_labels_from_json
 from src.content_labels import get_actor_content_labels
+from src.utils import license_link_from_name
 from src.utils import get_preferred_username
 from src.utils import is_private_browser
 from src.utils import replace_embedded_map_with_link
@@ -3625,6 +3626,17 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
     edit_profile_form += \
         edit_text_field(translate['Time Zone'], 'timeZone',
                         timezone, 'Europe/London')
+
+    person_content_license_url = ''
+    if actor_json.get('preferredLicense'):
+        person_content_license_url = \
+            license_link_from_name(actor_json['preferredLicense'])
+    if not person_content_license_url:
+        person_content_license_url = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+    edit_profile_form += \
+        edit_text_field(translate['Content License'],
+                        'personContentLicenseUrl', person_content_license_url)
 
     keep_dms: int = get_post_expiry_keep_dms(base_dir, nickname, domain)
     edit_profile_form += '<br>\n' + \
