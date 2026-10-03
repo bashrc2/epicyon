@@ -601,7 +601,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'vcard:bday': '',
         'showFeatured': False,
         'showMedia': False,
-        'showRepliesInMedia': False
+        'showRepliesInMedia': False,
+        'preferredLicense': 'https://creativecommons.org/licenses/by-nc/4.0'
     }
 
     # extra fields used only by groups
@@ -944,6 +945,11 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         if 'supportsFriendRequests' not in person_json['capabilities']:
             person_json['capabilities']['supportsFriendRequests'] = False
             update_actor = True
+
+    if 'preferredLicense' not in person_json:
+        person_json['preferredLicense'] = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+        update_actor = True
 
     if 'memorial' not in person_json:
         person_json['memorial'] = False
