@@ -153,6 +153,10 @@ def show_instance_actor(self, calling_domain: str,
         {
             'href': 'https://w3id.org/fep/7628',
             'name': 'FEP-7628: Move actor (incoming)'
+        },
+        {
+            'href': 'https://w3id.org/fep/6757',
+            'name': 'FEP-6757: Content License Metadata in ActivityPub'
         }
     ]
     actor_json['preferredUsername'] = domain_full
