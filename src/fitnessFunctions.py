@@ -129,7 +129,11 @@ def fitness_thread(base_dir: str, fitness: {}) -> None:
     """Thread used to save fitness function scores
     """
     fitness_filename: str = data_dir(base_dir) + '/fitness.json'
+    prev_fitness_str = str(fitness)
     while True:
         # every 10 mins
         time.sleep(60 * 10)
-        save_json(fitness, fitness_filename)
+        curr_fitness_str = str(fitness)
+        if curr_fitness_str != prev_fitness_str:
+            save_json(fitness, fitness_filename)
+            prev_fitness_str = curr_fitness_str
