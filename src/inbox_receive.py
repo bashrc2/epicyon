@@ -2109,7 +2109,8 @@ def receive_announce(recent_posts_cache: {},
                      block_military: {},
                      block_government: {},
                      block_bluesky: {},
-                     block_nostr: {}) -> bool:
+                     block_nostr: {},
+                     max_hashtags: int) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -2392,7 +2393,8 @@ def receive_announce(recent_posts_cache: {},
 
         store_hash_tags(base_dir, nickname, domain,
                         http_prefix, domain_full,
-                        post_json_object, translate, session)
+                        post_json_object, translate, session,
+                        max_hashtags)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookup_actor = None

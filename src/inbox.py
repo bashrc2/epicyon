@@ -2347,7 +2347,8 @@ def _inbox_after_initial(server, inbox_start_time,
                         server.block_military,
                         server.block_government,
                         server.block_bluesky,
-                        server.block_nostr):
+                        server.block_nostr,
+                        max_hashtags):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2832,7 +2833,8 @@ def _inbox_after_initial(server, inbox_start_time,
 
             store_hash_tags(base_dir, handle_name, domain,
                             http_prefix, domain_full,
-                            post_json_object, translate, session)
+                            post_json_object, translate, session,
+                            max_hashtags)
             fitness_performance(inbox_start_time,
                                 server.fitness,
                                 'INBOX', 'store_hash_tags',

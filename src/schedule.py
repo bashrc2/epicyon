@@ -175,7 +175,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.auto_cw_cache,
                                           httpd.block_federated,
                                           httpd.mitm_servers,
-                                          httpd.instance_software):
+                                          httpd.instance_software,
+                                          httpd.max_hashtags):
                 index_lines.remove(line)
                 ex_text = \
                     'EX: _update_post_schedule unable to delete ' + \

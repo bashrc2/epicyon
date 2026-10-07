@@ -316,7 +316,8 @@ def post_message_to_outbox(session, translate: {},
                            auto_cw_cache: {},
                            block_federated: [],
                            mitm_servers: [],
-                           instance_software: {}) -> bool:
+                           instance_software: {},
+                           max_hashtags: int) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -564,7 +565,8 @@ def post_message_to_outbox(session, translate: {},
 
     store_hash_tags(base_dir, post_to_nickname, domain,
                     http_prefix, domain_full,
-                    message_json, translate, session)
+                    message_json, translate, session,
+                    max_hashtags)
 
     # if this is a blog post or an event then save to its own box
     if message_json['type'] == 'Create':

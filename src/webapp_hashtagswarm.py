@@ -416,7 +416,7 @@ def _store_tag_name(base_dir: str, nickname: str,
 def store_hash_tags(base_dir: str, nickname: str, domain: str,
                     http_prefix: str, domain_full: str,
                     post_json_object: {}, translate: {},
-                    session) -> None:
+                    session, max_hashtags: int) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
@@ -484,12 +484,14 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                            map_links, published,
                            tag_maps_dir):
             hashtags_ctr += 1
+            if hashtags_ctr >= max_hashtags:
+                break
 
     # treat event categories as hashtags
     # See https://codeberg.org/fediverse/
     # fep/src/branch/main/fep/8a8e/fep-8a8e.md
     event_category_str = get_category_from_post(post_json_object, translate)
-    if event_category_str:
+    if event_category_str and hashtags_ctr < max_hashtags:
         if ', ' in event_category_str:
             event_category_list = event_category_str.split(', ')
         else:
@@ -506,6 +508,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                                    map_links, published,
                                    tag_maps_dir):
                     hashtags_ctr += 1
+                    if hashtags_ctr >= max_hashtags:
+                        break
 
     # if some hashtags were found then recalculate the swarm
     # ready for later display

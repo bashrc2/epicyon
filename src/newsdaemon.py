@@ -293,7 +293,7 @@ def hashtag_rule_tree(operators: [],
 def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
                  post_json_object: {},
                  action_str: str, hashtags: [], system_language: str,
-                 translate: {}, session) -> None:
+                 translate: {}, session, max_hashtags: int) -> None:
     """Adds a hashtag via a hashtag rule
     """
     add_hashtag = action_str.split('add ', 1)[1].strip()
@@ -341,9 +341,8 @@ def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
     domain = domain_full
     if ':' in domain:
         domain = remove_domain_port(domain)
-    store_hash_tags(base_dir, 'news', domain,
-                    http_prefix, domain_full,
-                    post_json_object, translate, session)
+    store_hash_tags(base_dir, 'news', domain, http_prefix, domain_full,
+                    post_json_object, translate, session, max_hashtags)
 
 
 def _hashtag_remove(http_prefix: str, domain_full: str, post_json_object: {},
@@ -384,7 +383,8 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
                                  domain: str, port: int,
                                  moderated: bool, url: str,
                                  system_language: str,
-                                 translate: {}, session) -> bool:
+                                 translate: {}, session,
+                                 max_hashtags: int) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -433,7 +433,8 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
             # add a hashtag
             _hashtag_add(base_dir, http_prefix, domain_full,
                          post_json_object, action_str, hashtags,
-                         system_language, translate, session)
+                         system_language, translate, session,
+                         max_hashtags)
         elif action_str.startswith('remove '):
             # remove a hashtag
             _hashtag_remove(http_prefix, domain_full, post_json_object,
@@ -554,7 +555,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 content_license_url: str,
                                 media_license_url: str,
                                 media_creator: str,
-                                session, debug: bool) -> None:
+                                session, debug: bool,
+                                max_hashtags: int) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -705,7 +707,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
             _newswire_hashtag_processing(base_dir, blog, hashtags,
                                          http_prefix, domain, port,
                                          moderated, url, system_language,
-                                         translate, session)
+                                         translate, session, max_hashtags)
 
         # save the post and update the index
         if save_post:
@@ -744,9 +746,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                 if tag not in newswire[original_date_str][6]:
                     newswire[original_date_str][6].append(tag)
 
-            store_hash_tags(base_dir, 'news', domain,
-                            http_prefix, domain_full,
-                            blog, translate, session)
+            store_hash_tags(base_dir, 'news', domain, http_prefix, domain_full,
+                            blog, translate, session, max_hashtags)
 
             clear_from_post_caches(base_dir, recent_posts_cache, post_id)
             if save_json(blog, filename):
@@ -852,7 +853,8 @@ def run_newswire_daemon(base_dir: str, httpd,
                                     httpd.low_bandwidth,
                                     httpd.content_license_url,
                                     httpd.content_license_url, '',
-                                    httpd.session, httpd.debug)
+                                    httpd.session, httpd.debug,
+                                    httpd.max_hashtags)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.max_news_posts > 0:
