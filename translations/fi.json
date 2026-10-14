@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Salli tämän tilin lisääminen listoihin",
 	"Apply dithering to images.": "Käytä kuviin rasterointia.",
 	"Replace dashes with em dashes": "Korvaa viivat em-viivoilla",
-	"Content labels": "Sisältötunnisteet"
+	"Content labels": "Sisältötunnisteet",
+	"Content is too large": "Sisältö on liian suuri.",
+	"Ain't no way no how": "Ei mitenkään, ei miten"
 }

@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "اجازه دهید این حساب به لیست‌ها اضافه شود",
 	"Apply dithering to images.": "اعمال لرزش (dithering) روی تصاویر",
 	"Replace dashes with em dashes": "خط تیره را با خط تیره em جایگزین کنید",
-	"Content labels": "برچسب‌های محتوا"
+	"Content labels": "برچسب‌های محتوا",
+	"Content is too large": "محتوا بیش از حد حجیم است.",
+	"Ain't no way no how": "به هیچ وجه، نه، چطور؟"
 }

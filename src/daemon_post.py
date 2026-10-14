@@ -42,6 +42,7 @@ from src.httpcodes import http_402
 from src.httpcodes import http_403
 from src.httpcodes import http_404
 from src.httpcodes import http_503
+from src.httpcodes import http_413
 from src.httpheaders import contains_suspicious_headers
 from src.httpheaders import update_headers_catalog
 from src.httpheaders import redirect_headers
@@ -1217,6 +1218,7 @@ def daemon_http_post(self) -> None:
                                'application/activity+json',
                                'application/ld+json')):
         print("POST is not json: " + self.headers['Content-type'])
+        http_code_returned: bool = False
         if self.server.debug:
             print(str(self.headers).replace('\n', ' '))
             length = int(self.headers['Content-length'])
@@ -1241,7 +1243,11 @@ def daemon_http_post(self) -> None:
                     self.server.postreq_busy = False
                     return
                 print(str(unknown_post))
-        http_400(self)
+            else:
+                http_413(self)
+                http_code_returned = True
+        if not http_code_returned:
+            http_400(self)
         self.server.postreq_busy = False
         return
 

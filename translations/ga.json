@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Ceadaigh an cuntas seo a chur le liostaí",
 	"Apply dithering to images.": "Cuir díodrú i bhfeidhm ar íomhánna.",
 	"Replace dashes with em dashes": "Cuir fleascáin em in ionad fleascáin",
-	"Content labels": "Lipéid ábhair"
+	"Content labels": "Lipéid ábhair",
+	"Content is too large": "Tá an t-ábhar ró-mhór",
+	"Ain't no way no how": "Níl aon bhealach ar bith ná conas"
 }

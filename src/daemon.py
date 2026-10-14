@@ -99,6 +99,7 @@ from src.httpcodes import http_403
 from src.httpcodes import http_404
 from src.httpcodes import http_304
 from src.httpcodes import http_400
+from src.httpcodes import http_413
 from src.httpcodes import write2
 from src.httpheaders import set_headers
 from src.daemon_utils import load_known_epicyon_instances
@@ -151,7 +152,7 @@ class PubServer(BaseHTTPRequestHandler):
         if length > self.server.max_post_length:
             print(endpoint_type.upper() +
                   ' request size too large ' + self.path)
-            http_400(self)
+            http_413(self)
             return
         if not self.path.startswith('/calendars/'):
             print(endpoint_type.upper() + ' without /calendars ' + self.path)

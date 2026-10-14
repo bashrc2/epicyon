@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Разрешить добавление этого аккаунта в списки",
 	"Apply dithering to images.": "Примените дизеринг к изображениям.",
 	"Replace dashes with em dashes": "Замените дефисы на тире.",
-	"Content labels": "Метки контента"
+	"Content labels": "Метки контента",
+	"Content is too large": "Объем содержимого слишком велик",
+	"Ain't no way no how": "Ни за что!"
 }

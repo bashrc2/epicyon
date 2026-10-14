@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Ruhusu akaunti hii iongezwe kwenye orodha",
 	"Apply dithering to images.": "Weka upau wa kuchorea kwenye picha.",
 	"Replace dashes with em dashes": "Badilisha dashibodi na dashibodi za em",
-	"Content labels": "Lebo za maudhui"
+	"Content labels": "Lebo za maudhui",
+	"Content is too large": "Maudhui ni makubwa mno",
+	"Ain't no way no how": "Hakuna njia wala jinsi"
 }

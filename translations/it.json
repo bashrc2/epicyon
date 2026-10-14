@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Consenti l'aggiunta di questo account agli elenchi",
 	"Apply dithering to images.": "Applica il dithering alle immagini.",
 	"Replace dashes with em dashes": "Sostituisci i trattini con i trattini lunghi.",
-	"Content labels": "Etichette dei contenuti"
+	"Content labels": "Etichette dei contenuti",
+	"Content is too large": "Il contenuto è troppo grande",
+	"Ain't no way no how": "Non c'è modo, in nessun modo"
 }

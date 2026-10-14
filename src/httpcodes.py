@@ -199,3 +199,17 @@ def http_503(self) -> None:
         _http_return_code(self, 503, 'Unavailable',
                           'The server is busy. Please try again ' +
                           'later', None)
+
+
+def http_413(self) -> None:
+    """HTTP code 413
+    """
+    if self.server.translate:
+        busy_str = \
+            self.server.translate["Ain't no way no how"]
+        _http_return_code(self, 413,
+                          self.server.translate['Content is too large'],
+                          busy_str, None)
+    else:
+        _http_return_code(self, 413, 'Content is too large',
+                          "Ain't no way no how", None)

@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Дозволити додавання цього облікового запису до списків",
 	"Apply dithering to images.": "Застосуйте дизеринг до зображень.",
 	"Replace dashes with em dashes": "Замініть тире довгими тире",
-	"Content labels": "Мітки контенту"
+	"Content labels": "Мітки контенту",
+	"Content is too large": "Вміст завеликий",
+	"Ain't no way no how": "Ні в якому разі, ні як"
 }

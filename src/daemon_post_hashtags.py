@@ -89,6 +89,8 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
         if length > max_post_length:
             print('Maximum links data length exceeded ' + str(length))
             redirect_headers(self, tag_screen_str, cookie, calling_domain, 303)
+            self.send_response(413)
+            self.end_headers()
             self.server.postreq_busy = False
             return
 

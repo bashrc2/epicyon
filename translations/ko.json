@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "이 계정을 목록에 추가할 수 있도록 허용",
 	"Apply dithering to images.": "이미지에 디더링을 적용합니다.",
 	"Replace dashes with em dashes": "대시를 엠 대시로 바꾸세요.",
-	"Content labels": "콘텐츠 라벨"
+	"Content labels": "콘텐츠 라벨",
+	"Content is too large": "콘텐츠가 너무 큽니다.",
+	"Ain't no way no how": "절대 불가능해"
 }

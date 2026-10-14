@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "इस अकाउंट को लिस्ट में जोड़ने की अनुमति दें",
 	"Apply dithering to images.": "इमेज पर डिथरिंग लागू करें।",
 	"Replace dashes with em dashes": "डैश की जगह एम-डैश (em dashes) का इस्तेमाल करें।",
-	"Content labels": "कंटेंट लेबल"
+	"Content labels": "कंटेंट लेबल",
+	"Content is too large": "कंटेंट बहुत बड़ा है",
+	"Ain't no way no how": "कोई रास्ता नहीं है, कोई तरीका नहीं है"
 }

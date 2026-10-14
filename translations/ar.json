@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "السماح بإضافة هذا الحساب إلى القوائم",
 	"Apply dithering to images.": "طبّق تقنية التدرج النقطي (dithering) على الصور.",
 	"Replace dashes with em dashes": "استبدل الشرطات (-) بشرطات طويلة (—)",
-	"Content labels": "تصنيفات المحتوى"
+	"Content labels": "تصنيفات المحتوى",
+	"Content is too large": "المحتوى كبير جداً",
+	"Ain't no way no how": "لا سبيل بأي حال من الأحوال"
 }

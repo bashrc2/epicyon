@@ -76,6 +76,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
         if length > max_post_length:
             print('Maximum newswire data length exceeded ' + str(length))
             redirect_headers(self, actor_str, cookie, calling_domain, 303)
+            self.send_response(413)
+            self.end_headers()
             self.server.postreq_busy = False
             return
 
@@ -239,6 +241,8 @@ def citations_update(self, calling_domain: str, cookie: str,
         if length > max_post_length:
             print('Maximum citations data length exceeded ' + str(length))
             redirect_headers(self, actor_str, cookie, calling_domain, 303)
+            self.send_response(413)
+            self.end_headers()
             self.server.postreq_busy = False
             return
 
@@ -351,6 +355,8 @@ def news_post_edit(self, calling_domain: str, cookie: str,
             else:
                 redirect_headers(self, actor_str + '/tlnews',
                                  cookie, calling_domain, 303)
+            self.send_response(413)
+            self.end_headers()
             self.server.postreq_busy = False
             return
 

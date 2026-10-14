@@ -2812,6 +2812,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
             print('Maximum profile data length exceeded ' +
                   str(length))
             redirect_headers(self, actor_str, cookie, calling_domain, 303)
+            self.send_response(413)
+            self.end_headers()
             self.server.postreq_busy = False
             return
 

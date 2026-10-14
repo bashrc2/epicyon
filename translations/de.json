@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Erlauben, dass dieses Konto zu Listen hinzugefügt wird",
 	"Apply dithering to images.": "Wenden Sie Dithering auf Bilder an.",
 	"Replace dashes with em dashes": "Ersetzen Sie Bindestriche durch Geviertstriche.",
-	"Content labels": "Inhaltsbezeichnungen"
+	"Content labels": "Inhaltsbezeichnungen",
+	"Content is too large": "Der Inhalt ist zu groß.",
+	"Ain't no way no how": "Das geht auf keinen Fall!"
 }

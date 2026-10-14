@@ -775,5 +775,7 @@
 	"Allow this account to be added to lists": "Permet que aquest compte s'afegeixi a les llistes",
 	"Apply dithering to images.": "Aplica el dithering a les imatges.",
 	"Replace dashes with em dashes": "Substitueix els guions per guions circulars",
-	"Content labels": "Etiquetes de contingut"
+	"Content labels": "Etiquetes de contingut",
+	"Content is too large": "El contingut és massa gran.",
+	"Ain't no way no how": "No hi ha manera de com"
 }
