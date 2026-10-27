@@ -810,7 +810,8 @@ def _get_common_words() -> str:
         'includes', 'know', 'knowing', 'knows', 'things',
         'say', 'says', 'saying', 'many', 'somewhat',
         'problem', 'problems', 'idea', 'ideas',
-        'using', 'uses', 'https', 'still', 'want', 'wants'
+        'using', 'uses', 'https', 'still', 'want', 'wants',
+        'another', 'should', 'take', 'being', 'feel'
     )
 
 
