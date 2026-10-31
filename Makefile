@@ -12,6 +12,7 @@ source:
 	rm -f scripts/*~
 	rm -f deploy/*~
 	rm -rf __pycache__
+	rm -rf src/__pycache__
 	rm -f \#* \.#* src/*~
 	rm -fr deb.*
 	rm -f ../${APP}*.deb ../${APP}*.changes ../${APP}*.asc ../${APP}*.dsc
@@ -32,5 +33,7 @@ clean:
 	rm -f deploy/*~
 	rm -f translations/*~
 	rm -f flycheck_*
+	rm -f src/flycheck_*
 	rm -rf __pycache__
+	rm -rf src/__pycache__
 	rm -f calendar.css blog.css epicyon.css follow.css login.css options.css search.css suspended.css
