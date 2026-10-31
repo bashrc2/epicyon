@@ -171,7 +171,10 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'keenablebot', 'agentdatabot', 'bixelbot',
             'cloudflarebrowserrenderingcrawler', 'kimi-agent', 'qodercli',
             'doubaobot', 'erniebot', 'qwenbot', 'kimi-searchbot',
-            'kimibot', 'mistralai-training', 'oai-adsbot', 'diffbot-user'
+            'kimibot', 'mistralai-training', 'oai-adsbot', 'diffbot-user',
+            'elevenlabs', 'scrybot', 'agi agent', 'agentic', 'cledarabot',
+            'payhawk', 'harkbot', 'exauser', 'grok bot', 'grokbot', 'grokapp',
+            'ai-grok', 'hunyuan', 'moonshotbot', 'yibot'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
