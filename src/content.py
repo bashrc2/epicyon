@@ -2522,3 +2522,10 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
         else:
             new_subject = cw_str
     return new_subject
+
+
+def clean_html(raw_html: str) -> str:
+    """Remove escape codes from html string
+    """
+    text = raw_html
+    return html.unescape(text)

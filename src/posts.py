@@ -106,6 +106,7 @@ from src.media import get_music_metadata
 from src.media import attach_media
 from src.media import replace_you_tube
 from src.media import replace_twitter
+from src.content import clean_html
 from src.content import reject_twitter_summary
 from src.content import words_similarity
 from src.content import limit_repeated_words
@@ -186,13 +187,6 @@ def convert_post_content_to_html(message_json: {}) -> None:
             continue
         obj_json['contentMap'][lang] = \
             markdown_to_html(content_str)
-
-
-def _clean_html(raw_html: str) -> str:
-    """Remove escape codes from html string
-    """
-    text = raw_html
-    return html.unescape(text)
 
 
 def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
@@ -746,7 +740,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
 
         if content:
             if simple:
-                print(_clean_html(content) + '\n')
+                print(clean_html(content) + '\n')
             else:
                 pprint(item)
                 person_posts[this_item['id']] = {
@@ -754,7 +748,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                     "inreplyto": in_reply_to,
                     "summary": summary,
                     "html": content,
-                    "plaintext": _clean_html(content),
+                    "plaintext": clean_html(content),
                     "attachment": attachment,
                     "mentions": mentions,
                     "emoji": emoji
