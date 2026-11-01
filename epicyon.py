@@ -3284,7 +3284,8 @@ def _command_options() -> None:
             'Accept': accept_str
         }
         if not person_url:
-            person_url = get_user_url(wf_request, 0, argb.debug)
+            person_url = \
+                get_user_url_from_webfinger(wf_request, 0, argb.debug)
         if nickname == domain:
             replacements = {
                 '/users/': '/actor/',
