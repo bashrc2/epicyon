@@ -59,7 +59,6 @@ from src.utils import get_post_attachments
 from src.utils import get_url_from_post
 from src.utils import get_attributed_to
 from src.utils import contains_statuses
-from src.utils import contains_invalid_actor_url_chars
 from src.utils import acct_handle_dir
 from src.utils import is_dm
 from src.utils import remove_eol
@@ -158,6 +157,7 @@ from src.data import is_a_dir
 from src.data import makedir
 from src.content_labels import set_post_content_labels
 from src.content_labels import store_person_labels
+from src.webfinger import get_user_url_from_webfinger
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -186,37 +186,6 @@ def convert_post_content_to_html(message_json: {}) -> None:
             continue
         obj_json['contentMap'][lang] = \
             markdown_to_html(content_str)
-
-
-def get_user_url_from_webfinger(wf_request: {}, source_id: int,
-                                debug: bool) -> str:
-    """Gets the actor url from a webfinger request
-    """
-    if not wf_request.get('links'):
-        if source_id == 72367:
-            print('get_user_url_from_webfinger ' + str(source_id) +
-                  ' failed to get display name for webfinger ' +
-                  str(wf_request))
-        else:
-            print('get_user_url_from_webfinger webfinger ' +
-                  'activity+json contains no links ' +
-                  str(source_id) + ' ' + str(wf_request))
-        return None
-    for link in wf_request['links']:
-        if not (link.get('type') and link.get('href')):
-            continue
-        if 'application/activity+json' not in link['type'] and \
-           'application/ld+json' not in link['type']:
-            continue
-        if '/@' not in link['href']:
-            if debug and not has_users_path(link['href']):
-                print('get_user_url_from_webfinger webfinger activity+json ' +
-                      'contains single user instance actor ' +
-                      str(source_id) + ' ' + str(link))
-        url = link['href']
-        if not contains_invalid_actor_url_chars(url):
-            return remove_html(url)
-    return None
 
 
 def parse_user_feed(signing_priv_key_pem: str,

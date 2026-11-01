@@ -24,6 +24,7 @@ from src.person import deactivate_account
 from src.skills import set_skill_level
 from src.roles import set_role
 from src.webfinger import webfinger_handle
+from src.webfinger import get_user_url_from_webfinger
 from src.bookmarks import send_bookmark_via_server
 from src.bookmarks import send_undo_bookmark_via_server
 from src.conversation import download_conversation_posts
@@ -44,7 +45,6 @@ from src.posts import delete_all_posts
 from src.posts import expire_posts
 from src.posts import archive_posts
 from src.posts import get_public_posts_of_person
-from src.posts import get_user_url
 from src.posts import check_domains
 from src.session import get_resolved_url
 from src.session import get_json_valid

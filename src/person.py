@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives import serialization
 from shutil import copyfile
 from src.webfinger import create_webfinger_endpoint
 from src.webfinger import store_webfinger_endpoint
-from src.posts import get_user_url_from_webfinger
+from src.webfinger import get_user_url_from_webfinger
 from src.posts import create_dm_timeline
 from src.posts import create_replies_timeline
 from src.posts import create_media_timeline

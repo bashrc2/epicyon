@@ -17,7 +17,7 @@ from src.utils import get_domain_from_actor
 from src.utils import acct_dir
 from src.webfinger import webfinger_handle
 from src.blocking import is_blocked
-from src.posts import get_user_url_from_webfinger
+from src.webfinger import get_user_url_from_webfinger
 from src.follow import unfollow_account
 from src.person import get_actor_json
 from src.data import load_list
