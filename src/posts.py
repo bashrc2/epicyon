@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import json
-import html
 import datetime
 import os
 import shutil
@@ -189,16 +188,18 @@ def convert_post_content_to_html(message_json: {}) -> None:
             markdown_to_html(content_str)
 
 
-def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
+def get_user_url_from_webfinger(wf_request: {}, source_id: int,
+                                debug: bool) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wf_request.get('links'):
         if source_id == 72367:
-            print('get_user_url ' + str(source_id) +
+            print('get_user_url_from_webfinger ' + str(source_id) +
                   ' failed to get display name for webfinger ' +
                   str(wf_request))
         else:
-            print('get_user_url webfinger activity+json contains no links ' +
+            print('get_user_url_from_webfinger webfinger ' +
+                  'activity+json contains no links ' +
                   str(source_id) + ' ' + str(wf_request))
         return None
     for link in wf_request['links']:
@@ -209,7 +210,7 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
             continue
         if '/@' not in link['href']:
             if debug and not has_users_path(link['href']):
-                print('get_user_url webfinger activity+json ' +
+                print('get_user_url_from_webfinger webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(source_id) + ' ' + str(link))
         url = link['href']
@@ -353,7 +354,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     # get the actor / person_url
     if not wf_request.get('errors'):
         # get the actor url from src.webfinger links
-        person_url = get_user_url(wf_request, source_id, debug)
+        person_url = get_user_url_from_webfinger(wf_request, source_id, debug)
     else:
         if nickname == 'dev':
             # try single user instance

@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives import serialization
 from shutil import copyfile
 from src.webfinger import create_webfinger_endpoint
 from src.webfinger import store_webfinger_endpoint
-from src.posts import get_user_url
+from src.posts import get_user_url_from_webfinger
 from src.posts import create_dm_timeline
 from src.posts import create_replies_timeline
 from src.posts import create_media_timeline
@@ -2093,7 +2093,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         "activity+json", "ld+json", "jrd+json"
     )
     if not person_url and wf_request:
-        person_url = get_user_url(wf_request, 0, debug)
+        person_url = get_user_url_from_webfinger(wf_request, 0, debug)
     if debug and person_url:
         print('\nget_actor_json getting json for ' + person_url)
     if nickname == domain:
