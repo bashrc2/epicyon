@@ -749,7 +749,9 @@ def _get_common_words() -> str:
         'say', 'says', 'saying', 'many', 'somewhat',
         'problem', 'problems', 'idea', 'ideas',
         'using', 'uses', 'https', 'still', 'want', 'wants',
-        'another', 'should', 'take', 'being', 'feel'
+        'another', 'should', 'take', 'being', 'feel',
+        'said', 'back', 'like', 'while', 'after', 'comes',
+        'thought', 'doing'
     )
 
 
