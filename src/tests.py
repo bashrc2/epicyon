@@ -49,10 +49,10 @@ from src.posts import get_mentioned_people
 from src.posts import delete_all_posts
 from src.posts import create_public_post
 from src.posts import send_post
-from src.posts import no_of_followers_on_domain
 from src.posts import group_followers_by_domain
 from src.posts import archive_posts_for_person
 from src.posts import seconds_between_published
+from src.follow import no_of_followers_on_domain
 from src.follow import clear_follows
 from src.follow import clear_followers
 from src.follow import send_follow_request_via_server

@@ -188,32 +188,6 @@ def convert_post_content_to_html(message_json: {}) -> None:
             markdown_to_html(content_str)
 
 
-def no_of_followers_on_domain(base_dir: str, handle: str,
-                              domain: str,
-                              follow_file: str = 'followers.txt') -> int:
-    """Returns the number of followers of the given handle from the
-    given domain
-    """
-    filename: str = acct_handle_dir(base_dir, handle) + '/' + follow_file
-    if not is_a_file(filename):
-        return 0
-
-    ctr: int = 0
-    followers_list: list[str] = \
-        load_list(filename,
-                  'EX: no_of_followers_on_domain unable to read ' + filename +
-                  ' [ex]')
-    if followers_list is not None:
-        for follower_handle in followers_list:
-            if '@' not in follower_handle:
-                continue
-            follower_domain = follower_handle.split('@')[1]
-            follower_domain = remove_eol(follower_domain)
-            if domain == follower_domain:
-                ctr += 1
-    return ctr
-
-
 def _clean_html(raw_html: str) -> str:
     """Remove escape codes from html string
     """
