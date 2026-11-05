@@ -12,7 +12,7 @@ from src.utils import get_attachment_property_value
 from src.utils import remove_html
 from src.utils import string_contains
 
-peertube_fieldnames = ['peertube']
+peertube_fieldnames: list[str] = ['peertube']
 
 
 def get_peertube(actor_json: {}) -> str:

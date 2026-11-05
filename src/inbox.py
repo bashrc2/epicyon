@@ -321,7 +321,7 @@ def inbox_message_has_params(message_json: {}) -> bool:
               str(message_json))
         return False
 
-    expected_params = ['actor', 'type', 'object']
+    expected_params: list[str] = ['actor', 'type', 'object']
     for param in expected_params:
         if not message_json.get(param):
             # print('inbox_message_has_params: ' +
@@ -2494,7 +2494,7 @@ def _inbox_after_initial(server, inbox_start_time,
         inbox_start_time = time.time()
 
         # list of indexes to be updated
-        update_index_list = ['inbox']
+        update_index_list: list[str] = ['inbox']
         populate_replies(base_dir, http_prefix, domain, post_json_object,
                          max_replies, debug)
         fitness_performance(inbox_start_time, server.fitness,

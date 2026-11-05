@@ -334,7 +334,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
         if debug:
             print('INBOX: checking object fields')
         # check that some fields are a string or list
-        string_or_list_fields: dict = ['url']
+        string_or_list_fields: list[str] = ['url']
         for check_field in string_or_list_fields:
             if not message_json['object'].get(check_field):
                 continue

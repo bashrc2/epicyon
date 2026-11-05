@@ -5182,9 +5182,9 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert str(tree) == str(['or', ['#foo'], ['#bar']])
     assert str(tags_in_conditions) == str(['#foo', '#bar'])
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#carrot', '#stick']
+    hashtags: list[str] = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     content = 'This is a test'
@@ -5196,7 +5196,7 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['#foo'], ['from', ['"testsite.com"']]])
     assert str(tags_in_conditions) == str(['#foo'])
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content,
                                     'othersite.net')
@@ -5211,9 +5211,9 @@ def _test_hashtag_rules():
         str(['and', ['contains', ['"is a"']],
              ['or', ['#foo'], ['#bar']]])
     assert str(tags_in_conditions) == str(['#foo', '#bar'])
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#carrot', '#stick']
+    hashtags: list[str] = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     moderated: bool = False
@@ -5224,9 +5224,9 @@ def _test_hashtag_rules():
     assert str(tree) == \
         str(['not', ['and', ['moderated'], ['or', ['#foo'], ['#bar']]]])
     assert str(tags_in_conditions) == str(['#foo', '#bar'])
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#carrot', '#stick']
+    hashtags: list[str] = ['#carrot', '#stick']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     moderated = True
@@ -5237,9 +5237,9 @@ def _test_hashtag_rules():
     assert str(tree) == \
         str(['and', ['moderated'], ['or', ['#foo'], ['#bar']]])
     assert str(tags_in_conditions) == str(['#foo', '#bar'])
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#carrot', '#stick']
+    hashtags: list[str] = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = 'x'
@@ -5248,7 +5248,7 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert tree is None
     assert not tags_in_conditions
-    hashtags = ['#foo']
+    hashtags: list[str] = ['#foo']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = '#x'
@@ -5257,9 +5257,9 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert str(tree) == str(['#x'])
     assert str(tags_in_conditions) == str(['#x'])
-    hashtags = ['#x']
+    hashtags: list[str] = ['#x']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#y', '#z']
+    hashtags: list[str] = ['#y', '#z']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = 'not #b'
@@ -5268,9 +5268,9 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert str(tree) == str(['not', ['#b']])
     assert str(tags_in_conditions) == str(['#b'])
-    hashtags = ['#y', '#z']
+    hashtags: list[str] = ['#y', '#z']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#a', '#b', '#c']
+    hashtags: list[str] = ['#a', '#b', '#c']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = '#foo or #bar and #a'
@@ -5279,13 +5279,13 @@ def _test_hashtag_rules():
                              tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
     assert str(tags_in_conditions) == str(['#foo', '#bar', '#a'])
-    hashtags = ['#foo', '#bar', '#a']
+    hashtags: list[str] = ['#foo', '#bar', '#a']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#bar', '#a']
+    hashtags: list[str] = ['#bar', '#a']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#foo', '#a']
+    hashtags: list[str] = ['#foo', '#a']
     assert hashtag_rule_resolve(tree, hashtags, moderated, content, url)
-    hashtags = ['#x', '#a']
+    hashtags: list[str] = ['#x', '#a']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
 
@@ -5804,7 +5804,9 @@ def _test_source_contains_no_tabs():
 def _test_checkbox_names():
     print('test_checkbox_names')
 
-    fnames = ['edit_text_field', 'edit_check_box', 'edit_text_area']
+    fnames: list[str] = [
+        'edit_text_field', 'edit_check_box', 'edit_text_area'
+    ]
     replacements = {
         '"': '',
         "'": ''
@@ -6069,7 +6071,7 @@ def _check_method_args(mod_name: str, method_name: str,
     """Tests that method arguments are not CamelCase
     and that arguments with default values have types
     """
-    exclude_modules = ['pyjsonld']
+    exclude_modules: list[str] = ['pyjsonld']
     for arg_str in method_args:
         if ':' in arg_str:
             arg_str = arg_str.split(':')[0]
@@ -9723,7 +9725,7 @@ def _test_conversation_to_convthread() -> None:
 
 def _test_blocking_nick(base_dir: str) -> None:
     print('blocking nickname')
-    blocked_cache = ['weasel@*', 'badger@*', 'chud*@*']
+    blocked_cache: list[str] = ['weasel@*', 'badger@*', 'chud*@*']
     assert not is_blocked_nickname(base_dir, 'cessil', blocked_cache)
     assert is_blocked_nickname(base_dir, 'weasel', blocked_cache)
     assert is_blocked_nickname(base_dir, 'chud', blocked_cache)
@@ -9732,8 +9734,8 @@ def _test_blocking_nick(base_dir: str) -> None:
 
 def _test_blocking_domain(base_dir: str) -> None:
     print('blocking domain')
-    block_federated = ['*@hate*.domain']
-    blocked_cache = ['*@weasel.social', '*@chud*.city']
+    block_federated: list[str] = ['*@hate*.domain']
+    blocked_cache: list[str] = ['*@weasel.social', '*@chud*.city']
     assert not is_blocked_domain(base_dir, 'fedi.instance', blocked_cache,
                                  block_federated)
     assert is_blocked_domain(base_dir, 'weasel.social', blocked_cache,

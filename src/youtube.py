@@ -12,7 +12,7 @@ from src.utils import get_attachment_property_value
 from src.utils import remove_html
 from src.utils import string_contains
 
-youtube_fieldnames = ['youtube']
+youtube_fieldnames: list[str] = ['youtube']
 
 
 def get_youtube(actor_json: {}) -> str:

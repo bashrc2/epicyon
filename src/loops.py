@@ -12,7 +12,7 @@ from src.utils import get_attachment_property_value
 from src.utils import remove_html
 from src.utils import string_contains
 
-loops_fieldnames = ['loops']
+loops_fieldnames: list[str] = ['loops']
 
 
 def get_loops(actor_json: {}) -> str:

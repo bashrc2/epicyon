@@ -12,7 +12,7 @@ from src.utils import get_attachment_property_value
 from src.utils import remove_html
 from src.utils import string_contains
 
-discord_fieldnames = ['discord']
+discord_fieldnames: list[str] = ['discord']
 
 
 def get_discord(actor_json: {}) -> str:

@@ -774,7 +774,7 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
 def _geocoords_from_waze_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a waze map link
     """
-    prefixes = ['/ul?ll=']
+    prefixes: list[str] = ['/ul?ll=']
     map_prefix = None
     for prefix in prefixes:
         if prefix in url:
@@ -824,7 +824,7 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
 def _geocoords_from_wego_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a wego map link
     """
-    prefixes = ['/?map=']
+    prefixes: list[str] = ['/?map=']
     map_prefix = None
     for prefix in prefixes:
         if prefix in url:
