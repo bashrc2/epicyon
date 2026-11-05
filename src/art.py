@@ -13,9 +13,9 @@ from src.utils import remove_html
 from src.utils import string_contains
 from src.utils import resembles_url
 
-art_fieldnames = ('art')
+art_fieldnames: list[str] = ('art')
 
-art_sites = (
+art_sites: list[str] = (
     'etsy.com', 'shopify.com', 'folksy.com', 'aftcra.com',
     'justartisan.com', 'goimagine.com', 'artfire.com',
     'indiecart.com', 'madeit.com.au', 'icraftgifts.com',

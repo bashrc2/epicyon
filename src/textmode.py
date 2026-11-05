@@ -18,7 +18,7 @@ def text_mode_browser(ua_str: str) -> bool:
     """Does the user agent indicate a text mode browser?
     """
     if ua_str:
-        text_mode_agents = (
+        text_mode_agents: list[str] = (
             'Lynx/', 'w3m/', 'Links (', 'Emacs/', 'ELinks', 'chawan'
         )
         for agent in text_mode_agents:

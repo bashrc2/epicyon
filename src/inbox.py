@@ -384,7 +384,7 @@ def inbox_permitted_message(domain: str, message_json: {},
     if not url_permitted(actor, federation_list):
         return False
 
-    always_allowed_types = (
+    always_allowed_types: list[str] = (
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move',
         'QuoteRequest', 'sm:ActorStatus', 'ActorStatus', 'FeatureRequest'
     )

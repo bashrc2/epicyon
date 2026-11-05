@@ -18,7 +18,7 @@ from src.utils import get_full_domain
 from src.utils import is_yggdrasil_address
 from src.utils import local_network_host
 
-pixelfed_fieldnames = ('pixelfed', 'fotos', 'photos')
+pixelfed_fieldnames: list[str] = ('pixelfed', 'fotos', 'photos')
 
 
 def get_pixelfed(actor_json: {}) -> str:

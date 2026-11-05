@@ -128,10 +128,10 @@ def _get_valid_shared_item_id(actor: str, display_name: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
-    remove_chars = (' ', '\n', '\r', '#')
+    remove_chars: list[str] = (' ', '\n', '\r', '#')
     for char in remove_chars:
         display_name = display_name.replace(char, '')
-    remove_chars2 = ('+', '/', '\\', '?', '&')
+    remove_chars2: list[str] = ('+', '/', '\\', '?', '&')
     for char in remove_chars2:
         display_name = display_name.replace(char, '-')
     replacements = {

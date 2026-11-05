@@ -750,7 +750,7 @@ def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
             return True
 
     # emojis
-    disallow_strings = (
+    disallow_strings: list[str] = (
         ':boost_no:',
         ':noboost:',
         ':noboosts:',

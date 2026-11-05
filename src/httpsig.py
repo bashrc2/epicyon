@@ -302,8 +302,10 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
     12 hours of the current time
     """
     curr_date = date_utcnow()
-    formats = ("%a, %d %b %Y %H:%M:%S %Z",
-               "%a, %d %b %Y %H:%M:%S %z")
+    formats: list[str] = (
+        "%a, %d %b %Y %H:%M:%S %Z",
+        "%a, %d %b %Y %H:%M:%S %z"
+    )
     signed_date = date_from_string_format(signed_date_str, formats)
     if not signed_date:
         return False

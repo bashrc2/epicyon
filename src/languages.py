@@ -59,7 +59,7 @@ def set_actor_languages(actor_json: {}, languages_str: str) -> None:
     """
     languages_str = languages_str.strip()
     separator = None
-    possible_separators = (',', '/', ';', '+', ' ')
+    possible_separators: list[str] = (',', '/', ';', '+', ' ')
     for poss in possible_separators:
         if poss in languages_str:
             separator = poss

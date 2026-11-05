@@ -314,7 +314,7 @@ def _markdown_replace_bullet_points(markdown: str) -> str:
     """Replaces bullet points
     """
     lines = markdown.split('\n')
-    bullet_style = ('* ', ' * ', '- ', ' - ')
+    bullet_style: list[str] = ('* ', ' * ', '- ', ' - ')
     bullet_matched: str = ''
     start_line: int = -1
     line_ctr: int = 0
@@ -496,7 +496,7 @@ def markdown_to_html(markdown: str) -> str:
         html_str += line
         ctr += 1
 
-    replacements = (
+    replacements: list[list[str]] = (
         ('<code><br>', '<code>'),
         ('</code><br>', '</code>'),
         ('<ul class="md_list"><br>', '<ul class="md_list">'),

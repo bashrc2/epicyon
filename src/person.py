@@ -1203,9 +1203,11 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
         path = '/users/inbox'
         is_shared_inbox = True
     else:
-        not_person_lookup = ('/inbox', '/outbox', '/outboxarchive',
-                             '/followers', '/following', '/featured',
-                             '.png', '.jpg', '.gif', '.svg', '.mpv')
+        not_person_lookup: list[str] = (
+            '/inbox', '/outbox', '/outboxarchive',
+            '/followers', '/following', '/featured',
+            '.png', '.jpg', '.gif', '.svg', '.mpv'
+        )
         for ending in not_person_lookup:
             if path.endswith(ending):
                 return None
@@ -2089,7 +2091,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                 return None, None
 
     profile_str = 'https://www.w3.org/ns/activitystreams'
-    headers_list = (
+    headers_list: list[str] = (
         "activity+json", "ld+json", "jrd+json"
     )
     if not person_url and wf_request:
@@ -2107,14 +2109,14 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     if not person_url:
         # try single user instance
         person_url = http_prefix + '://' + domain + '/' + nickname
-        headers_list = (
+        headers_list: list[str] = (
             "ld+json", "jrd+json", "activity+json"
         )
         try_single_person = True
         if debug:
             print('Trying single user instance ' + person_url)
     if '/channel/' in person_url or '/accounts/' in person_url:
-        headers_list = (
+        headers_list: list[str] = (
             "ld+json", "jrd+json", "activity+json"
         )
     if debug:

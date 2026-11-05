@@ -50,7 +50,7 @@ def actor_status_expired(actor_status_json: {}) -> bool:
     if 'T' not in actor_status_json['endTime'] or \
        ':' not in actor_status_json['endTime']:
         return False
-    date_formats = (
+    date_formats: list[str] = (
         "%Y-%m-%dT%H:%M:%S%z",
         "%Y-%m-%dT%H:%M:%S%Z"
     )

@@ -1580,7 +1580,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
             return
         # generate instance allow list
         allowed_domains = [domain_full]
-        follow_files = ('following.txt', 'followers.txt')
+        follow_files: list[str] = ('following.txt', 'followers.txt')
         dir_str = data_dir(base_dir)
         for _, dirs, _ in os.walk(dir_str):
             for acct in dirs:

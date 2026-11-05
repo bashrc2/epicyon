@@ -47,7 +47,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
         rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
     makedir(temp_theme_dir)
     unpack_archive(filename, temp_theme_dir, 'zip')
-    essential_theme_files = ('name.txt', 'theme.json')
+    essential_theme_files: list[str] = ('name.txt', 'theme.json')
     for theme_file in essential_theme_files:
         if not is_a_file(temp_theme_dir + '/' + theme_file):
             print('WARN: ' + theme_file +
@@ -68,7 +68,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
             print('WARN: Imported theme name is too short')
             return False
         new_theme_name = new_theme_name.lower()
-        forbidden_chars = (
+        forbidden_chars: list[str] = (
             ' ', ';', '/', '\\', '?', '!', '#', '@',
             ':', '%', '&', '"', '+', '<', '>', '$'
         )
@@ -394,7 +394,7 @@ def _set_theme_from_dict(base_dir: str, name: str,
             save_string(css, filename,
                         'EX: _set_theme_from_dict unable to write ' + filename)
 
-    screen_name = (
+    screen_name: list[str] = (
         'login', 'follow', 'options', 'search', 'welcome'
     )
     for scr in screen_name:
@@ -670,9 +670,11 @@ def _set_theme_images(base_dir: str, name: str) -> None:
 
     set_text_mode_theme(base_dir, theme_name_lower)
 
-    background_names = ('login', 'shares', 'delete', 'follow',
-                        'options', 'block', 'search', 'calendar',
-                        'welcome')
+    background_names: list[str] = (
+        'login', 'shares', 'delete', 'follow',
+        'options', 'block', 'search', 'calendar',
+        'welcome'
+    )
     extensions = get_image_extensions()
 
     dir_str = data_dir(base_dir)

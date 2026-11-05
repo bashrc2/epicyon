@@ -23,12 +23,12 @@ from src.data import is_a_file
 def detect_mitm(self) -> bool:
     """Detect if a request contains a MiTM
     """
-    mitm_domains = (
+    mitm_domains: list[str] = (
         'cloudflare', 'radware', 'imperva', 'akamai', 'azure',
         'fastly', 'google'
     )
     # look for domains within these headers
-    check_headers = (
+    check_headers: list[str] = (
         'Server', 'Report-To', 'Report-to', 'report-to',
         'Expect-CT', 'Expect-Ct', 'expect-ct'
     )
@@ -39,7 +39,7 @@ def detect_mitm(self) -> bool:
             if interloper in str(self.headers[header_name]).lower():
                 return True
     # The presence of these headers on their own indicates a MiTM
-    mitm_headers = (
+    mitm_headers: list[str] = (
         'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
         'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
     )

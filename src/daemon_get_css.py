@@ -71,7 +71,7 @@ def get_fonts(self, calling_domain: str, path: str,
     """Returns a font
     """
     font_str = path.split('/fonts/')[1]
-    possible_extensions = ('.otf', '.ttf', '.woff', '.woff2')
+    possible_extensions: list[str] = ('.otf', '.ttf', '.woff', '.woff2')
     if string_ends_with(font_str, possible_extensions):
         if font_str.endswith('.otf'):
             font_type = 'font/otf'

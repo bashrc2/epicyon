@@ -272,13 +272,14 @@ def contains_suspicious_headers(headers: {}) -> bool:
         return True
 
     headers_str = str(headers)
-    sus_strings = ('../../', '.php/', 'index.php', 'passwd=', 'PHPSESSID',
-                   '.local/')
+    sus_strings: list[str] = (
+        '../../', '.php/', 'index.php', 'passwd=', 'PHPSESSID', '.local/'
+    )
     if string_contains(headers_str, sus_strings):
         return True
 
     # check for bad cookies
-    cookie_fields = ('Cookie:', 'cookie:')
+    cookie_fields: list[str] = ('Cookie:', 'cookie:')
     for cookie_fieldname in cookie_fields:
         if cookie_fieldname not in headers_str:
             continue

@@ -161,7 +161,7 @@ def referer_is_active(http_prefix: str,
     referer_url = http_prefix + '://' + referer_domain
     if referer_domain + '/' in ua_str:
         referer_url = referer_url + ua_str.split(referer_domain)[1]
-        ending_chars = (' ', ';', ')')
+        ending_chars: list[str] = (' ', ';', ')')
         for end_ch in ending_chars:
             if end_ch in referer_url:
                 referer_url = referer_url.split(end_ch)[0]

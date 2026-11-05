@@ -60,16 +60,16 @@ from src.data import is_a_file
 from src.data import is_a_dir
 from src.data import makedir
 
-MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
+MUSIC_SITES: list[str] = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
 MAX_LINK_LENGTH = 40
 
-REMOVE_MARKUP = (
+REMOVE_MARKUP: list[str] = (
     'b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
     'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5'
 )
 
-INVALID_CONTENT_STRINGS = (
+INVALID_CONTENT_STRINGS: list[str] = (
     'mute', 'unmute', 'editeventpost', 'notifypost',
     'delete', 'options', 'page', 'repeat',
     'bm', 'tl', 'actor', 'unrepeat', 'eventid',
@@ -293,7 +293,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
     if not content:
         return False
 
-    css_matches = (
+    css_matches: list[str] = (
         'behavior:', ':expression', '?php', '.php',
         'google', 'regexp', 'localhost',
         '127.0.', '192.168', '10.0.', '@import'
@@ -353,7 +353,7 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
 
     for line in rules:
         replace_str = remove_eol(line)
-        splitters = ('->', ':', ',', ';', '-')
+        splitters: list[str] = ('->', ':', ',', ';', '-')
         word_transform = None
         for split_str in splitters:
             if split_str in replace_str:
@@ -833,7 +833,7 @@ def safe_web_text(arbitrary_html: str) -> str:
     if not safe_text:
         return ''
     # remove any spurious characters found in podcast descriptions
-    remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]', '__')
+    remove_chars: list[str] = ('Œ', 'â€', 'ğŸ', '�', ']]', '__')
     for remchar in remove_chars:
         safe_text = safe_text.replace(remchar, '')
     safe_text = _web_link_concatenations(safe_text)
@@ -1436,7 +1436,7 @@ def load_dogwhistles(filename: str) -> {}:
         return {}
     if dogwhistle_lines_str:
         dogwhistle_lines = dogwhistle_lines_str.split('\n')
-    separators = ('->', '=>', ',', ';', '|', '=')
+    separators: list[str] = ('->', '=>', ',', ';', '|', '=')
     dogwhistles = {}
     for line in dogwhistle_lines:
         line = remove_eol(line).strip()
@@ -1543,7 +1543,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
                 continue
         elif first_char == '#':
             # remove any endings from the hashtag
-            hash_tag_endings = ('.', ':', ';', '-', '\n')
+            hash_tag_endings: list[str] = ('.', ':', ';', '-', '\n')
             for ending in hash_tag_endings:
                 if word_str.endswith(ending):
                     word_str = word_str[:len(word_str) - 1]
@@ -1624,7 +1624,9 @@ def add_html_tags(base_dir: str, http_prefix: str,
 def _string_starts_with_url_prefix(text: str) -> bool:
     """ Does the given text begin with one of the url prefixes?
     """
-    url_prefixes = ('http', 'gnunet', 'i2p', 'ipfs', 'ipns', 'hyper', 'dat:')
+    url_prefixes: list[str] = (
+        'http', 'gnunet', 'i2p', 'ipfs', 'ipns', 'hyper', 'dat:'
+    )
     for possible_prefix in url_prefixes:
         if text.startswith(possible_prefix):
             return True
@@ -1891,7 +1893,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
 
     message_fields = message_fields.split(boundary)
     fields = {}
-    fields_with_semicolon_allowed = (
+    fields_with_semicolon_allowed: list[str] = (
         'message', 'bio', 'autoCW', 'password', 'passwordconfirm',
         'instanceDescription', 'instanceDescriptionShort',
         'subject', 'location', 'imageDescription', 'importBlocks',
@@ -2027,7 +2029,7 @@ def _words_similarity_histogram(words: []) -> {}:
 def _words_similarity_words_list(content: str) -> []:
     """Returns a list of words for the given content
     """
-    remove_punctuation = ('.', ',', ';', '-', ':', '"')
+    remove_punctuation: list[str] = ('.', ',', ';', '-', ':', '"')
     content = remove_html(content).lower()
     for punc in remove_punctuation:
         content = content.replace(punc, ' ')
@@ -2332,7 +2334,7 @@ def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
     if not is_a_file(remove_twitter):
         return False
     summary_lower = summary.lower()
-    twitter_strings = ('twitter', '/x.com', ' x.com', 'birdsite')
+    twitter_strings: list[str] = ('twitter', '/x.com', ' x.com', 'birdsite')
     if string_contains(summary_lower, twitter_strings):
         return True
     return False

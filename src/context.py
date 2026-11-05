@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Security"
 
 
-VALID_CONTEXTS = (
+VALID_CONTEXTS: list[str] = (
     "https://www.w3.org/ns/activitystreams",
     "https://www.w3.org/ns/cid/v1",
     "https://w3id.org/identity/v1",

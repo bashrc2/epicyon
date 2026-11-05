@@ -195,7 +195,7 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
     # update fields within actor
     if 'attachment' in updated_actor_json:
         # these attachments are updatable via c2s
-        updatable_attachments = ('PGP', 'OpenPGP', 'Email')
+        updatable_attachments: list[str] = ('PGP', 'OpenPGP', 'Email')
 
         for new_property_value in updated_actor_json['attachment']:
             name_value: str = None
@@ -534,7 +534,7 @@ def post_message_to_outbox(session, translate: {},
                                               '/system/' +
                                               'media_attachments/files/')
 
-    permitted_outbox_types = (
+    permitted_outbox_types: list[str] = (
         'Create', 'Announce', 'Like', 'EmojiReact', 'Follow', 'Undo',
         'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore',
         'Move', 'Edition', 'sm:ActorStatus', 'ActorStatus'
@@ -638,7 +638,7 @@ def post_message_to_outbox(session, translate: {},
                            citations_filename)
 
     # The following activity types get added to the index files
-    indexed_activities = (
+    indexed_activities: list[str] = (
         'Create', 'Question', 'Note', 'Event', 'EncryptedMessage', 'Article',
         'Patch', 'Announce', 'ChatMessage'
     )

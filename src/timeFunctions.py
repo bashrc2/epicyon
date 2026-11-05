@@ -71,9 +71,11 @@ def date_from_string_format(date_str: str, formats: []):
     """returns an offset-aware datetime from a string date
     """
     if not formats:
-        formats = ("%a, %d %b %Y %H:%M:%S %Z",
-                   "%a, %d %b %Y %H:%M:%S %z",
-                   "%Y-%m-%dT%H:%M:%S%z")
+        formats: list[str] = (
+            "%a, %d %b %Y %H:%M:%S %Z",
+            "%a, %d %b %Y %H:%M:%S %z",
+            "%Y-%m-%dT%H:%M:%S%z"
+        )
     dtime = None
 
     # Remove any traling spaces

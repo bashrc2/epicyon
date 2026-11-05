@@ -36,7 +36,7 @@ from src.data import load_string
 from src.data import save_string
 from src.data import is_a_file
 
-SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
+SPEAKER_REMOVE_CHARS: list[str] = ('.\n', '. ', ',', ';', '?', '!')
 
 
 def get_speaker_pitch(display_name: str, screenreader: str,

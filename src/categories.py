@@ -23,7 +23,7 @@ from src.data import makedir
 
 MAX_TAG_LENGTH = 42
 
-INVALID_HASHTAG_CHARS = (',', ' ', '<', ';', '\\', '"', '&', '#')
+INVALID_HASHTAG_CHARS: list[str] = (',', ' ', '<', ';', '\\', '"', '&', '#')
 
 
 def get_hashtag_category(base_dir: str, hashtag: str) -> str:

@@ -13,9 +13,9 @@ from src.utils import remove_html
 from src.utils import string_contains
 from src.utils import resembles_url
 
-music_fieldnames = ('music')
+music_fieldnames: list[str] = ['music']
 
-music_sites = (
+music_sites: list[str] = (
     'bandcamp.com', 'soundcloud.com', 'beatport.com', 'last.fm',
     'hypeddit.com', 'mixcloud.com', 'reverbnation.com', 'soundclick.com',
     'pandora.com'

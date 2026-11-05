@@ -44,7 +44,7 @@ def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
         return None
 
     # check that the required fields are present
-    required_fields = (
+    required_fields: list[str] = (
         'id', 'published', 'to', 'attributedTo', 'content'
     )
     for field_name in required_fields:

@@ -306,7 +306,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     # check that some additional fields are strings
     if debug:
         print('INBOX: checking fields 1')
-    string_fields = ('id', 'type', 'published')
+    string_fields: list[str] = ('id', 'type', 'published')
     for check_field in string_fields:
         if not message_json.get(check_field):
             continue
@@ -321,7 +321,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     # check that to/cc fields are lists
     if debug:
         print('INBOX: checking to and cc fields')
-    list_fields = ('to', 'cc')
+    list_fields: list[str] = ('to', 'cc')
     for check_field in list_fields:
         if not message_json.get(check_field):
             continue
@@ -361,7 +361,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                 self.server.postreq_busy = False
                 return 3
         # check that some fields are strings
-        string_fields = (
+        string_fields: list[str] = (
             'id', 'actor', 'type', 'content', 'published',
             'summary'
         )
@@ -390,7 +390,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
         if debug:
             print('INBOX: checking object to and cc fields')
         # check to and cc fields
-        list_fields = ('to', 'cc')
+        list_fields: list[str] = ('to', 'cc')
         for check_field in list_fields:
             if not message_json['object'].get(check_field):
                 continue
@@ -545,7 +545,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     original_message_json = message_json.copy()
 
     # whether to add a 'to' field to the message
-    add_to_field_types = (
+    add_to_field_types: list[str] = (
         'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore', 'Move'
     )
     for add_to_type in add_to_field_types:
@@ -606,7 +606,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
 def is_authorized(self) -> bool:
     self.authorized_nickname = None
 
-    not_auth_paths = (
+    not_auth_paths: list[str] = (
         '/icons/', '/avatars/', '/favicons/',
         '/system/accounts/avatars/',
         '/system/accounts/headers/',

@@ -1303,7 +1303,7 @@ def _profile_post_remove_custom_font(base_dir: str, nickname: str, domain: str,
     if (fields['removeCustomFont'] == 'on' and
         (is_artist(base_dir, nickname) or
          path.startswith('/users/' + admin_nickname + '/'))):
-        font_ext = ('woff', 'woff2', 'otf', 'ttf')
+        font_ext: list[str] = ('woff', 'woff2', 'otf', 'ttf')
         for ext in font_ext:
             if is_a_file(base_dir + '/fonts/custom.' + ext):
                 erase_file(base_dir + '/fonts/custom.' + ext,
@@ -1660,7 +1660,7 @@ def _profile_post_moved(actor_json: {}, fields: {},
                         send_move_activity: bool) -> bool:
     """ HTTP POST account moved to new address
     """
-    fieldnames = ('movedTo', 'copiedTo')
+    fieldnames: list[str] = ('movedTo', 'copiedTo')
     for fieldname in fieldnames:
         moved_to: str = ''
         if actor_json.get(fieldname):
@@ -2851,7 +2851,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
         # get the various avatar, banner and background images
         actor_changed: bool = True
         send_move_activity: bool = False
-        profile_media_types = (
+        profile_media_types: list[str] = (
             'avatar', 'image',
             'banner', 'search_banner',
             'instanceLogo',

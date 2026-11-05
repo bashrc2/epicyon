@@ -60,11 +60,11 @@ VALID_LABEL_CHARS = \
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
-INVALID_CHARACTERS = (
+INVALID_CHARACTERS: list[str] = (
     '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡', '​'
 )
 
-INVALID_ACTOR_URL_CHARACTERS = (
+INVALID_ACTOR_URL_CHARACTERS: list[str] = (
     ' ', '​', '<', '>', '%', '{', '}', '|', '\\', '^', '`',
     '?', '#', '!', '$', '&', "'", '(', ')', '*', '+', ',',
     ';', '='
@@ -2281,7 +2281,7 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
 def is_dm(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """
-    dm_types = (
+    dm_types: list[str] = (
         'Note', 'Event', 'Page', 'Patch', 'EncryptedMessage', 'Article'
     )
     if post_json_object['type'] != 'Create':

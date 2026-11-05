@@ -67,7 +67,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if not post_id:
         return 0
 
-    try_post_box = ('tlblogs', 'inbox', 'outbox')
+    try_post_box: list[str] = ('tlblogs', 'inbox', 'outbox')
     box_found: bool = False
     for post_box in try_post_box:
         post_filename = \
@@ -133,7 +133,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if not post_id:
         return ''
 
-    try_post_box = ('tlblogs', 'inbox', 'outbox')
+    try_post_box: list[str] = ('tlblogs', 'inbox', 'outbox')
     box_found: bool = False
     for post_box in try_post_box:
         post_filename = \

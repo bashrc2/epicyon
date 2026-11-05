@@ -451,7 +451,7 @@ def html_calendar(person_cache: {}, translate: {},
     set_custom_background(base_dir, 'calendar-background',
                           'calendar-background')
 
-    months = (
+    months: list[str] = (
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     )
@@ -590,7 +590,7 @@ def html_calendar(person_cache: {}, translate: {},
     calendar_str += '</p>\n</center>\n<table class="calendar">\n'
     calendar_str += '<thead>\n'
     calendar_str += '<tr>\n'
-    days = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
+    days: list[str] = ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
     for day in days:
         calendar_str += '  <th scope="col" class="calendar__day__header">' + \
             translate[day] + '</th>\n'

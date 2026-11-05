@@ -35,7 +35,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         accept_str = 'text/vcard'
     else:
         accept_str = self.headers['Accept']
-    vcard_mime_types = (
+    vcard_mime_types: list[str] = (
         'text/vcard',
         'application/vcard+xml'
     )

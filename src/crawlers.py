@@ -132,7 +132,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
 
         # is this an LLM crawler?
         # https://github.com/ai-robots-txt/ai.robots.txt/blob/main/robots.txt
-        llm_bot_strings = (
+        llm_bot_strings: list[str] = (
             'addsearchbot', 'aihitbot', 'andibot', 'channel3bot',
             'chatglm', 'cloudflare-autorag', 'crawl4ai',
             'facebookbot', 'facebookexternalhit',
@@ -188,7 +188,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
 
         # is this a web crawler? If so then block it by default
         # unless this is a news instance or if it is in the allowed list
-        bot_strings = (
+        bot_strings: list[str] = (
             'bot/', 'bot-', '/bot', '_bot', 'bot_', 'bot;', ' bot ',
             '/robot', 'spider/', 'spider.ht', '/spider.', '-spider',
             'externalhit/', 'google', 'applebot', 'yandex',

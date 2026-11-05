@@ -145,7 +145,7 @@ def _meta_data_instance_v2(show_accounts: bool,
     if admin_actor.get('attachment'):
         if isinstance(admin_actor['attachment'], list):
             translated_email = translate['Email'].lower()
-            email_fields = ('email', 'e-mail', translated_email)
+            email_fields: list[str] = ('email', 'e-mail', translated_email)
             for tag in admin_actor['attachment']:
                 if not isinstance(tag, dict):
                     continue

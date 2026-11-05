@@ -13,7 +13,7 @@ from random import randint
 from src.data import load_string
 from src.data import is_a_file
 
-common_nouns = (
+common_nouns: list[str] = (
     "time",
     "way",
     "year",
@@ -1007,7 +1007,7 @@ common_nouns = (
     "championship"
 )
 
-common_words = (
+common_words: list[str] = (
     "you",
     "I",
     "to",

@@ -608,14 +608,14 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
 
 
 def _test_signature():
-    signature_check = (
+    signature_check: list[int] = (
         501, 336, 339, 306, 342, 543, 339, 309, 348, 543, 294, 291, 294, 336,
         291, 543, 309, 306, 276, 342, 324, 303, 336, 543, 315, 315, 348, 543,
         336, 291, 336, 315, 336, 339, 543, 339, 309, 348, 543, 294, 309, 306,
         324, 291, 342, 288, 297, 291, 294, 309, 324, 543, 294, 288, 306, 324,
         285, 336, 297, 303, 543, 339, 297, 348, 330, 336, 297, 294, 324, 435
     )
-    checksum = (
+    checksum: list[int] = (
         600, 414, 489, 366, 558, 600, 414, 489, 366, 558
     )
     system = 639
@@ -5159,7 +5159,7 @@ def _test_strip_html_tag():
 
 def _test_hashtag_rules():
     print('test_hashtag_rule_tree')
-    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
+    operators: list[str] = ('not', 'and', 'or', 'xor', 'from', 'contains')
 
     url = 'testsite.com'
     moderated = True
@@ -5729,7 +5729,7 @@ def _test_post_variable_names():
 def _test_config_param_names():
     print('test_config_param_names')
 
-    fnames = ('get_config_param', 'set_config_param')
+    fnames: list[str] = ('get_config_param', 'set_config_param')
     for subdir, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
@@ -6045,7 +6045,7 @@ def _check_self_variables(mod_name: str, method_name: str,
     """
     self_vars = line.split('self.server.')
     ctr: int = 0
-    terminators = (' ', '.', ',', ')', '[', ' ', ':')
+    terminators: list[str] = (' ', '.', ',', ')', '[', ' ', ':')
     func_args: list[str] = []
     for arg_str in method_args:
         arg_str = arg_str.strip().split(':')[0]
@@ -6483,7 +6483,7 @@ def _test_functions():
         print('Function: ' + name + ' ✓')
 
     print('Constructing function call graph')
-    module_colors = (
+    module_colors: list[str] = (
         'red', 'green', 'yellow', 'orange', 'purple', 'cyan',
         'darkgoldenrod3', 'darkolivegreen1', 'darkorange1',
         'darkorchid1', 'darkseagreen', 'darkslategray4',
@@ -9131,8 +9131,10 @@ def _test_format_mixed_rtl() -> None:
 def _test_dateformat():
     print('dateformat')
     date_str = 'Mon, 20 Nov 2023 16:51:15 GMT'
-    formats = ("%a, %d %b %Y %H:%M:%S %Z",
-               "%a, %d %b %Y %H:%M:%S %z")
+    formats: list[str] = (
+        "%a, %d %b %Y %H:%M:%S %Z",
+        "%a, %d %b %Y %H:%M:%S %z"
+    )
     dtime = date_from_string_format(date_str, formats)
     print(str(dtime))
     assert dtime.tzinfo

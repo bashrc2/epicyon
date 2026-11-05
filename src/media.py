@@ -300,7 +300,7 @@ def replace_twitter(post_json_object: {}, replacement_domain: str,
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    twitter_domains = ('x.com', 'twitter.com')
+    twitter_domains: list[str] = ('x.com', 'twitter.com')
     for tw_domain in twitter_domains:
         _replace_silo_domain(post_json_object, tw_domain,
                              replacement_domain, system_language)
@@ -454,7 +454,7 @@ def get_music_metadata(filename: str) -> {}:
     except BaseException:
         print('EX: get_music_metadata unable to decode output')
         return {}
-    fieldnames = (
+    fieldnames: list[str] = (
         'Title', 'Artist', 'Genre', 'Track', 'Album', 'Length', 'Band'
     )
     music_metadata = {}

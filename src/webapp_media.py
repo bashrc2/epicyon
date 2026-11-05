@@ -155,7 +155,7 @@ def _add_embedded_video_from_sites(content: str,
                     "</iframe>\n</span></center>\n"
                 return content
 
-    invidious_sites = (
+    invidious_sites: list[str] = (
         'https://invidious.snopyta.org',
         'https://yewtu.be',
         'https://tube.connect.cafe',
@@ -241,7 +241,7 @@ def _add_embedded_video_from_sites(content: str,
             # Also see https://peertube_isolation.frama.io/list/ for
             # adversarial instances. Nothing in that list should be
             # in the defaults below.
-            peertube_sites = (
+            peertube_sites: list[str] = (
                 'share.tube',
                 'visionon.tv',
                 'anarchy.tube',
@@ -281,7 +281,7 @@ def _add_embedded_video_from_sites(content: str,
             url = url.split('"')[0]
             if not url:
                 continue
-            possible_endings = (
+            possible_endings: list[str] = (
                 '/trending', '/home', '/overview',
                 '/recently-added', '/local', '/about')
             if string_ends_with(url, possible_endings):
@@ -319,7 +319,7 @@ def _add_embedded_video_from_sites(content: str,
             loops_sites = loops_instances
         else:
             # A default minimal set of loops instances
-            loops_sites = (
+            loops_sites: list[str] = (
             )
         for site in loops_sites:
             site = site.strip()
@@ -351,9 +351,10 @@ def _add_embedded_video_from_sites(content: str,
             if not url:
                 continue
             # TODO check this on Loops instances
-            possible_endings = (
+            possible_endings: list[str] = (
                 '/trending', '/home', '/overview',
-                '/recently-added', '/local', '/about')
+                '/recently-added', '/local', '/about'
+            )
             if string_ends_with(url, possible_endings):
                 # ignore various loops endpoints
                 continue

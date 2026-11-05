@@ -1127,7 +1127,7 @@ def daemon_http_post(self) -> None:
                         '_POST', 'receive post',
                         self.server.debug)
 
-    possible_path_endings = ('/outbox', '/wanted', '/shares')
+    possible_path_endings: list[str] = ('/outbox', '/wanted', '/shares')
     if string_ends_with(self.path, possible_path_endings):
         if users_in_path:
             if authorized:
@@ -1148,8 +1148,9 @@ def daemon_http_post(self) -> None:
                         self.server.debug)
 
     # check that the post is to an expected path
-    possible_endings = ('/outbox', '/inbox', '/wanted', '/shares',
-                        '/moderationaction')
+    possible_endings: list[str] = (
+        '/outbox', '/inbox', '/wanted', '/shares', '/moderationaction'
+    )
     if not string_ends_with(self.path, possible_endings) and \
        self.path != '/sharedInbox':
         print('Attempt to POST to invalid path ' + self.path)

@@ -12,7 +12,7 @@ from src.utils import get_attachment_property_value
 from src.utils import remove_html
 from src.utils import string_contains
 
-pronoun_fieldnames = ('pronoun', 'they/them', 'he/him', 'she/her')
+pronoun_fieldnames: list[str] = ('pronoun', 'they/them', 'he/him', 'she/her')
 
 
 def get_pronouns(actor_json: {}) -> str:

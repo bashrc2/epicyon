@@ -439,7 +439,9 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         if debug:
             print('No type')
         return False
-    allowed_post_types = ('Create', 'Announce', 'Page', 'Note', 'Event')
+    allowed_post_types: list[str] = (
+        'Create', 'Announce', 'Page', 'Note', 'Event'
+    )
     if item['type'] not in allowed_post_types:
         if debug:
             print('Not a Create/Note/Announce type')
@@ -760,7 +762,7 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
     that they appear
     """
     plain_text = remove_html(content)
-    remove_chars = ('.', ';', '?', '\n', ':')
+    remove_chars: list[str] = ('.', ';', '?', '\n', ':')
     for char in remove_chars:
         plain_text = plain_text.replace(char, ' ')
     words_list = plain_text.split(' ')
@@ -3856,7 +3858,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
         recipients_object = post_json_object
 
     recipients: list[str] = []
-    recipient_type = ('to', 'cc')
+    recipient_type: list[str] = ('to', 'cc')
     for rtype in recipient_type:
         if not recipients_object.get(rtype):
             continue
@@ -4674,7 +4676,7 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
             'items': []
         }
     # remove other collections
-    remove_collections = (
+    remove_collections: list[str] = (
         'replies', 'shares', 'bookmarks', 'ignores'
     )
     for remove_name in remove_collections:

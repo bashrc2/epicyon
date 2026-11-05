@@ -411,7 +411,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     content = content.lower()
 
     # actionOccurred = False
-    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
+    operators: list[str] = ('not', 'and', 'or', 'xor', 'from', 'contains')
     for rule_str in rules:
         if not rule_str:
             continue

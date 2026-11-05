@@ -30,10 +30,12 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
         return False
 
     divert_to_login_screen: bool = False
-    non_login_paths = ('/media/', '/ontologies/', '/data/', '/sharefiles/',
-                       '/statuses/', '/emoji/', '/tags/', '/tagmaps/',
-                       '/avatars/', '/favicons/', '/headers/', '/fonts/',
-                       '/icons/')
+    non_login_paths: list[str] = (
+        '/media/', '/ontologies/', '/data/', '/sharefiles/',
+        '/statuses/', '/emoji/', '/tags/', '/tagmaps/',
+        '/avatars/', '/favicons/', '/headers/', '/fonts/',
+        '/icons/'
+    )
     if not string_contains(path, non_login_paths):
         divert_to_login_screen: bool = True
         if path.startswith('/users/'):
@@ -41,8 +43,10 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
             if '/' not in nick_str and '?' not in nick_str:
                 divert_to_login_screen = False
             else:
-                possible_endings = ('/following', '/followers',
-                                    '/skills', '/roles', '/wanted', '/shares')
+                possible_endings: list[str] = (
+                    '/following', '/followers',
+                    '/skills', '/roles', '/wanted', '/shares'
+                )
                 if string_ends_with(path, possible_endings):
                     divert_to_login_screen = False
 

@@ -1367,7 +1367,7 @@ def _receive_new_post_process_newquestion(self, fields: {},
         duration_days = fields['duration']
     else:
         end_time_str = fields['endTime']
-        date_formats = (
+        date_formats: list[str] = (
             "%Y-%m-%dT%H:%M:%S%z",
             "%Y-%m-%dT%H:%M:%S%Z"
         )

@@ -169,9 +169,9 @@ def _receive_search_skills(self, search_str: str,
                            calling_domain: str) -> bool:
     """Receive a search for a skill from the search screen
     """
-    possible_endings = (
+    possible_endings: list[str] = [
         ' skill'
-    )
+    ]
     for poss_ending in possible_endings:
         if search_str.endswith(poss_ending):
             search_str = search_str.replace(poss_ending, '')
@@ -236,7 +236,7 @@ def _receive_search_my_posts(self, search_str: str,
     """Receive a search for your own posts from the search screen
     """
     # your post history search
-    possible_endings = (
+    possible_endings: list[str] = (
         ' in my posts',
         ' in my history',
         ' in my outbox',
@@ -357,7 +357,7 @@ def _receive_search_bookmarks(self, search_str: str,
     """Receive a search for bookmarked posts from the search screen
     """
     # bookmark search
-    possible_endings = (
+    possible_endings: list[str] = (
         ' in my bookmarks'
         ' in my saved posts'
         ' in my saved items'
@@ -888,11 +888,11 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     if search_for_emoji:
         search_str = ':' + search_str + ':'
 
-    my_posts_endings = (
+    my_posts_endings: list[str] = (
         ' history', ' in sent', ' in outbox', ' in outgoing',
         ' in sent items', ' in sent posts', ' in outgoing posts',
         ' in my history', ' in my outbox', ' in my posts')
-    bookmark_endings = (
+    bookmark_endings: list[str] = (
         ' in my saved items', ' in my saved posts',
         ' in my bookmarks', ' in my saved', ' in my saves',
         ' in saved posts', ' in saved items', ' in bookmarks',

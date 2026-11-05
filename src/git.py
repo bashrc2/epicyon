@@ -234,8 +234,10 @@ def get_repo_url(actor_json: {}) -> str:
         return ''
     if not isinstance(actor_json['attachment'], list):
         return ''
-    repo_type = ('github', 'ghub', 'gitlab', 'glab', 'codeberg', 'launchpad',
-                 'sourceforge', 'bitbucket', 'gitea')
+    repo_type: list[str] = (
+        'github', 'ghub', 'gitlab', 'glab', 'codeberg', 'launchpad',
+        'sourceforge', 'bitbucket', 'gitea'
+    )
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             print("WARN: actor attachment is not dict: " + str(property_value))

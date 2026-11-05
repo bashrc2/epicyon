@@ -77,7 +77,7 @@ def _location_address_from_dict(location: {}) -> str:
     """returns location address as a string
     """
     location_str: str = ''
-    address_section_name = (
+    address_section_name: list[str] = (
         'streetAddress',
         'addressLocality',
         'addressRegion',
@@ -723,7 +723,7 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
 def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a bing map link
     """
-    prefixes = ('/maps?cp=', '/maps/directions?cp=')
+    prefixes: list[str] = ('/maps?cp=', '/maps/directions?cp=')
     map_prefix = None
     for prefix in prefixes:
         if prefix in url:
