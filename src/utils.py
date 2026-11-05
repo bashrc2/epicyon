@@ -4333,7 +4333,9 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         if contains_ipv4_address(path_lower):
             return True
 
-    bad_starts = ('/firebase', '/composer', '/sugar', '/_')
+    bad_starts: list[str] = (
+        '/firebase', '/composer', '/sugar', '/_', '/?rest', '/?cb='
+    )
     if string_starts_with(path_lower, bad_starts):
         return True
 
