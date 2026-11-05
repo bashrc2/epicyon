@@ -7494,7 +7494,7 @@ def _test_roles() -> None:
             }
         ]
     }
-    test_roles_list = ["admin", "moderator"]
+    test_roles_list: list[str] = ["admin", "moderator"]
     actor_roles_from_list(actor_json, test_roles_list)
     assert actor_has_role(actor_json, "admin")
     assert actor_has_role(actor_json, "moderator")
@@ -7909,7 +7909,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
     print('test_add_CW_from_lists')
     translate = {}
     system_language = "en"
-    languages_understood = ["en"]
+    languages_understood: list[str] = ["en"]
     cw_lists = load_cw_lists(base_dir, True)
     assert cw_lists
 
@@ -8436,7 +8436,7 @@ def _test_diff_content() -> None:
     assert result == expected
 
     system_language = "en"
-    languages_understood = ["en"]
+    languages_understood: list[str] = ["en"]
     translate = {
         "SHOW EDITS": "SHOW EDITS"
     }

@@ -1978,7 +1978,9 @@ def create_post_base(base_dir: str,
     # convert the searchable_by state into a url
     searchable_by_list: list[str] = []
     if searchable_by == 'public':
-        searchable_by_list = ["https://www.w3.org/ns/activitystreams#Public"]
+        searchable_by_list: list[str] = [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ]
     elif searchable_by == 'yourself':
         searchable_by_list = \
             [local_actor_url(http_prefix, nickname, domain)]
