@@ -281,7 +281,11 @@ def daemon_http_get(self) -> None:
         if self.server.robots_txt:
             msg = self.server.robots_txt
         else:
-            msg = "User-agent: *\nAllow: /"
+            # See https://www.ietf.org/archive/id/
+            # draft-kelley-aipref-training-preference-signal-00.txt
+            msg = \
+                "User-agent: __usage_ai-training\nDisallow: /" + \
+                "User-agent: *\nAllow: /"
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/plain', msglen,
