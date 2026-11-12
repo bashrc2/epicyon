@@ -4318,7 +4318,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     bad_endings: list[str] = (
         '.js', '.ts', '.py', '.php', '.bak', '.env', '.local', '.yml',
         '.rs', '.ru', '.old', '.backup', '~', '.ini', '.db', '.stage',
-        '.prod'
+        '.prod', '.alfa'
     )
     if string_ends_with(path_lower, bad_endings):
         return True
