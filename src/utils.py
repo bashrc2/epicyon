@@ -1248,10 +1248,11 @@ def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
-            '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
-            '/button/', '/x/', '/o/', '/posts/', '/items/', '/object/', '/r/',
-            '/content/', '/federation/', '/elsewhere/', '/article/',
-            '/activity/', '/blog/', '/app.bsky.feed.post/', '/?p=')
+            '/fediverse/post/', '/note/', '/notes/', '/comment/', '/post/',
+            '/item/', '/videos/', '/button/', '/x/', '/o/', '/posts/',
+            '/items/', '/object/', '/r/', '/content/', '/federation/',
+            '/elsewhere/', '/article/', '/activity/', '/blog/',
+            '/app.bsky.feed.post/', '/?p=')
 
 
 def contains_statuses(url: str) -> bool:
