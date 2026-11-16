@@ -29,7 +29,8 @@ VALID_CONTEXTS: list[str] = (
     "*/contexts/data-integrity/v1.jsonld",
     "*/ns/privacyHeaders",
     "https://w3id.org/fep/*",
-    "https://gotosocial.org/ns"
+    "https://gotosocial.org/ns",
+    "https://app.wafrn.net/contexts/litepub-wafrn-*"
 )
 
 
