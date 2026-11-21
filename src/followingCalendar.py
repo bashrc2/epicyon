@@ -59,15 +59,21 @@ def _port_domain_remove(domain: str) -> str:
 
 def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
                               following_nickname: str,
-                              following_domain: str) -> bool:
+                              following_domain: str,
+                              is_public_event: bool) -> bool:
     """Returns true if receiving calendar events from the given
     account from following.txt
     """
     if following_nickname == nickname and following_domain == domain:
         # reminder post
         return True
-    calendar_filename: str = \
-        _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
+    account_dir = _dir_acct(base_dir, nickname, domain)
+    if is_public_event:
+        allow_public_events_filename = account_dir + '/.allow_public_events'
+        if is_a_file(allow_public_events_filename):
+            # this is a public event
+            return True
+    calendar_filename: str = account_dir + '/followingCalendar.txt'
     handle: str = following_nickname + '@' + following_domain
     if not is_a_file(calendar_filename):
         following_filename: str = \

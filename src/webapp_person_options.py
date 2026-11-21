@@ -650,7 +650,7 @@ def html_person_options(default_timeline: str,
                     translate['Save'] + '</button><br>\n'
                 if not receiving_calendar_events(base_dir, nickname, domain,
                                                  options_nickname,
-                                                 options_domain_full):
+                                                 options_domain_full, False):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

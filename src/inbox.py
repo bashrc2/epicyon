@@ -1305,9 +1305,30 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
         return
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
+
+    # is this a public event?
+    is_public_event = False
+    to_field = None
+    if post_json_object['object'].get('to'):
+        to_field = post_json_object['object']['to']
+    else:
+        if post_json_object.get('to'):
+            to_field = post_json_object['to']
+    if isinstance(to_field, list):
+        for to_str in to_field:
+            if not isinstance(to_str, str):
+                continue
+            if to_str.endswith('#Public'):
+                is_public_event = True
+                break
+    elif isinstance(to_field, str):
+        if to_field.endswith('#Public'):
+            is_public_event = True
+
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
-                                     actor_nickname, actor_domain):
+                                     actor_nickname, actor_domain,
+                                     is_public_event):
         return
 
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
@@ -1350,9 +1371,30 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
         return
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
+
+    # is this a public event?
+    is_public_event = False
+    to_field = None
+    if post_json_object['object'].get('to'):
+        to_field = post_json_object['object']['to']
+    else:
+        if post_json_object.get('to'):
+            to_field = post_json_object['to']
+    if isinstance(to_field, list):
+        for to_str in to_field:
+            if not isinstance(to_str, str):
+                continue
+            if to_str.endswith('#Public'):
+                is_public_event = True
+                break
+    elif isinstance(to_field, str):
+        if to_field.endswith('#Public'):
+            is_public_event = True
+
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
-                                     actor_nickname, actor_domain):
+                                     actor_nickname, actor_domain,
+                                     is_public_event):
         return
 
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
