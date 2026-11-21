@@ -1528,9 +1528,9 @@ def get_user_paths() -> []:
     e.g. /users/nickname, /channel/nickname
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/',
-            '/u/', '/c/', '/m/', '/a/', '/video-channels/',
-            '/nieuws/author/', '/author/', '/federation/user/',
-            '/.ghost/activitypub/users/',
+            '/federation/u/', '/u/', '/c/', '/m/', '/a/',
+            '/video-channels/', '/nieuws/author/', '/author/',
+            '/federation/user/', '/.ghost/activitypub/users/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
             '/fediverse/blog/', '/user/', '/@', '/api/collections/',
             '/feed/', '/actor/', '/ap/', '/ap/users/')
