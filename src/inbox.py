@@ -1287,16 +1287,25 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     and if so saves the post id to a file in the calendar directory
     for the account
     """
-    if not post_json_object.get('actor'):
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+        if not post_json_object.get('actor'):
+            return
+    else:
+        if not post_json_object.get('attributedTo'):
+            return
+    if not post_obj.get('tag'):
         return
-    if not has_object_dict(post_json_object):
-        return
-    if not post_json_object['object'].get('tag'):
-        return
-    if not isinstance(post_json_object['object']['tag'], list):
+    if not isinstance(post_obj['tag'], list):
         return
 
     actor = get_actor_from_post(post_json_object)
+    if not actor:
+        if post_obj.get('attributedTo'):
+            actor = get_attributed_to(post_obj['attributedTo'])
+            if not actor:
+                return
     actor_nickname = get_nickname_from_actor(actor)
     if not actor_nickname:
         return
@@ -1309,21 +1318,19 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     # is this a public event?
     is_public_event = False
     to_field = None
-    if post_json_object['object'].get('to'):
-        to_field = post_json_object['object']['to']
-    else:
-        if post_json_object.get('to'):
-            to_field = post_json_object['to']
-    if isinstance(to_field, list):
-        for to_str in to_field:
-            if not isinstance(to_str, str):
-                continue
-            if to_str.endswith('#Public'):
+    if post_obj.get('to'):
+        to_field = post_obj['to']
+    if to_field is not None:
+        if isinstance(to_field, list):
+            for to_str in to_field:
+                if not isinstance(to_str, str):
+                    continue
+                if to_str.endswith('#Public'):
+                    is_public_event = True
+                    break
+        elif isinstance(to_field, str):
+            if to_field.endswith('#Public'):
                 is_public_event = True
-                break
-    elif isinstance(to_field, str):
-        if to_field.endswith('#Public'):
-            is_public_event = True
 
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
@@ -1334,7 +1341,7 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
 
     # look for events within the tags list
-    for tag_dict in post_json_object['object']['tag']:
+    for tag_dict in post_obj['tag']:
         if not tag_dict.get('type'):
             continue
         if tag_dict['type'] != 'Event':
@@ -1351,18 +1358,28 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
     for the account
     This is for Friendica-style calendar events
     """
-    if not post_json_object.get('actor'):
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+        if not post_json_object.get('actor'):
+            return
+    else:
+        if not post_json_object.get('attributedTo'):
+            return
+
+    if post_obj['type'] != 'Event':
         return
-    if not has_object_dict(post_json_object):
+    if not post_obj.get('startTime'):
         return
-    if post_json_object['object']['type'] != 'Event':
-        return
-    if not post_json_object['object'].get('startTime'):
-        return
-    if not isinstance(post_json_object['object']['startTime'], str):
+    if not isinstance(post_obj['startTime'], str):
         return
 
     actor = get_actor_from_post(post_json_object)
+    if not actor:
+        if post_obj.get('attributedTo'):
+            actor = get_attributed_to(post_obj['attributedTo'])
+            if not actor:
+                return
     actor_nickname = get_nickname_from_actor(actor)
     if not actor_nickname:
         return
@@ -1375,21 +1392,19 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
     # is this a public event?
     is_public_event = False
     to_field = None
-    if post_json_object['object'].get('to'):
-        to_field = post_json_object['object']['to']
-    else:
-        if post_json_object.get('to'):
-            to_field = post_json_object['to']
-    if isinstance(to_field, list):
-        for to_str in to_field:
-            if not isinstance(to_str, str):
-                continue
-            if to_str.endswith('#Public'):
+    if post_obj.get('to'):
+        to_field = post_obj['to']
+    if to_field is not None:
+        if isinstance(to_field, list):
+            for to_str in to_field:
+                if not isinstance(to_str, str):
+                    continue
+                if to_str.endswith('#Public'):
+                    is_public_event = True
+                    break
+        elif isinstance(to_field, str):
+            if to_field.endswith('#Public'):
                 is_public_event = True
-                break
-    elif isinstance(to_field, str):
-        if to_field.endswith('#Public'):
-            is_public_event = True
 
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
@@ -1398,7 +1413,7 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
         return
 
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
-    save_event_post(base_dir, handle, post_id, post_json_object['object'])
+    save_event_post(base_dir, handle, post_id, post_obj)
 
 
 def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
