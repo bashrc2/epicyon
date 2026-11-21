@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Korvaa viivat em-viivoilla",
 	"Content labels": "Sisältötunnisteet",
 	"Content is too large": "Sisältö on liian suuri.",
-	"Ain't no way no how": "Ei mitenkään, ei miten"
+	"Ain't no way no how": "Ei mitenkään, ei miten",
+	"Allow public events on calendar": "Salli julkiset tapahtumat kalenterissa"
 }

@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Αντικαταστήστε τις παύλες με παύλες em",
 	"Content labels": "Ετικέτες περιεχομένου",
 	"Content is too large": "Το περιεχόμενο είναι πολύ μεγάλο",
-	"Ain't no way no how": "Δεν υπάρχει τρόπος, ούτε πώς"
+	"Ain't no way no how": "Δεν υπάρχει τρόπος, ούτε πώς",
+	"Allow public events on calendar": "Να επιτρέπονται δημόσιες εκδηλώσεις στο ημερολόγιο"
 }

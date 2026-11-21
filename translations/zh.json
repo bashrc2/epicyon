@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "将连字符替换为长破折号",
 	"Content labels": "内容标签",
 	"Content is too large": "内容过大",
-	"Ain't no way no how": "绝对没有办法"
+	"Ain't no way no how": "绝对没有办法",
+	"Allow public events on calendar": "允许在日历中显示公开活动"
 }

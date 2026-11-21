@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Замените дефисы на тире.",
 	"Content labels": "Метки контента",
 	"Content is too large": "Объем содержимого слишком велик",
-	"Ain't no way no how": "Ни за что!"
+	"Ain't no way no how": "Ни за что!",
+	"Allow public events on calendar": "Разрешить публичные мероприятия в календаре"
 }

@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Substitueix els guions per guions circulars",
 	"Content labels": "Etiquetes de contingut",
 	"Content is too large": "El contingut és massa gran.",
-	"Ain't no way no how": "No hi ha manera de com"
+	"Ain't no way no how": "No hi ha manera de com",
+	"Allow public events on calendar": "Permetre esdeveniments públics al calendari"
 }

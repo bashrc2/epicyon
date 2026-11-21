@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "ড্যাশগুলোকে এম-ড্যাশ (em dashes) দিয়ে প্রতিস্থাপন করুন।",
 	"Content labels": "বিষয়বস্তুর লেবেল",
 	"Content is too large": "বিষয়বস্তু অত্যধিক বড়",
-	"Ain't no way no how": "কোনোভাবেই সম্ভব না।"
+	"Ain't no way no how": "কোনোভাবেই সম্ভব না।",
+	"Allow public events on calendar": "ক্যালেন্ডারে সর্বজনীন ইভেন্টের অনুমতি দিন"
 }

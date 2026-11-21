@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Замініть тире довгими тире",
 	"Content labels": "Мітки контенту",
 	"Content is too large": "Вміст завеликий",
-	"Ain't no way no how": "Ні в якому разі, ні як"
+	"Ain't no way no how": "Ні в якому разі, ні як",
+	"Allow public events on calendar": "Дозволити публічні події в календарі"
 }

@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "대시를 엠 대시로 바꾸세요.",
 	"Content labels": "콘텐츠 라벨",
 	"Content is too large": "콘텐츠가 너무 큽니다.",
-	"Ain't no way no how": "절대 불가능해"
+	"Ain't no way no how": "절대 불가능해",
+	"Allow public events on calendar": "캘린더에 공개 이벤트 허용"
 }

@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "ダッシュをemダッシュに置き換えてください",
 	"Content labels": "コンテンツラベル",
 	"Content is too large": "コンテンツが大きすぎます",
-	"Ain't no way no how": "絶対に無理だ"
+	"Ain't no way no how": "絶対に無理だ",
+	"Allow public events on calendar": "カレンダーで公開イベントを許可する"
 }

@@ -969,6 +969,30 @@ def _profile_post_replace_dashes(base_dir: str,
                        replace_dashes_filename)
 
 
+def _profile_post_allow_public_events(base_dir: str,
+                                      nickname: str, domain: str,
+                                      fields: {}) -> bool:
+    """ HTTP POST whether to allow #Public events on the calendar
+    """
+    allow_public_events_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.allow_public_events'
+    allow_public_events: bool = False
+    if fields.get('allowPublicEvents'):
+        if fields['allowPublicEvents'] == 'on':
+            allow_public_events = True
+    if allow_public_events:
+        if not is_a_file(allow_public_events_filename):
+            save_flag_file(allow_public_events_filename,
+                           'EX: unable to write allow_public_events ' +
+                           allow_public_events_filename)
+    if not allow_public_events:
+        if is_a_file(allow_public_events_filename):
+            erase_file(allow_public_events_filename,
+                       'EX: _profile_edit ' +
+                       'unable to delete ' +
+                       allow_public_events_filename)
+
+
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
                                actor_changed: bool,
@@ -3402,6 +3426,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                 fields)
                 _profile_post_replace_dashes(base_dir, nickname, domain,
                                              fields)
+                _profile_post_allow_public_events(base_dir, nickname, domain,
+                                                  fields)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'

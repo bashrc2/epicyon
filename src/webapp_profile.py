@@ -3406,7 +3406,8 @@ def _html_edit_profile_options(is_admin: bool,
                                no_seen_posts: bool,
                                watermark_enabled: bool,
                                allow_on_lists: bool,
-                               replace_dashes: bool) -> str:
+                               replace_dashes: bool,
+                               allow_public_events: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form: str = '    <div class="container">\n'
@@ -3497,6 +3498,11 @@ def _html_edit_profile_options(is_admin: bool,
     replacedashes_str: str = translate["Replace dashes with em dashes"]
     edit_profile_form += \
         edit_check_box(replacedashes_str, 'replaceDashes', replace_dashes)
+
+    publicevents_str: str = translate["Allow public events on calendar"]
+    edit_profile_form += \
+        edit_check_box(publicevents_str, 'allowPublicEvents',
+                       allow_public_events)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -4005,6 +4011,11 @@ def html_edit_profile(server, translate: {},
     if is_a_file(replace_dashes_filename):
         replace_dashes = True
 
+    allow_public_events_filename: str = account_dir + '/.allow_public_events'
+    allow_public_events: bool = False
+    if is_a_file(allow_public_events_filename):
+        allow_public_events = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -4018,7 +4029,8 @@ def html_edit_profile(server, translate: {},
                                    show_vote_posts, hide_follows,
                                    hide_recent_posts, premium,
                                    no_seen_posts, watermark_enabled,
-                                   allow_on_lists, replace_dashes)
+                                   allow_on_lists, replace_dashes,
+                                   allow_public_events)
 
     # reply controls
     edit_profile_form += \

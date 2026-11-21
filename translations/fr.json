@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Remplacez les tirets par des tirets cadratins.",
 	"Content labels": "Étiquettes de contenu",
 	"Content is too large": "Le contenu est trop volumineux.",
-	"Ain't no way no how": "C'est absolument impossible."
+	"Ain't no way no how": "C'est absolument impossible.",
+	"Allow public events on calendar": "Autoriser les événements publics dans le calendrier"
 }

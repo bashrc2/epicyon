@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "استبدل الشرطات (-) بشرطات طويلة (—)",
 	"Content labels": "تصنيفات المحتوى",
 	"Content is too large": "المحتوى كبير جداً",
-	"Ain't no way no how": "لا سبيل بأي حال من الأحوال"
+	"Ain't no way no how": "لا سبيل بأي حال من الأحوال",
+	"Allow public events on calendar": "السماح بإدراج الفعاليات العامة في التقويم"
 }

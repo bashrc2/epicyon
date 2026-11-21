@@ -777,5 +777,6 @@
 	"Replace dashes with em dashes": "Kısa çizgileri uzun çizgilerle (em dash) değiştirin.",
 	"Content labels": "İçerik etiketleri",
 	"Content is too large": "İçerik çok büyük",
-	"Ain't no way no how": "Hiçbir şekilde mümkün değil"
+	"Ain't no way no how": "Hiçbir şekilde mümkün değil",
+	"Allow public events on calendar": "Takvimde herkese açık etkinliklere izin ver"
 }
