@@ -16,7 +16,7 @@ Submit to https://gitlab.com/bashrc2/epicyon/issues
 
 You can also post patches in the old-fashioned style via email to **bob@libreserver.org**. Include **[Epicyon]** in the subject line, otherwise it may be ignored.
 
-You may be questioned about what you have submitted. This is to establish whether you understand your submission and to rule out the possibility of fraudulent submisions.
+You may be questioned about what you have submitted. This is to establish whether you understand your submission and to rule out the possibility of fraudulent submissions.
 
 ## Generative AI Policy
 
