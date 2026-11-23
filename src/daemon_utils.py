@@ -932,11 +932,11 @@ def log_accept_string(base_dir: str, accept_str: str):
     """
     log_accepts_filename: str = base_dir + '/accepts.log'
     if not is_a_file(log_accepts_filename):
-        save_string(accept_str, log_accepts_filename,
+        save_string(accept_str + '\n', log_accepts_filename,
                     'EX: log_accept_string ' + accept_str)
     else:
         if not text_in_file(accept_str, log_accepts_filename, True):
-            append_string(accept_str, log_accepts_filename,
+            append_string(accept_str + '\n', log_accepts_filename,
                           'EX: log_accept_string ' + accept_str)
 
 
