@@ -1803,9 +1803,13 @@ def _low_frequency_post_notification(base_dir: str, http_prefix: str,
     from_domain, from_port = get_domain_from_actor(attributed_to)
     if not from_domain:
         return
+    from_handle = from_nickname + '@' + from_domain
+    if from_port:
+        from_handle += ':' + str(from_port)
     from_domain_full = get_full_domain(from_domain, from_port)
     if notify_when_person_posts(base_dir, nickname, domain,
-                                from_nickname, from_domain_full):
+                                from_nickname, from_domain_full,
+                                from_handle):
         post_id = remove_id_ending(json_obj['id'])
         dom_full = get_full_domain(domain, port)
         post_link = \

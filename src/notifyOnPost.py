@@ -19,6 +19,7 @@ from src.data import is_a_file
 def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
                             following_nickname: str,
                             following_domain: str,
+                            following_handle: str,
                             add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to notify when a new post arrives from that account
@@ -35,8 +36,15 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
 
     # check that you are following this handle
     if not text_in_file(handle + '\n', following_filename, False):
-        print('WARN: ' + handle + ' is not in ' + following_filename)
-        return
+        if handle != following_handle:
+            if not text_in_file(following_handle + '\n',
+                                following_filename, False):
+                print('WARN: ' + handle + ' is not in ' + following_filename)
+                return
+            handle = following_handle
+        else:
+            print('WARN: ' + handle + ' is not in ' + following_filename)
+            return
 
     notify_on_post_filename = \
         acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
@@ -99,25 +107,30 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
 
 def add_notify_on_post(base_dir: str, nickname: str, domain: str,
                        following_nickname: str,
-                       following_domain: str) -> None:
+                       following_domain: str,
+                       following_handle: str) -> None:
     """Add a notification
     """
     _notify_on_post_arrival(base_dir, nickname, domain,
-                            following_nickname, following_domain, True)
+                            following_nickname, following_domain,
+                            following_handle, True)
 
 
 def remove_notify_on_post(base_dir: str, nickname: str, domain: str,
                           following_nickname: str,
-                          following_domain: str) -> None:
+                          following_domain: str,
+                          following_handle: str) -> None:
     """Remove a notification
     """
     _notify_on_post_arrival(base_dir, nickname, domain,
-                            following_nickname, following_domain, False)
+                            following_nickname, following_domain,
+                            following_handle, False)
 
 
 def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
                              following_nickname: str,
-                             following_domain: str) -> bool:
+                             following_domain: str,
+                             following_handle: str) -> bool:
     """Returns true if receiving notifications when the given publishes a post
     """
     if following_nickname == nickname and following_domain == domain:
@@ -130,4 +143,8 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
         save_flag_file(notify_on_post_filename,
                        'EX: notify_when_person_posts unable to write ' +
                        notify_on_post_filename)
-    return text_in_file(handle + '\n', notify_on_post_filename, False)
+    notify = text_in_file(handle + '\n', notify_on_post_filename, False)
+    if not notify and handle != following_handle:
+        notify = text_in_file(following_handle + '\n',
+                              notify_on_post_filename, False)
+    return notify

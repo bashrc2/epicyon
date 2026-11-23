@@ -651,7 +651,8 @@ def html_person_options(default_timeline: str,
                     translate['Save'] + '</button><br>\n'
                 if not notify_when_person_posts(base_dir, nickname, domain,
                                                 options_nickname,
-                                                options_domain_full):
+                                                options_domain_full,
+                                                handle):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

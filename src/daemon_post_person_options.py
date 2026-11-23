@@ -555,6 +555,7 @@ def _person_options_notify(self, options_confirm_params: str,
                            domain: str,
                            options_nickname: str,
                            options_domain_full: str,
+                           options_handle: str,
                            users_path: str,
                            default_timeline: str,
                            page_number: int,
@@ -574,13 +575,15 @@ def _person_options_notify(self, options_confirm_params: str,
                                chooser_nickname,
                                domain,
                                options_nickname,
-                               options_domain_full)
+                               options_domain_full,
+                               options_handle)
         else:
             remove_notify_on_post(base_dir,
                                   chooser_nickname,
                                   domain,
                                   options_nickname,
-                                  options_domain_full)
+                                  options_domain_full,
+                                  options_handle)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
@@ -1566,6 +1569,7 @@ def person_options2(self, path: str,
                               domain,
                               options_nickname,
                               options_domain_full,
+                              options_handle,
                               users_path,
                               default_timeline,
                               page_number,
