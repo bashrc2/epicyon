@@ -87,7 +87,7 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
         # create a new minimize file from the following file
         print('Creating minimize file ' + minimize_filename)
         if add:
-            save_flag_file('\n', minimize_filename,
+            save_flag_file(minimize_filename,
                            'EX: minimize_attached_images unable to write ' +
                            minimize_filename)
 
