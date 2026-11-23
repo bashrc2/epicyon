@@ -927,17 +927,17 @@ def has_accept(self, calling_domain: str) -> bool:
     return False
 
 
-def log_accept_string(base_dir: str, accept_str: str):
-    """Logs the given http Accept to a file
+def log_path_string(base_dir: str, path: str):
+    """Logs the given http Path to a file
     """
-    log_accepts_filename: str = base_dir + '/accepts.log'
-    if not is_a_file(log_accepts_filename):
-        save_string(accept_str + '\n', log_accepts_filename,
-                    'EX: log_accept_string ' + accept_str)
+    log_paths_filename: str = base_dir + '/paths.log'
+    if not is_a_file(log_paths_filename):
+        save_string(path + '\n', log_paths_filename,
+                    'EX: log_paths_string ' + path)
     else:
-        if not text_in_file(accept_str, log_accepts_filename, True):
-            append_string(accept_str + '\n', log_accepts_filename,
-                          'EX: log_accept_string ' + accept_str)
+        if not text_in_file(path + '\n', log_paths_filename, True):
+            append_string(path + '\n', log_paths_filename,
+                          'EX: log_paths_string ' + path)
 
 
 def etag_exists(self, media_filename: str) -> bool:

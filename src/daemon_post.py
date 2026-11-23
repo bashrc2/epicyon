@@ -46,8 +46,7 @@ from src.httpcodes import http_413
 from src.httpheaders import contains_suspicious_headers
 from src.httpheaders import update_headers_catalog
 from src.httpheaders import redirect_headers
-from src.daemon_utils import has_accept
-from src.daemon_utils import log_accept_string
+from src.daemon_utils import log_path_string
 from src.daemon_utils import log_epicyon_instances
 from src.daemon_utils import get_user_agent
 from src.daemon_utils import post_to_outbox
@@ -230,10 +229,8 @@ def daemon_http_post(self) -> None:
         return
 
     calling_domain = self.server.domain_full
-    if self.server.log_accepts:
-        if has_accept(self, calling_domain):
-            accept_str = 'POST ' + self.headers['Accept']
-            log_accept_string(self.server.base_dir, accept_str)
+    if self.server.log_paths:
+        log_path_string(self.server.base_dir, 'POST ' + self.path)
 
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])
