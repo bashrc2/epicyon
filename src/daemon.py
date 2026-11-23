@@ -501,6 +501,7 @@ class EpicyonServer(ThreadingHTTPServer):
     instance_description: str = ''
     instance_description_short: str = 'Epicyon'
     robots_txt = None
+    log_accepts: bool = False
     last_llm_time = None
     pause_between_feeds_sec = 15
     instance_software = {}
@@ -762,6 +763,12 @@ def run_daemon(accounts_data_dir: str,
 
     # load the list of known Epicyon instances
     httpd.known_epicyon_instances = load_known_epicyon_instances(base_dir)
+
+    # whether or not to log http Accepts
+    httpd.log_accepts: bool = False
+    log_accepts_filename = data_dir(base_dir) + '/log_accepts'
+    if is_a_file(log_accepts_filename):
+        httpd.log_accepts = True
 
     # if a custom robots.txt exists then read it
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'

@@ -29,6 +29,7 @@ from src.status import actor_status_expired
 from src.status import get_actor_status
 from src.mitm import detect_mitm
 from src.content_labels import get_labels_from_json
+from src.utils import text_in_file
 from src.utils import valid_nickname
 from src.utils import is_yggdrasil_url
 from src.utils import data_dir
@@ -82,6 +83,7 @@ from src.fitnessFunctions import fitness_performance
 from src.siteactive import is_online
 from src.data import load_string
 from src.data import is_a_file
+from src.data import append_string
 
 
 def post_to_outbox(self, message_json: {}, version: str,
@@ -922,6 +924,15 @@ def has_accept(self, calling_domain: str) -> bool:
                 'application/xml;q=0.9,image/webp,*/*;q=0.8'
         return True
     return False
+
+
+def log_accept_string(base_dir: str, accept_str: str):
+    """Logs the given http Accept to a file
+    """
+    log_accepts_filename: str = data_dir(base_dir) + '/accepts.log'
+    if not text_in_file(accept_str, log_accepts_filename, True):
+        append_string(accept_str, log_accepts_filename,
+                      'EX: ' + log_accept_string + ' ' + accept_str)
 
 
 def etag_exists(self, media_filename: str) -> bool:

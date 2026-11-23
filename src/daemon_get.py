@@ -64,6 +64,7 @@ from src.session import get_session_for_domains
 from src.crawlers import blocked_user_agent
 from src.daemon_utils import etag_exists
 from src.daemon_utils import has_accept
+from src.daemon_utils import log_accept_string
 from src.daemon_utils import show_person_options
 from src.daemon_utils import is_authorized
 from src.daemon_utils import get_user_agent
@@ -262,6 +263,10 @@ def daemon_http_get(self) -> None:
         return
 
     calling_domain = self.server.domain_full
+    if self.server.log_accepts:
+        if has_accept(self, calling_domain):
+            accept_str = 'GET ' + self.headers['Accept']
+            log_accept_string(self.server.base_dir, accept_str)
 
     # record header fields encountered
     update_headers_catalog(self.server.base_dir,
