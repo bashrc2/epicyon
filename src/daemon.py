@@ -766,7 +766,7 @@ def run_daemon(accounts_data_dir: str,
 
     # whether or not to log http Accepts
     httpd.log_accepts: bool = False
-    log_accepts_filename = data_dir(base_dir) + '/log_accepts'
+    log_accepts_filename = base_dir + '/log_accepts'
     if is_a_file(log_accepts_filename):
         httpd.log_accepts = True
 

@@ -929,7 +929,7 @@ def has_accept(self, calling_domain: str) -> bool:
 def log_accept_string(base_dir: str, accept_str: str):
     """Logs the given http Accept to a file
     """
-    log_accepts_filename: str = data_dir(base_dir) + '/accepts.log'
+    log_accepts_filename: str = base_dir + '/accepts.log'
     if not text_in_file(accept_str, log_accepts_filename, True):
         append_string(accept_str, log_accepts_filename,
                       'EX: ' + log_accept_string + ' ' + accept_str)
