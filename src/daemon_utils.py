@@ -84,6 +84,7 @@ from src.siteactive import is_online
 from src.data import load_string
 from src.data import is_a_file
 from src.data import append_string
+from src.data import save_string
 
 
 def post_to_outbox(self, message_json: {}, version: str,
@@ -930,9 +931,13 @@ def log_accept_string(base_dir: str, accept_str: str):
     """Logs the given http Accept to a file
     """
     log_accepts_filename: str = base_dir + '/accepts.log'
-    if not text_in_file(accept_str, log_accepts_filename, True):
-        append_string(accept_str, log_accepts_filename,
-                      'EX: ' + log_accept_string + ' ' + accept_str)
+    if not is_a_file(log_accepts_filename):
+        save_string(accept_str, log_accepts_filename,
+                    'EX: ' + log_accept_string + ' ' + accept_str)
+    else:
+        if not text_in_file(accept_str, log_accepts_filename, True):
+            append_string(accept_str, log_accepts_filename,
+                          'EX: ' + log_accept_string + ' ' + accept_str)
 
 
 def etag_exists(self, media_filename: str) -> bool:
