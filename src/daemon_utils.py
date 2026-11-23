@@ -930,6 +930,8 @@ def has_accept(self, calling_domain: str) -> bool:
 def log_path_string(base_dir: str, path: str):
     """Logs the given http Path to a file
     """
+    if path.startswith('/avatars/'):
+        return
     log_paths_filename: str = base_dir + '/paths.log'
     if not is_a_file(log_paths_filename):
         save_string(path + '\n', log_paths_filename,
