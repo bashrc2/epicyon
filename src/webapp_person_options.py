@@ -51,6 +51,7 @@ from src.data import is_a_file
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
                               following_nickname: str,
                               following_domain: str,
+                              following_handle: str,
                               add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to minimize images from that account
@@ -67,8 +68,16 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
 
     # check that you are following this handle (not case sensitive)
     if not text_in_file(handle + '\n', following_filename, False):
-        print('WARN: ' + handle + ' is not in ' + following_filename)
-        return
+        if following_handle != handle:
+            if not text_in_file(following_handle + '\n',
+                                following_filename, False):
+                print('WARN: ' + handle + ' and ' + following_handle +
+                      ' is not in ' + following_filename)
+                return
+            handle = following_handle
+        else:
+            print('WARN: ' + handle + ' is not in ' + following_filename)
+            return
 
     minimize_filename = \
         acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
@@ -113,20 +122,24 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
 
 def person_minimize_images(base_dir: str, nickname: str, domain: str,
                            following_nickname: str,
-                           following_domain: str) -> None:
+                           following_domain: str,
+                           following_handle: str) -> None:
     """Images from this person are minimized by default
     """
     _minimize_attached_images(base_dir, nickname, domain,
-                              following_nickname, following_domain, True)
+                              following_nickname, following_domain,
+                              following_handle, True)
 
 
 def person_undo_minimize_images(base_dir: str, nickname: str, domain: str,
                                 following_nickname: str,
-                                following_domain: str) -> None:
+                                following_domain: str,
+                                following_handle: str) -> None:
     """Images from this person are no longer minimized by default
     """
     _minimize_attached_images(base_dir, nickname, domain,
-                              following_nickname, following_domain, False)
+                              following_nickname, following_domain,
+                              following_handle, False)
 
 
 def html_person_options(default_timeline: str,
@@ -577,6 +590,8 @@ def html_person_options(default_timeline: str,
         options_actor + '">\n'
     options_str += '    <input type="hidden" name="actorUrl" value="' + \
         options_actor_url + '">\n'
+    options_str += '    <input type="hidden" name="handle" value="' + \
+        handle + '">\n'
     options_str += '    <input type="hidden" name="avatarUrl" value="' + \
         options_profile_url + '">\n'
 
@@ -664,7 +679,8 @@ def html_person_options(default_timeline: str,
                     translate['Save'] + '</button><br>\n'
                 if not minimizing_attached_images(base_dir, nickname, domain,
                                                   options_nickname,
-                                                  options_domain_full):
+                                                  options_domain_full,
+                                                  handle):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

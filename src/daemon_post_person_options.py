@@ -77,6 +77,15 @@ def _person_options_actor_url(options_confirm_params: str) -> str:
     return options_actor
 
 
+def _person_options_handle(options_confirm_params: str) -> str:
+    """Get the handle
+    """
+    options_handle = options_confirm_params.split('handle=')[1]
+    if '&' in options_handle:
+        options_handle = options_handle.split('&')[0]
+    return options_handle
+
+
 def _person_options_moved_to(options_confirm_params: str) -> str:
     """actor for movedTo
     """
@@ -414,6 +423,7 @@ def _person_options_min_images(self, options_confirm_params: str,
                                domain: str,
                                options_nickname: str,
                                options_domain_full: str,
+                               options_handle: str,
                                users_path: str,
                                default_timeline: str,
                                page_number: int,
@@ -434,13 +444,15 @@ def _person_options_min_images(self, options_confirm_params: str,
                                    chooser_nickname,
                                    domain,
                                    options_nickname,
-                                   options_domain_full)
+                                   options_domain_full,
+                                   options_handle)
         else:
             person_undo_minimize_images(base_dir,
                                         chooser_nickname,
                                         domain,
                                         options_nickname,
-                                        options_domain_full)
+                                        options_domain_full,
+                                        options_handle)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
@@ -1370,6 +1382,8 @@ def person_options2(self, path: str,
 
     options_actor = _person_options_actor_url(options_confirm_params)
 
+    options_handle = _person_options_handle(options_confirm_params)
+
     options_actor_moved = _person_options_moved_to(options_confirm_params)
 
     options_avatar_url = _person_options_avatar_url(options_confirm_params)
@@ -1512,6 +1526,7 @@ def person_options2(self, path: str,
                                   domain,
                                   options_nickname,
                                   options_domain_full,
+                                  options_handle,
                                   users_path,
                                   default_timeline,
                                   page_number,

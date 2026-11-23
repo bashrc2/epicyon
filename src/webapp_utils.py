@@ -72,7 +72,8 @@ from src.data import is_a_dir
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
                                following_nickname: str,
-                               following_domain: str) -> bool:
+                               following_domain: str,
+                               handle: str) -> bool:
     """Returns true if images from the account being followed should be
     minimized by default
     """
@@ -81,7 +82,7 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
         return False
     minimize_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/followingMinimizeImages.txt'
-    handle: str = following_nickname + '@' + following_domain
+    handle2: str = following_nickname + '@' + following_domain
     if not is_a_file(minimize_filename):
         following_filename: str = \
             acct_dir(base_dir, nickname, domain) + '/following.txt'
@@ -91,7 +92,10 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
         save_flag_file(minimize_filename,
                        'EX: minimizing_attached_images 2 ' +
                        minimize_filename)
-    return text_in_file(handle + '\n', minimize_filename, False)
+    is_minimized = text_in_file(handle2 + '\n', minimize_filename, False)
+    if not is_minimized and handle != handle2:
+        is_minimized = text_in_file(handle + '\n', minimize_filename, False)
+    return is_minimized
 
 
 def get_broken_link_substitute() -> str:
@@ -1596,6 +1600,8 @@ def get_post_attachments_as_html(base_dir: str,
                         get_nickname_from_actor(attributed_actor)
                     following_domain, _ = \
                         get_domain_from_actor(attributed_actor)
+                    following_handle = \
+                        following_nickname + '@' + following_domain
                     if minimize_all_images:
                         minimize_images = True
                     else:
@@ -1603,7 +1609,8 @@ def get_post_attachments_as_html(base_dir: str,
                             minimizing_attached_images(base_dir,
                                                        nickname, domain,
                                                        following_nickname,
-                                                       following_domain)
+                                                       following_domain,
+                                                       following_handle)
 
                 # minimize any NSFW images
                 if not minimize_images and content:
