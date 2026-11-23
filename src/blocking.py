@@ -864,12 +864,13 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
 
 def allowed_announce(base_dir: str, nickname: str, domain: str,
                      block_nickname: str, block_domain: str,
+                     block_handle: str,
                      announce_blocked_cache: [] = None) -> bool:
     """Is the given nickname allowed to send announces?
     """
-    block_handle = None
+    block_handle2 = None
     if block_nickname and block_domain:
-        block_handle = block_nickname + '@' + block_domain
+        block_handle2 = block_nickname + '@' + block_domain
 
     # cached announce blocks
     if announce_blocked_cache:
@@ -880,9 +881,13 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
             if block_domain:
                 if '*@' + block_domain in blocked_str:
                     return False
-            if block_handle:
-                if blocked_str == block_handle:
+            if block_handle2:
+                if blocked_str == block_handle2:
                     return False
+            if block_handle:
+                if block_handle != block_handle2:
+                    if blocked_str == block_handle:
+                        return False
 
     # non-cached instance level announce blocks
     global_announce_blocks_filename = \
@@ -896,7 +901,12 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
             if text_in_file('*@' + block_domain,
                             global_announce_blocks_filename, False):
                 return False
-        if block_handle:
+        if block_handle2:
+            block_str = block_handle2 + '\n'
+            if text_in_file(block_str,
+                            global_announce_blocks_filename, False):
+                return False
+        if block_handle != block_handle2:
             block_str = block_handle + '\n'
             if text_in_file(block_str,
                             global_announce_blocks_filename, False):
@@ -914,15 +924,21 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
             if text_in_file('*@' + block_domain + '\n',
                             blocking_filename, False):
                 return False
-        if block_handle:
-            if text_in_file(block_handle + '\n', blocking_filename, False):
+        if block_handle2:
+            block_str = block_handle2 + '\n'
+            if text_in_file(block_str, blocking_filename, False):
+                return False
+        if block_handle != block_handle2:
+            block_str = block_handle + '\n'
+            if text_in_file(block_str, blocking_filename, False):
                 return False
     return True
 
 
 def allowed_announce_add(base_dir: str, nickname: str, domain: str,
                          following_nickname: str,
-                         following_domain: str) -> None:
+                         following_domain: str,
+                         following_handle: str) -> None:
     """Allow announces for a handle
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -932,8 +948,15 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
     if not is_a_file(blocking_filename):
         return
 
+    new_announce = False
     handle = following_nickname + '@' + following_domain
     if text_in_file(handle + '\n', blocking_filename, False):
+        new_announce = True
+    elif text_in_file(following_handle + '\n', blocking_filename, False):
+        new_announce = True
+        handle = following_handle
+
+    if new_announce:
         file_text: str = \
             load_string(blocking_filename,
                         'EX: unable to read noannounce add: ' +
@@ -956,7 +979,8 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
 
 def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                             following_nickname: str,
-                            following_domain: str) -> None:
+                            following_domain: str,
+                            following_handle: str) -> None:
     """Don't allow announces from a handle
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -971,8 +995,13 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                     blocking_filename + ' ' + handle)
         return
 
+    remove_announce: bool = False
     file_text: str = ''
-    if not text_in_file(handle + '\n', blocking_filename, False):
+    if not text_in_file(handle + '\n', blocking_filename, False) and \
+       not text_in_file(following_handle + '\n', blocking_filename, False):
+        remove_announce = True
+
+    if remove_announce:
         file_text = load_string(blocking_filename,
                                 'EX: unable to read noannounce remove: ' +
                                 blocking_filename + ' ' + handle)

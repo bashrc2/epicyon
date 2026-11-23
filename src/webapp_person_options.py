@@ -620,7 +620,8 @@ def html_person_options(default_timeline: str,
                     'name="submitAllowAnnounce">' + \
                     translate['Save'] + '</button><br>\n'
                 if not allowed_announce(base_dir, nickname, domain,
-                                        options_nickname, options_domain_full):
+                                        options_nickname, options_domain_full,
+                                        handle):
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 

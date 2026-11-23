@@ -2235,10 +2235,11 @@ def receive_announce(recent_posts_cache: {},
         print('Receive announce blocked for actor: ' +
               actor_nickname + '@' + actor_domain)
         return False
+    actor_handle = actor_nickname + '@' + actor_domain
 
     # Are announces permitted from the given actor?
     if not allowed_announce(base_dir, nickname, domain,
-                            actor_nickname, actor_domain):
+                            actor_nickname, actor_domain, actor_handle):
         print('Announce not allowed for: ' +
               actor_nickname + '@' + actor_domain)
         return False

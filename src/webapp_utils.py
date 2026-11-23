@@ -159,11 +159,13 @@ def csv_following_list(following_filename: str,
                     get_nickname_from_actor(following_address)
                 following_domain, _ = \
                     get_domain_from_actor(following_address)
+                following_handle = following_nickname + '@' + following_domain
 
                 announce_is_allowed: bool = \
                     allowed_announce(base_dir, nickname, domain,
                                      following_nickname,
-                                     following_domain)
+                                     following_domain,
+                                     following_handle)
                 notify_on_new: str = 'false'
                 languages: str = ''
                 person_notes: str = \
