@@ -504,6 +504,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     # isn't written to file
     post_nickname = None
     post_domain = None
+    post_handle = None
     actor = None
     obj_dict_exists: bool = False
 
@@ -547,6 +548,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                   post_nickname + '@' + post_domain + ' blocked')
             return None
         post_domain = get_full_domain(post_domain, post_port)
+        post_handle = post_nickname + '@' + post_domain
 
     # get the content of the post
     content_str = \
@@ -560,7 +562,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 if sending_actor:
                     allow_quotes = \
                         quote_toots_allowed(base_dir, nickname, domain,
-                                            post_nickname, post_domain)
+                                            post_nickname, post_domain,
+                                            post_handle)
                 if not allow_quotes:
                     if post_json_object.get('id'):
                         print('REJECT: inbox quote toot ' +
@@ -2064,6 +2067,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     get_attributed_to(message_json['attributedTo'])
         quote_post_nickname = None
         quote_post_domain_full = None
+        quote_post_handle = None
         allow_quotes: bool = False
         if quote_post_actor:
             quote_post_nickname = get_nickname_from_actor(quote_post_actor)
@@ -2072,12 +2076,15 @@ def _inbox_after_initial(server, inbox_start_time,
             if quote_post_domain:
                 quote_post_domain_full = \
                     get_full_domain(quote_post_domain, quote_post_port)
+                quote_post_handle = \
+                    quote_post_nickname + '@' + quote_post_domain_full
         # are quote toots allowed from this actor?
         if quote_post_nickname and quote_post_domain_full:
             allow_quotes = \
                 quote_toots_allowed(base_dir, handle_name, domain,
                                     quote_post_nickname,
-                                    quote_post_domain_full)
+                                    quote_post_domain_full,
+                                    quote_post_handle)
         if not allow_quotes:
             if message_json.get('id'):
                 print('REJECT: inbox quote toot ' +

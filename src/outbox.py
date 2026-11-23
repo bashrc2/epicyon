@@ -353,7 +353,7 @@ def post_message_to_outbox(session, translate: {},
         if is_quote_toot(message_json, ''):
             allow_quotes = \
                 quote_toots_allowed(base_dir, post_to_nickname, domain,
-                                    None, None)
+                                    None, None, None)
             if not allow_quotes:
                 print('REJECT: POST quote toot ' + str(message_json))
                 return False

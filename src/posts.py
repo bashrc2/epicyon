@@ -6742,13 +6742,15 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
                 return None
+            attributed_handle = attributed_nickname + '@' + attributed_domain
 
             # check if quote toots are allowed
             if is_quote_toot(announced_json, content_str):
                 allow_quotes = \
                     quote_toots_allowed(base_dir, nickname, domain,
                                         attributed_nickname,
-                                        attributed_domain)
+                                        attributed_domain,
+                                        attributed_handle)
                 if not allow_quotes:
                     print('REJECT: announced quote toot ' +
                           nickname + '@' + domain + ' ' +

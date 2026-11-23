@@ -626,7 +626,7 @@ def html_person_options(default_timeline: str,
 
                 # allow quote toots
                 if quote_toots_allowed(base_dir, nickname, domain,
-                                       None, None):
+                                       None, None, None):
                     checkbox_str = \
                         '    <input type="checkbox" ' + \
                         'class="profilecheckbox" ' + \
@@ -637,7 +637,8 @@ def html_person_options(default_timeline: str,
                         translate['Save'] + '</button><br>\n'
                     if not quote_toots_allowed(base_dir, nickname, domain,
                                                options_nickname,
-                                               options_domain_full):
+                                               options_domain_full,
+                                               handle):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     options_str += checkbox_str
 

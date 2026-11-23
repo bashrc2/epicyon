@@ -96,7 +96,8 @@ def get_quote_toot_url(post_json_object: str) -> str:
 
 
 def quote_toots_allowed(base_dir: str, nickname: str, domain: str,
-                        sender_nickname: str, sender_domain: str) -> bool:
+                        sender_nickname: str, sender_domain: str,
+                        sender_handle: str) -> bool:
     """ Returns true if quote toots are allowed by the given account
     for the given sender
     """
@@ -108,9 +109,15 @@ def quote_toots_allowed(base_dir: str, nickname: str, domain: str,
         if sender_nickname is None:
             return True
         if is_a_file(quotes_blocked_filename):
-            sender_handle = sender_nickname + '@' + sender_domain
-            if text_in_file(sender_handle, quotes_blocked_filename, False):
-                # quote toots not permitted from this sender
-                return False
+            sender_handle2 = sender_nickname + '@' + sender_domain
+            if text_in_file(sender_handle2, quotes_blocked_filename, False):
+                if sender_handle != sender_handle2:
+                    if text_in_file(sender_handle, quotes_blocked_filename,
+                                    False):
+                        # quote toots not permitted from this sender
+                        return False
+                else:
+                    # quote toots not permitted from this sender
+                    return False
         return True
     return False
