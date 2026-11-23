@@ -1312,6 +1312,7 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     actor_domain, _ = get_domain_from_actor(actor)
     if not actor_domain:
         return
+    actor_handle = actor_nickname + '@' + actor_domain
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
 
@@ -1335,7 +1336,7 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
                                      actor_nickname, actor_domain,
-                                     is_public_event):
+                                     actor_handle, is_public_event):
         return
 
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
@@ -1386,6 +1387,7 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
     actor_domain, _ = get_domain_from_actor(actor)
     if not actor_domain:
         return
+    actor_handle = actor_nickname + '@' + actor_domain
     handle_nickname = handle.split('@')[0]
     handle_domain = handle.split('@')[1]
 
@@ -1409,7 +1411,7 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
     if not receiving_calendar_events(base_dir,
                                      handle_nickname, handle_domain,
                                      actor_nickname, actor_domain,
-                                     is_public_event):
+                                     actor_handle, is_public_event):
         return
 
     post_id = remove_id_ending(post_json_object['id']).replace('/', '#')

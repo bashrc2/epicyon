@@ -1707,7 +1707,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
               follow_nickname + '@' + follow_domain + ' to calendar of ' +
               nickname + '@' + domain)
         add_person_to_calendar(base_dir, nickname, domain,
-                               follow_nickname, follow_domain)
+                               follow_nickname, follow_domain,
+                               handle_to_follow)
         # add a default petname
         _set_default_pet_name(base_dir, nickname, domain,
                               follow_nickname, follow_domain)

@@ -60,6 +60,7 @@ def _port_domain_remove(domain: str) -> str:
 def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
                               following_nickname: str,
                               following_domain: str,
+                              following_handle: str,
                               is_public_event: bool) -> bool:
     """Returns true if receiving calendar events from the given
     account from following.txt
@@ -87,12 +88,17 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
         if following_handles:
             save_string(following_handles, calendar_filename,
                         'EX: receiving_calendar_events 2 ' + calendar_filename)
-    return _text_in_file2(handle + '\n', calendar_filename, False)
+    calevents = _text_in_file2(handle + '\n', calendar_filename, False)
+    if not calevents and handle != following_handle:
+        calevents = _text_in_file2(following_handle + '\n',
+                                   calendar_filename, False)
+    return calevents
 
 
 def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
                              following_nickname: str,
                              following_domain: str,
+                             following_handle: str,
                              add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to receive calendar events from that account
@@ -109,8 +115,16 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
 
     # check that you are following this handle
     if not _text_in_file2(handle + '\n', following_filename, False):
-        print('WARN: ' + handle + ' is not in ' + following_filename)
-        return
+        if handle != following_handle:
+            if not _text_in_file2(following_handle + '\n',
+                                  following_filename, False):
+                print('WARN: ' + handle + ' and ' + following_handle +
+                      ' are not in ' + following_filename)
+                return
+            handle = following_handle
+        else:
+            print('WARN: ' + handle + ' is not in ' + following_filename)
+            return
 
     calendar_filename: str = \
         _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
@@ -167,17 +181,21 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
 
 def add_person_to_calendar(base_dir: str, nickname: str, domain: str,
                            following_nickname: str,
-                           following_domain: str) -> None:
+                           following_domain: str,
+                           following_handle: str) -> None:
     """Add a person to the calendar
     """
     _receive_calendar_events(base_dir, nickname, domain,
-                             following_nickname, following_domain, True)
+                             following_nickname, following_domain,
+                             following_handle, True)
 
 
 def remove_person_from_calendar(base_dir: str, nickname: str, domain: str,
                                 following_nickname: str,
-                                following_domain: str) -> None:
+                                following_domain: str,
+                                following_handle: str) -> None:
     """Remove a person from the calendar
     """
     _receive_calendar_events(base_dir, nickname, domain,
-                             following_nickname, following_domain, False)
+                             following_nickname, following_domain,
+                             following_handle, False)
