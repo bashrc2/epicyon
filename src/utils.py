@@ -4303,7 +4303,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '..', '/.', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-',
         '/statistics', '/config/', 'settings.', 'credentials',
         '/packs/', '/backend/', '/apis/', '/laravel/', '/js/',
-        '/root/', '/webmail/', '/mail/'
+        '/root/', '/webmail/', '/mail/', '/cgi-bin'
     ]
 
     # allow /.well-known/...
@@ -4337,7 +4337,9 @@ def check_bad_path(path: str, allow_local_network_access: bool):
 
     bad_starts: list[str] = (
         '/firebase', '/composer', '/sugar', '/_', '/?rest', '/?cb=',
-        '/service', '/package', '/openapi', '/swagger'
+        '/service', '/package', '/openapi', '/swagger',
+        '/friendika/', '/friendica/', '/upload', '/wordpress',
+        '/ads.txt'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
