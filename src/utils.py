@@ -4320,7 +4320,9 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     bad_endings: list[str] = (
         '.js', '.ts', '.py', '.php', '.bak', '.env', '.local', '.yml',
         '.rs', '.ru', '.old', '.backup', '~', '.ini', '.db', '.stage',
-        '.prod', '.alfa'
+        '.prod', '.alfa', '.sql', '.conf', '.hcl', '.log', '.toml',
+        '.tfvars', '.tfstate', '/env', '.ovpn', '.properties', '-s3fs',
+        '.axd', '.tar', '.gz', '.zip', '.config'
     )
     if string_ends_with(path_lower, bad_endings):
         return True
@@ -4336,10 +4338,12 @@ def check_bad_path(path: str, allow_local_network_access: bool):
             return True
 
     bad_starts: list[str] = (
-        '/firebase', '/composer', '/sugar', '/_', '/?rest', '/?cb=',
+        '/firebase', '/compose', '/sugar', '/_', '/?rest', '/?cb=',
         '/service', '/package', '/openapi', '/swagger',
         '/friendika/', '/friendica/', '/upload', '/wordpress',
-        '/ads.txt'
+        '/ads.txt', '/docker', '/jenkins', '/actuator',
+        '/php', '/symfony', '/secret', '/serverless', '/metrics',
+        '/server', '/storage', '/litellm', '/telescope'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
