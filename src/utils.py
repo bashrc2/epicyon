@@ -4349,7 +4349,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '/friendika/', '/friendica/', '/upload', '/wordpress',
         '/ads.txt', '/docker', '/jenkins', '/actuator',
         '/php', '/symfony', '/secret', '/serverless', '/metrics',
-        '/server', '/storage', '/litellm', '/telescope'
+        '/server', '/storage', '/litellm', '/telescope', '/oai_'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
