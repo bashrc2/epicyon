@@ -4318,11 +4318,11 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         return True
 
     bad_endings: list[str] = (
-        '.js', '.ts', '.py', '.php', '.bak', '.env', '.local', '.yml',
-        '.rs', '.ru', '.old', '.backup', '~', '.ini', '.db', '.stage',
-        '.prod', '.alfa', '.sql', '.conf', '.hcl', '.log', '.toml',
-        '.tfvars', '.tfstate', '/env', '.ovpn', '.properties', '-s3fs',
-        '.axd', '.tar', '.gz', '.zip', '.config'
+        '.js', '.ts', '.py', '.php', '.bak', '.env', '.local',
+        '.yml', '.yaml', '.rs', '.ru', '.old', '.backup', '~', '.ini',
+        '.db', '.stage', '.prod', '.alfa', '.sql', '.conf', '.hcl',
+        '.log', '.toml', '.tfvars', '.tfstate', '/env', '.ovpn',
+        '.properties', '-s3fs', '.axd', '.tar', '.gz', '.zip', '.config'
     )
     if string_ends_with(path_lower, bad_endings):
         import_export: bool = False
