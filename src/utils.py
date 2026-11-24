@@ -4325,7 +4325,13 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '.axd', '.tar', '.gz', '.zip', '.config'
     )
     if string_ends_with(path_lower, bad_endings):
-        return True
+        import_export: bool = False
+        if path_lower.endswith('.zip') or path_lower.endswith('.gz'):
+            if path_lower.startswith('/imports/') or \
+               path_lower.startswith('/exports/'):
+                import_export = True
+        if not import_export:
+            return True
 
     if '/.ghost/activitypub/' in path_lower and '/.' in bad_strings:
         bad_strings.remove('/.')
