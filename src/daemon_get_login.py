@@ -10,6 +10,7 @@ __module_group__ = "Daemon Login"
 from src.utils import get_instance_url
 from src.utils import string_ends_with
 from src.utils import string_contains
+from src.utils import string_starts_with
 from src.httpcodes import write2
 from src.httpheaders import login_headers
 from src.httpheaders import redirect_headers
@@ -89,7 +90,8 @@ def show_login_screen(path: str, authorized: bool,
                       self) -> bool:
     """ Shows the login screen
     """
-    if path.startswith('/login') or \
+    login_paths = ('/login', '/signin')
+    if string_starts_with(path, login_paths) or \
        (path == '/' and not authorized and not news_instance):
         # request basic auth
         msg = html_login(translate, base_dir,

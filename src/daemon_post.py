@@ -386,7 +386,8 @@ def daemon_http_post(self) -> None:
                         self.server.debug)
 
     # POST to login screen, containing credentials
-    if self.path.startswith('/login'):
+    login_paths = ('/login', '/signin')
+    if string_starts_with(self.path, login_paths):
         post_login_screen(self, calling_domain, cookie,
                           self.server.base_dir,
                           self.server.http_prefix,

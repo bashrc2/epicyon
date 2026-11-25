@@ -2731,7 +2731,7 @@ def daemon_http_get(self) -> None:
         self.path = self.path.replace('/welcome_final', '')
 
     # if not authorized then show the login screen
-    if html_getreq and self.path != '/login' and \
+    if html_getreq and self.path not in ('/login', '/signin') and \
        not is_image_file(self.path) and \
        self.path != '/' and \
        not self.path.startswith('/.well-known/protocol-handler') and \
@@ -6514,7 +6514,7 @@ def _permitted_crawler_path(path: str) -> bool:
     """Is the given path permitted to be crawled by a search engine?
     this should only allow through basic information, such as nodeinfo
     """
-    if path == '/' or path == '/about' or path == '/login' or \
+    if path in ('/', '/about', '/login', '/signin') or \
        path.startswith('/blog/'):
         return True
     return False
