@@ -4357,7 +4357,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '/pip', '/make', '/rake', '/gulp',
         '/cap', '/ansible', '/vagrant', '/brew', '/oauth',
         '/dir', '/tsconfig', '/angular', '/changelog',
-        '/graphiql', '/requirements'
+        '/graphiql', '/requirements', '/xrpc', '/poco'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
