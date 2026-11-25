@@ -4348,7 +4348,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     bad_starts: list[str] = (
         '/firebase', '/compose', '/sugar', '/_', '/?rest', '/?cb=',
         '/service', '/package', '/open', '/swagger',
-        '/friendika/', '/friendica/', '/upload', '/wordpress',
+        '/friend', '/upload', '/wordpress',
         '/ads.txt', '/docker', '/jenkins', '/actuator',
         '/php', '/symfony', '/secret', '/serverless', '/metrics',
         '/server', '/storage', '/litellm', '/telescope', '/oai',
