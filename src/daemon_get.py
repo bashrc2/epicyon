@@ -263,7 +263,10 @@ def daemon_http_get(self) -> None:
         http_400(self)
         return
 
-    health_paths: list[str] = ('/health', '/status', '/debug')
+    health_paths: list[str] = (
+        '/health', '/status', '/debug',
+        '/api/health', '/api/status', '/api/debug'
+    )
     if string_starts_with(self.path, health_paths):
         http_ok(self)
         return
