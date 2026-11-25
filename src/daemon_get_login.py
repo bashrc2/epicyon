@@ -90,7 +90,11 @@ def show_login_screen(path: str, authorized: bool,
                       self) -> bool:
     """ Shows the login screen
     """
-    login_paths = ('/login', '/signin')
+    login_paths: list[str] = (
+        '/login', '/signin', '/register', '/join', '/create',
+        '/account/register', '/account/join', '/account/create',
+        '/account/login', '/account/signin'
+    )
     if string_starts_with(path, login_paths) or \
        (path == '/' and not authorized and not news_instance):
         # request basic auth

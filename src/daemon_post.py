@@ -386,7 +386,11 @@ def daemon_http_post(self) -> None:
                         self.server.debug)
 
     # POST to login screen, containing credentials
-    login_paths = ('/login', '/signin')
+    login_paths: list[str] = (
+        '/login', '/signin', '/register', '/join', '/create',
+        '/account/register', '/account/join', '/account/create',
+        '/account/login', '/account/signin'
+    )
     if string_starts_with(self.path, login_paths):
         post_login_screen(self, calling_domain, cookie,
                           self.server.base_dir,
