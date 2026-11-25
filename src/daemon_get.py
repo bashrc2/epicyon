@@ -2431,7 +2431,7 @@ def daemon_http_get(self) -> None:
                         '_GET', 'followers accounts done',
                         self.server.debug)
 
-    if self.path.endswith('/about'):
+    if self.path.endswith('/about') or self.path.endswith('/info'):
         if calling_domain.endswith('.onion') and self.server.onion_domain:
             msg = \
                 html_about(self.server.base_dir, 'http',
@@ -6520,7 +6520,7 @@ def _permitted_crawler_path(path: str) -> bool:
     """Is the given path permitted to be crawled by a search engine?
     this should only allow through basic information, such as nodeinfo
     """
-    if path in ('/', '/about', '/login', '/signin') or \
+    if path in ('/', '/about', '/info', '/login', '/signin') or \
        path.startswith('/blog/'):
         return True
     return False
