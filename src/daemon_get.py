@@ -81,6 +81,7 @@ from src.httpheaders import set_headers
 from src.httpheaders import logout_headers
 from src.httpheaders import logout_redirect
 from src.httpheaders import contains_suspicious_headers
+from src.httpcodes import http_ok
 from src.httpcodes import http_200
 from src.httpcodes import http_402
 from src.httpcodes import http_403
@@ -260,6 +261,11 @@ def daemon_http_get(self) -> None:
                       self.server.allow_local_network_access):
         print('WARN: bad path GET ' + self.path)
         http_400(self)
+        return
+
+    health_paths: list[str] = ('/health', '/status', '/debug')
+    if string_starts_with(self.path, health_paths):
+        http_ok(self)
         return
 
     calling_domain = self.server.domain_full

@@ -126,6 +126,25 @@ def http_400(self) -> None:
                           'Better luck next time', None)
 
 
+def http_ok(self) -> None:
+    """HTTP OK
+    """
+    msg = \
+        '<html><head><title>👍</title></head>' + \
+        '<body bgcolor="linen" text="black">' + \
+        '<div style="font-size: 800px; ' + \
+        'text-align: center;">👍</div>' + \
+        '</body></html>'
+    msg = msg.encode('utf-8')
+    self.send_response(200)
+    self.send_header('Content-Type', 'text/html; charset=utf-8')
+    msg_len_str = str(len(msg))
+    self.send_header('Content-Length', msg_len_str)
+    self.end_headers()
+    if not write2(self, msg):
+        print('Error when showing 👍 ' + str(200))
+
+
 def http_401(self, post_msg: str) -> None:
     """HTTP code 401
     """
