@@ -4324,7 +4324,7 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '.log', '.toml', '.tfvars', '.tfstate', '/env', '.ovpn',
         '.properties', '-s3fs', '.axd', '.tar', '.gz', '.zip', '.config',
         '.save', '_log', '.pem', '.gradle', '.lock', '.rb', '.inc',
-        '.aspx', '.asa', '.asax', '.kv', '.php7'
+        '.aspx', '.asa', '.asax', '.kv', '.php7', '/graphql'
     )
     if string_ends_with(path_lower, bad_endings):
         import_export: bool = False
@@ -4348,16 +4348,17 @@ def check_bad_path(path: str, allow_local_network_access: bool):
     bad_starts: list[str] = (
         '/firebase', '/compose', '/sugar', '/_', '/?rest', '/?cb=',
         '/service', '/package', '/open', '/swagger',
-        '/friend', '/upload', '/wordpress',
+        '/friend', '/upload', '/wordpress', '/build',
         '/ads.txt', '/docker', '/jenkins', '/actuator',
         '/php', '/symfony', '/secret', '/serverless', '/metrics',
         '/server', '/storage', '/litellm', '/telescope', '/oai',
         '/key', '/google', '/gcp', '/sa.', '/web',
         '/id_', '/procfile', '/horizon', '/gemfile', '/yarn',
-        '/pip', '/make', '/rake', '/gulp',
+        '/pip', '/make', '/rake', '/gulp', '/rail', '/mcp',
         '/cap', '/ansible', '/vagrant', '/brew', '/oauth',
         '/dir', '/tsconfig', '/angular', '/changelog',
-        '/graphiql', '/requirements', '/xrpc', '/poco'
+        '/graphiql', '/requirements', '/xrpc', '/poco', '/relay',
+        '/js', '/mix-manifest', '/pom.', '/sitemap', '/vercel'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
