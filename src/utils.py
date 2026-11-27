@@ -4318,13 +4318,14 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         return True
 
     bad_endings: list[str] = (
-        '.js', '.ts', '.py', '.php', '.bak', '.env', '.local',
+        '.js', '.ts', '.py', '.php', '.bak', '.env', '.local', '.sh',
         '.yml', '.yaml', '.rs', '.ru', '.old', '.backup', '~', '.ini',
         '.db', '.stage', '.prod', '.alfa', '.sql', '.conf', '.hcl',
         '.log', '.toml', '.tfvars', '.tfstate', '/env', '.ovpn',
         '.properties', '-s3fs', '.axd', '.tar', '.gz', '.zip', '.config',
         '.save', '_log', '.pem', '.gradle', '.lock', '.rb', '.inc',
-        '.aspx', '.asa', '.asax', '.kv', '.php7', '/graphql'
+        '.aspx', '.asa', '.asax', '.kv', '.php7', '/graphql', '.sqlite',
+        '.codekit', '.codekit3', '.prisma', '.cfg', '.sdb', '.ppk'
     )
     if string_ends_with(path_lower, bad_endings):
         import_export: bool = False
@@ -4358,7 +4359,8 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '/cap', '/ansible', '/vagrant', '/brew', '/oauth',
         '/dir', '/tsconfig', '/angular', '/changelog',
         '/graphiql', '/requirements', '/xrpc', '/poco', '/relay',
-        '/js', '/mix-manifest', '/pom.', '/sitemap', '/vercel'
+        '/js', '/mix-manifest', '/pom.', '/sitemap', '/vercel',
+        '/Cakefile', '/Guardfile', '/db/', '/data/', '/bower'
     )
     if string_starts_with(path_lower, bad_starts):
         return True
