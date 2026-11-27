@@ -4325,7 +4325,8 @@ def check_bad_path(path: str, allow_local_network_access: bool):
         '.properties', '-s3fs', '.axd', '.tar', '.gz', '.zip', '.config',
         '.save', '_log', '.pem', '.gradle', '.lock', '.rb', '.inc',
         '.aspx', '.asa', '.asax', '.kv', '.php7', '/graphql', '.sqlite',
-        '.codekit', '.codekit3', '.prisma', '.cfg', '.sdb', '.ppk'
+        '.codekit', '.codekit3', '.prisma', '.cfg', '.sdb', '.ppk',
+        '%2eenv'
     )
     if string_ends_with(path_lower, bad_endings):
         import_export: bool = False
